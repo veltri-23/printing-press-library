@@ -334,20 +334,29 @@ func buildEntry(dir, category, slug string, existing map[string]RegistryEntry) (
 		PrinterName: pp.PrinterName,
 	}
 
-	// Description preference: existing registry value (curated) > goreleaser
-	// brew description (homebrew tap one-liner) > .printing-press.json
-	// description (modern printed CLIs populate this from the publish-skill's
-	// narrative.headline) > empty. Curated descriptions in registry.json are
-	// the documented surface and shouldn't be clobbered. Exception: an old
-	// generator bug let bare Markdown headings like "# Introduction" land as
-	// descriptions. Those are not real curated copy, so allow the source
-	// one-liner to repair them on the next regen.
+	// Description preference: .printing-press.json description (authored by
+	// the publish skill from narrative.headline; canonical source of truth
+	// for what this CLI is) > .goreleaser.yaml brews description (Homebrew
+	// tap one-liner; serves the Homebrew flow and acts as the fallback for
+	// pre-2026-05 CLIs whose .printing-press.json didn't carry description)
+	// > prior registry value (legacy backstop for entries with no source
+	// description at all) > empty.
 	//
-	// The .printing-press.json fallback was added after the lawhub incident
-	// (registry shipped description="" because its .goreleaser.yaml brews
-	// block was empty and no prior curated value existed). Modern printed
-	// CLIs always carry a narrative description in .printing-press.json,
-	// so this fallback fires when both prior tiers come back empty.
+	// The pp-first order was adopted after the lawhub-shape incident: the
+	// previous order (prior > goreleaser > pp) meant `registry.json`'s
+	// description was only reproducible from sources if `prior` happened to
+	// match what sources would emit. Curated values that diverged from both
+	// sources lived only in `registry.json` and would silently degrade if
+	// regen ever started from scratch. Making `.printing-press.json` the
+	// authority and backfilling the 26 curated-divergent CLIs (see
+	// docs/plans/2026-05-18-002-...) means the registry is now fully
+	// reproducible from `library/<cat>/<slug>/` source files alone.
+	//
+	// Bare-markdown-heading exception still applies only to the prior tier
+	// (legacy generator bug). `.printing-press.json` and `.goreleaser.yaml`
+	// are author-controlled and have never produced "# Introduction"-shaped
+	// descriptions; if they do, the right fix is upstream, not a per-tier
+	// exception here.
 	entry.Description = registryDescription(
 		prior.Description,
 		readGoreleaserDescription(filepath.Join(dir, ".goreleaser.yaml")),
@@ -377,24 +386,32 @@ func buildEntry(dir, category, slug string, existing map[string]RegistryEntry) (
 }
 
 // registryDescription picks the final description for a registry entry from
-// three tiers in preference order: prior curated value > goreleaser brews
-// description > .printing-press.json description. The bare-markdown-heading
-// exception applies only to the prior tier — that's the only tier with the
-// legacy "# Introduction" bug history. The two source tiers are author-written
-// one-liners and don't need the exception.
+// three tiers in preference order: .printing-press.json description >
+// .goreleaser.yaml brews description > prior curated value. The
+// bare-markdown-heading exception applies only to the prior tier — that's
+// the only tier with the legacy "# Introduction" bug history. The two source
+// tiers are author-written one-liners and don't need the exception.
+//
+// The pp-first order makes the registry fully reproducible from
+// `library/<cat>/<slug>/` source files alone. The prior tier survives as a
+// legacy backstop for entries whose source files genuinely have no
+// description (an increasingly rare case after the 2026-05-18 backfill).
 //
 // Returns "" only when every tier is empty. The --validate mode treats that
 // as a fail-stop; the regular write path lets it through so first-time runs
 // of new CLIs that intentionally have no description can complete (validation
 // is a separate concern from generation).
 func registryDescription(prior, goreleaser, ppDescription string) string {
-	if prior != "" && !isBareMarkdownHeading(prior) {
-		return prior
+	if ppDescription != "" {
+		return ppDescription
 	}
 	if goreleaser != "" {
 		return goreleaser
 	}
-	return ppDescription
+	if prior != "" && !isBareMarkdownHeading(prior) {
+		return prior
+	}
+	return ""
 }
 
 // validateEntries returns one human-readable error per missing required
@@ -436,11 +453,11 @@ func validateEntries(entries []RegistryEntry) []string {
 		}
 		if isBlank(e.Description) {
 			// Source order mirrors the resolution chain in registryDescription:
-			// goreleaser brews is the second tier, .printing-press.json description
-			// is the third. Listing them in resolution order helps a contributor
-			// reading this error understand which file would take precedence if
-			// they populated both.
-			errs = append(errs, fmt.Sprintf("%s: description is empty (sources checked: .goreleaser.yaml brews description, .printing-press.json description)", slug))
+			// .printing-press.json description is the primary source, .goreleaser.yaml
+			// brews description is the fallback. Listing them in resolution order helps
+			// a contributor reading this error understand which file would take precedence
+			// if they populated both.
+			errs = append(errs, fmt.Sprintf("%s: description is empty (sources checked: .printing-press.json description, .goreleaser.yaml brews description)", slug))
 		}
 		if e.MCP != nil {
 			if isBlank(e.MCP.Binary) {
@@ -451,6 +468,27 @@ func validateEntries(entries []RegistryEntry) []string {
 			}
 			if isBlank(e.MCP.AuthType) {
 				errs = append(errs, fmt.Sprintf("%s: mcp.auth_type is empty", slug))
+			}
+			// Tool count of zero is structurally nonsensical for an MCP block —
+			// the block exists to declare an MCP server, and a server with zero
+			// tools has nothing to serve. Negative values are also invalid.
+			if e.MCP.ToolCount <= 0 {
+				errs = append(errs, fmt.Sprintf("%s: mcp.tool_count must be positive (got %d)", slug, e.MCP.ToolCount))
+			}
+			// PublicToolCount is an `int` (not pointer), so a missing JSON field
+			// deserializes to 0 — that's valid (entry advertises no public tools).
+			// Only flag explicitly negative values, which indicate a malformed
+			// hand-edit or schema mismatch.
+			if e.MCP.PublicToolCount < 0 {
+				errs = append(errs, fmt.Sprintf("%s: mcp.public_tool_count must be non-negative (got %d)", slug, e.MCP.PublicToolCount))
+			}
+			// env_vars must be a JSON array (possibly empty) so npm-side
+			// consumers can iterate without a null guard. The generator's
+			// buildMCPBlock always initializes the slice to []string{}, so a
+			// nil here means a malformed hand-edit to registry.json or to the
+			// .printing-press.json that fed it.
+			if e.MCP.EnvVars == nil {
+				errs = append(errs, fmt.Sprintf("%s: mcp.env_vars must be a JSON array (got null)", slug))
 			}
 		}
 	}

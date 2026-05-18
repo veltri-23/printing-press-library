@@ -66,43 +66,54 @@ func TestFormatDescription(t *testing.T) {
 }
 
 func TestRegistryDescription(t *testing.T) {
+	// Preference order is pp > goreleaser > prior (with bare-heading
+	// exception still applying only to prior). The pp-first ordering means
+	// the registry can be regenerated from `library/<cat>/<slug>/` source
+	// files alone without depending on a curated prior value.
 	cases := []struct {
-		name           string
-		prior          string
-		goreleaser     string
-		ppDescription  string
-		want           string
+		name          string
+		prior         string
+		goreleaser    string
+		ppDescription string
+		want          string
 	}{
 		{
-			name:          "curated copy wins over both fallbacks",
+			name:          "pp wins over both fallbacks",
 			prior:         "Curated catalog copy.",
 			goreleaser:    "Goreleaser brews copy.",
 			ppDescription: "Manifest copy.",
-			want:          "Curated catalog copy.",
+			want:          "Manifest copy.",
 		},
 		{
-			name:          "bare-heading prior falls through to goreleaser",
+			name:          "empty pp falls through to goreleaser, prior still ignored",
+			prior:         "Curated catalog copy.",
+			goreleaser:    "Goreleaser brews copy.",
+			ppDescription: "",
+			want:          "Goreleaser brews copy.",
+		},
+		{
+			name:          "empty pp and goreleaser fall through to prior (legacy backstop)",
+			prior:         "Legacy curated copy.",
+			goreleaser:    "",
+			ppDescription: "",
+			want:          "Legacy curated copy.",
+		},
+		{
+			name:          "bare-heading prior is skipped when all sources empty",
+			prior:         "# Introduction",
+			goreleaser:    "",
+			ppDescription: "",
+			want:          "",
+		},
+		{
+			name:          "bare-heading prior is skipped, goreleaser still wins",
 			prior:         "# Introduction",
 			goreleaser:    "Real catalog copy.",
-			ppDescription: "Manifest copy.",
+			ppDescription: "",
 			want:          "Real catalog copy.",
 		},
 		{
-			name:          "empty prior falls through to goreleaser",
-			prior:         "",
-			goreleaser:    "Goreleaser copy.",
-			ppDescription: "Manifest copy.",
-			want:          "Goreleaser copy.",
-		},
-		{
-			name:          "empty prior and goreleaser fall through to pp manifest description (lawhub-shape repair)",
-			prior:         "",
-			goreleaser:    "",
-			ppDescription: "Local-first LSAT practice analytics.",
-			want:          "Local-first LSAT practice analytics.",
-		},
-		{
-			name:          "bare-heading prior with empty goreleaser falls through to pp",
+			name:          "pp wins even when prior would have been bare-heading",
 			prior:         "# Introduction",
 			goreleaser:    "",
 			ppDescription: "Manifest copy.",
@@ -131,7 +142,17 @@ func TestRegistryDescription(t *testing.T) {
 // npm installer's parseRegistry contract — any new requiredString check
 // added there should grow a case here.
 func TestValidateEntries(t *testing.T) {
-	mcpOK := &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "api_key"}
+	// Valid baseline MCP block — satisfies every check in validateEntries
+	// including the post-2026-05-18 invariants (positive tool_count,
+	// non-nil env_vars, non-negative public_tool_count).
+	mcpOK := &MCPBlock{
+		Binary:          "x-pp-mcp",
+		Transports:      []string{"stdio"},
+		AuthType:        "api_key",
+		ToolCount:       3,
+		PublicToolCount: 0,
+		EnvVars:         []string{},
+	}
 
 	cases := []struct {
 		name    string
@@ -156,10 +177,11 @@ func TestValidateEntries(t *testing.T) {
 			},
 			wantSubstrs: []string{
 				"lawhub: description is empty",
-				// Sources appear in fallback-resolution order: goreleaser
-				// (second tier) is listed before .printing-press.json (third
-				// tier), matching what registryDescription consults.
-				".goreleaser.yaml brews description, .printing-press.json description",
+				// Sources appear in fallback-resolution order:
+				// .printing-press.json (primary) is listed before
+				// .goreleaser.yaml brews (fallback), matching what
+				// registryDescription consults after the 2026-05-18 reorder.
+				".printing-press.json description, .goreleaser.yaml brews description",
 			},
 		},
 		{
@@ -203,7 +225,7 @@ func TestValidateEntries(t *testing.T) {
 			entries: []RegistryEntry{
 				{
 					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
-					MCP: &MCPBlock{Binary: "", Transports: []string{"stdio"}, AuthType: "api_key"},
+					MCP: &MCPBlock{Binary: "", Transports: []string{"stdio"}, AuthType: "api_key", ToolCount: 3, EnvVars: []string{}},
 				},
 			},
 			wantSubstrs: []string{"x: mcp.binary is empty"},
@@ -213,7 +235,7 @@ func TestValidateEntries(t *testing.T) {
 			entries: []RegistryEntry{
 				{
 					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
-					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: nil, AuthType: "api_key"},
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: nil, AuthType: "api_key", ToolCount: 3, EnvVars: []string{}},
 				},
 			},
 			wantSubstrs: []string{"x: mcp.transports is empty"},
@@ -223,10 +245,70 @@ func TestValidateEntries(t *testing.T) {
 			entries: []RegistryEntry{
 				{
 					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
-					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: ""},
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "", ToolCount: 3, EnvVars: []string{}},
 				},
 			},
 			wantSubstrs: []string{"x: mcp.auth_type is empty"},
+		},
+		{
+			name: "zero mcp.tool_count fails",
+			entries: []RegistryEntry{
+				{
+					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "api_key", ToolCount: 0, EnvVars: []string{}},
+				},
+			},
+			wantSubstrs: []string{"x: mcp.tool_count must be positive (got 0)"},
+		},
+		{
+			name: "negative mcp.tool_count fails",
+			entries: []RegistryEntry{
+				{
+					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "api_key", ToolCount: -1, EnvVars: []string{}},
+				},
+			},
+			wantSubstrs: []string{"x: mcp.tool_count must be positive (got -1)"},
+		},
+		{
+			name: "negative mcp.public_tool_count fails",
+			entries: []RegistryEntry{
+				{
+					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "api_key", ToolCount: 3, PublicToolCount: -1, EnvVars: []string{}},
+				},
+			},
+			wantSubstrs: []string{"x: mcp.public_tool_count must be non-negative (got -1)"},
+		},
+		{
+			name: "zero mcp.public_tool_count passes (means: advertises no public tools)",
+			entries: []RegistryEntry{
+				{
+					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "api_key", ToolCount: 3, PublicToolCount: 0, EnvVars: []string{}},
+				},
+			},
+			wantOK: true,
+		},
+		{
+			name: "nil mcp.env_vars fails (must be a JSON array)",
+			entries: []RegistryEntry{
+				{
+					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "api_key", ToolCount: 3, EnvVars: nil},
+				},
+			},
+			wantSubstrs: []string{"x: mcp.env_vars must be a JSON array (got null)"},
+		},
+		{
+			name: "empty mcp.env_vars array passes",
+			entries: []RegistryEntry{
+				{
+					Name: "x", Category: "tools", API: "X", Description: "Has desc.", Path: "library/tools/x",
+					MCP: &MCPBlock{Binary: "x-pp-mcp", Transports: []string{"stdio"}, AuthType: "api_key", ToolCount: 3, EnvVars: []string{}},
+				},
+			},
+			wantOK: true,
 		},
 		{
 			name: "non-mcp entry skips mcp checks",
