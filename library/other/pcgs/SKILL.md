@@ -264,23 +264,39 @@ Recipe R10 — diff coin batch --list-certs's normalized cert list against your 
 
 Reach for [`numista-pp-cli`](https://github.com/mvanhorn/printing-press-library/tree/main/library/other/numista) when you have a PCGS cert result in hand and want the community-maintained catalogue context PCGS doesn't carry: the Numista N# (type ID), mintage by year/mint, references to traditional catalogues (Krause, Schön, Yeoman), and collector links. PCGS is grading-service-authoritative (cert, grade, population, auction history); Numista is catalogue-authoritative. They're complementary, not redundant.
 
-Two commands, one Numista API call:
+**Direct cross-walk (recommended when you have a PCGSNo).** PCGS *is* one of Numista's reference catalogues, registered as catalogue id `1856` (code `PCGS`, title "PCGS CoinFacts"). When you have a PCGSNo on hand, two commands resolve the Numista N# in a single API call with no ambiguity:
 
 ```bash
-# 1. Pull type / year / issuer from PCGS (no Numista quota cost).
-pcgs-pp-cli coin facts-cert <cert-number> --json --select Name,Year,CountryName
-# → e.g. {"Name":"1881-S Morgan Dollar","Year":1881,"CountryName":"United States"}
+# 1. Get the PCGSNo from PCGS (no Numista quota cost).
+pcgs-pp-cli coin facts-cert <cert-number> --json --select PCGSNo,Name,Year
+# → e.g. {"PCGSNo":"7130","Name":"1881-S Morgan Dollar","Year":"1881"}
 
-# 2. Text-search Numista with --issuer (slug) + --year for an unambiguous match.
-numista-pp-cli types search --q "morgan dollar" --issuer united-states --year 1878-1921 \
+# 2. Look up the Numista N# directly via the catalogue cross-reference.
+numista-pp-cli types search --catalogue 1856 --number 7130 \
   --agent --select types.id,types.title
-# → top result is the Numista N# you want (e.g. 1492 for the Morgan Dollar type).
+# → {"results":{"types":[{"id":1492,"title":"1 Dollar \"Morgan Dollar\""}]}}
 ```
+
+One result, definitive — no text-match guessing.
+
+**Text-search fallback (when PCGSNo is missing or the catalogue lookup misses).** Some PCGS holders predate the modern numbering, and the `PCGS CoinFacts` Numista catalogue doesn't index every cert. When the direct lookup returns no types, fall back to a text search:
+
+```bash
+pcgs-pp-cli coin facts-cert <cert-number> --json --select Name,Year,CountryName
+# → e.g. {"Name":"1881-S Morgan Dollar","Year":"1881","CountryName":"United States"}
+
+numista-pp-cli types search --q "morgan dollar" --issuer united-states --date 1881 \
+  --agent --select types.id,types.title
+# → top result is usually the Numista N# you want.
+```
+
+Use Numista's `--date` (Gregorian calendar year) for the year PCGS returns, not `--year` (which Numista defines as the year *as written on the item* — relevant for non-Gregorian dating systems on world coins; for US coins they coincide).
 
 Notes:
 
-- There is no `--catalogue pcgs` shortcut in Numista. PCGS is not one of Numista's reference catalogues (`--catalogue` works for traditional numismatic references like Krause / Schön only), so don't go hunting for a direct cert → N# lookup. The two-command bridge above is the supported workflow for common US types.
-- This CLI does NOT depend on `numista-pp-cli`. No shell-out, no auto-detection — install it separately when you want catalogue enrichment. `numista-pp-cli` has the matching `### If your input is a PCGS cert` section in its SKILL.md so an agent landing in either CLI gets directed to the other when the workflow calls for it.
+- The catalogue ID `1856` can be confirmed at any time with `numista-pp-cli catalogues find pcgs` (local-only, no quota cost; requires that `numista-pp-cli catalogues` has been run at least once to populate the local cache).
+- This CLI does NOT depend on `numista-pp-cli`. No shell-out, no auto-detection — install it separately when you want catalogue enrichment.
+- A reciprocal "If your input is a PCGS cert" section is proposed for `numista-pp-cli`'s SKILL.md (see [PR #684](https://github.com/mvanhorn/printing-press-library/pull/684)) so an agent landing in either CLI gets directed to the other when the workflow calls for it.
 
 ## Auth Setup
 
