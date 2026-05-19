@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.3",
+  "name": "theclose-pp-mcp",
+  "display_name": "Close Developer",
+  "version": "4.6.1",
+  "description": "Close Developer API surface as MCP tools.",
+  "author": {
+    "name": "CLI Printing Press"
+  },
+  "license": "Apache-2.0",
+  "server": {
+    "type": "binary",
+    "entry_point": "bin/theclose-pp-mcp",
+    "mcp_config": {
+      "command": "${__dirname}/bin/theclose-pp-mcp",
+      "args": [],
+      "env": {
+        "THECLOSE_API_TOKEN": "${user_config.theclose_api_token}"
+      }
+    }
+  },
+  "user_config": {
+    "theclose_api_token": {
+      "type": "string",
+      "title": "THECLOSE_API_TOKEN",
+      "description": "Sets THECLOSE_API_TOKEN for The Close MCP server.",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ]
+  }
+}

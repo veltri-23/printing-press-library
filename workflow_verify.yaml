@@ -1,0 +1,29 @@
+workflows:
+  - name: theclose-agent-approval-queue-review
+    primary: true
+    steps:
+      - name: review-pending-connector-approvals
+        command: work-queue needs-approval
+        mode: local
+        expect_fields:
+          - meta
+          - results
+      - name: check-stale-agent-actions
+        command: work-queue stale-actions
+        mode: local
+        expect_fields:
+          - meta
+          - results
+      - name: find-missing-transaction-fields
+        command: work-queue missing-fields
+        mode: local
+        expect_fields:
+          - meta
+          - results
+      - name: review-blocked-tasks
+        command: work-queue blocked
+        mode: local
+        expect_fields:
+          - meta
+          - results
+

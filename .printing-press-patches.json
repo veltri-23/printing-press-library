@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "applied_at": "2026-05-14",
+  "base_run_id": "local-generate",
+  "base_printing_press_version": "4.6.1",
+  "patches": [
+    {
+      "id": "dependent-parent-id-fallback",
+      "summary": "Typed child-table upserts fall back to parent_id for generated parent foreign keys.",
+      "reason": "The generated dependent sync path injects parent_id, but several typed child tables require resource-specific parent columns such as transactions_id.",
+      "files": [
+        "internal/store/store.go"
+      ],
+      "validated_outcome": "go test ./... passes the generated UpsertBatch dependent parent-id tests."
+    },
+    {
+      "id": "baseline-local-dev-readme",
+      "summary": "README documents local app startup, source OpenAPI URL, and the exact reprint command.",
+      "reason": "The generated README is publish-oriented; this CLI is currently consumed from the local generated tree while distribution is undecided.",
+      "files": [
+        "README.md"
+      ],
+      "validated_outcome": "README includes install, auth, and local development instructions."
+    },
+    {
+      "id": "theclose-canonical-auth-env",
+      "summary": "CLI auth and config prefer THECLOSE_BASE_URL and THECLOSE_API_TOKEN.",
+      "reason": "The Close agents need stable project-owned env vars rather than generated provider-shaped names.",
+      "files": [
+        "internal/config/config.go",
+        "internal/cli/auth.go",
+        "internal/cli/config_cmd.go",
+        "internal/cli/doctor.go",
+        "internal/cli/root.go",
+        "README.md"
+      ],
+      "validated_outcome": "auth status and config get report THECLOSE_API_TOKEN without printing token values."
+    },
+    {
+      "id": "agent-output-redaction-contract",
+      "summary": "Classified CLI errors use canonical The Close auth hints and redact bearer tokens.",
+      "reason": "Agent output must be machine-actionable and safe to log without leaking API tokens.",
+      "files": [
+        "internal/cli/helpers.go",
+        "internal/cli/root_test.go"
+      ],
+      "validated_outcome": "go test ./internal/cli covers compact projection and token redaction."
+    },
+    {
+      "id": "transaction-workflow-commands",
+      "summary": "Adds high-level deals, fields, and task workflow commands on top of generated endpoint wrappers.",
+      "reason": "Agents need transaction-coordination verbs and a one-command deal workspace without bypassing The Close API.",
+      "files": [
+        "internal/cli/deals_workflow.go",
+        "internal/cli/fields_workflow.go",
+        "internal/cli/tasks_workflow.go",
+        "internal/cli/tasks.go",
+        "internal/cli/root.go",
+        "README.md"
+      ],
+      "validated_outcome": "deals/tasks/fields help and dry-run mutation commands work from the built CLI."
+    },
+    {
+      "id": "connector-action-workflow-commands",
+      "summary": "Adds high-level actions lifecycle commands for proposal, dry-run, status, approval, execution, runs, and audit.",
+      "reason": "Connector-backed provider work must be controlled by The Close rather than direct agent writes to downstream systems.",
+      "files": [
+        "internal/cli/actions_workflow.go",
+        "internal/cli/actions_workflow_test.go",
+        "internal/cli/root.go",
+        "README.md"
+      ],
+      "validated_outcome": "go test ./... and built CLI help/dry-run checks cover action idempotency, approval-boundary output, and proposal audit helpers."
+    },
+    {
+      "id": "follow-up-boss-proposal-helpers",
+      "summary": "Adds FUB helper commands that create The Close connector action proposals using catalog capability IDs.",
+      "reason": "Agents need convenient Follow Up Boss workflows without bypassing The Close's proposal, approval, dry-run, and audit controls.",
+      "files": [
+        "internal/cli/fub_workflow.go",
+        "internal/cli/fub_workflow_test.go",
+        "internal/cli/root.go",
+        "README.md"
+      ],
+      "validated_outcome": "FUB helper dry-runs show proposal payloads with follow_up_boss.actions capability IDs and generated idempotency keys."
+    },
+    {
+      "id": "mcp-skill-control-plane-guidance",
+      "summary": "Updates MCP/skill packaging for workflow commands, canonical auth, and no-bypass provider guidance.",
+      "reason": "IDE/chat agents need the same The Close control-plane boundary as shell users, with MCP bundle auth and skill examples aligned to the high-level commands.",
+      "files": [
+        "SKILL.md",
+        "manifest.json",
+        "internal/cli/actions_workflow.go",
+        "internal/cli/deals_workflow.go",
+        "internal/cli/fields_workflow.go",
+        "internal/cli/fub_workflow.go",
+        "internal/cli/tasks_workflow.go"
+      ],
+      "validated_outcome": "go test ./..., go build ./..., printing-press verify-skill, and printing-press bundle all pass."
+    },
+    {
+      "id": "safety-idempotency-privacy-hardening",
+      "summary": "Documents mutating command risk classes, tests action idempotency bodies, and redacts provider secret-shaped fields from dry-run/error output.",
+      "reason": "Connector-adjacent agent workflows need safe previews, idempotency replay behavior, TC approval boundaries, and publishable docs without local paths or sample PII.",
+      "files": [
+        "README.md",
+        "SKILL.md",
+        "manifest.json",
+        "internal/client/client.go",
+        "internal/client/client_test.go",
+        "internal/cli/actions_workflow.go",
+        "internal/cli/actions_workflow_test.go",
+        "internal/cli/agent_context.go",
+        "internal/cli/helpers.go",
+        "internal/cli/root_test.go",
+        "internal/cli/transactions_emails_draft.go"
+      ],
+      "validated_outcome": "go test ./..., go build ./..., printing-press verify-skill, printing-press pii-audit --strict, and The Close bun test/build pass."
+    },
+    {
+      "id": "local-cache-search-work-queue",
+      "summary": "Expands local sync/search coverage and adds work-queue commands for overdue, blocked, approval, closing, missing-field, and stale-action queues.",
+      "reason": "Agents need local-first repeated reads and compound cross-deal questions without fan-out API calls, while The Close API remains authoritative.",
+      "files": [
+        "README.md",
+        "internal/store/store.go",
+        "internal/store/search_resource_test.go",
+        "internal/cli/search.go",
+        "internal/cli/sync.go",
+        "internal/cli/work_queue.go",
+        "internal/cli/work_queue_test.go",
+        "internal/cli/root.go",
+        "internal/cli/which.go"
+      ],
+      "validated_outcome": "go test ./..., go build ./..., built CLI help checks, printing-press verify-skill, printing-press tools-audit, and printing-press pii-audit --strict pass."
+    },
+    {
+      "id": "dogfood-proof-and-approval-queue-signal",
+      "summary": "Captures the tc-wghg.11 dogfood transcript and lets local work-queue approval checks surface synced connector proposal events.",
+      "reason": "The API exposes connector proposal status by ID but not a list endpoint, so local approval queues need the synced activity-event signal until a list route exists.",
+      "files": [
+        "proofs/tc-wghg.11-dogfood.md",
+        "internal/cli/actions_workflow.go",
+        "internal/cli/work_queue.go",
+        "internal/cli/work_queue_test.go"
+      ],
+      "validated_outcome": "The generated CLI completed the redacted local dogfood loop; go test ./..., go build ./..., printing-press dogfood, scorecard, verify-skill, and pii-audit --strict pass."
+    },
+    {
+      "id": "distribution-release-maintenance",
+      "summary": "Documents initial Printing Press library distribution, versioning, release artifacts, and reprint maintenance gates.",
+      "reason": "The Close CLI needs an explicit install and maintenance story while staying outside the app repo until long-term ownership is decided.",
+      "files": [
+        "README.md"
+      ],
+      "validated_outcome": "README includes local go install, post-publish Printing Press install, API-version-linked release line, MCP bundle command, and release verification commands."
+    }
+  ]
+}

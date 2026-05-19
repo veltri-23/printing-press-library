@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-14T15:38:07.150394Z",
+  "printing_press_version": "4.6.1",
+  "api_name": "theclose",
+  "display_name": "Close Developer",
+  "cli_name": "theclose-pp-cli",
+  "owner": "cathrynlavery",
+  "spec_url": "http://localhost:3000/openapi.json",
+  "spec_format": "openapi3",
+  "spec_checksum": "sha256:ebb6c0a4adc3fd82dc9cf6fd21ee33f471dd2cdddc798cf258ce257e81ef5305",
+  "mcp_binary": "theclose-pp-mcp",
+  "mcp_tool_count": 115,
+  "mcp_ready": "full",
+  "api_version": "0.1.0",
+  "auth_type": "bearer_token",
+  "auth_env_vars": [
+    "CLOSE_DEVELOPER_BEARER_AUTH"
+  ]
+}

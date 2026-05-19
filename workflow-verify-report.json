@@ -1,0 +1,33 @@
+{
+  "dir": "\u003ccli-dir\u003e/theclose",
+  "workflows": [
+    {
+      "name": "theclose-agent-approval-queue-review",
+      "primary": true,
+      "steps": [
+        {
+          "command": "work-queue needs-approval",
+          "status": "pass",
+          "output": "{\n  \"meta\": {\n    \"reason\": \"work_queue\",\n    \"resource_type\": \"needs-approval\",\n    \"source\": \"local\"\n  },\n  \"results\": []\n}\n"
+        },
+        {
+          "command": "work-queue stale-actions",
+          "status": "pass",
+          "output": "{\n  \"meta\": {\n    \"reason\": \"work_queue\",\n    \"resource_type\": \"stale-actions\",\n    \"source\": \"local\"\n  },\n  \"results\": []\n}\n"
+        },
+        {
+          "command": "work-queue missing-fields",
+          "status": "pass",
+          "output": "{\n  \"meta\": {\n    \"reason\": \"work_queue\",\n    \"resource_type\": \"missing-fields\",\n    \"source\": \"local\"\n  },\n  \"results\": []\n}\n"
+        },
+        {
+          "command": "work-queue blocked",
+          "status": "pass",
+          "output": "{\n  \"meta\": {\n    \"reason\": \"work_queue\",\n    \"resource_type\": \"blocked\",\n    \"source\": \"local\"\n  },\n  \"results\": []\n}\n"
+        }
+      ],
+      "verdict": "workflow-pass"
+    }
+  ],
+  "verdict": "workflow-pass"
+}
