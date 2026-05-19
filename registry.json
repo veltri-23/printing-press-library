@@ -1304,6 +1304,29 @@
       }
     },
     {
+      "name": "kit",
+      "category": "marketing",
+      "api": "Kit",
+      "description": "Printing Press CLI for Kit.",
+      "path": "library/marketing/kit",
+      "printer": "cathrynlavery",
+      "printer_name": "Cathryn Lavery",
+      "mcp": {
+        "binary": "kit-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 72,
+        "public_tool_count": 0,
+        "auth_type": "api_key",
+        "env_vars": [
+          "KIT_API_KEY"
+        ],
+        "mcp_ready": "full"
+      }
+    },
+    {
       "name": "klaviyo",
       "category": "marketing",
       "api": "Klaviyo",
