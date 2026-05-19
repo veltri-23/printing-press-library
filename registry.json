@@ -2743,6 +2743,27 @@
       }
     },
     {
+      "name": "trendhunter",
+      "category": "marketing",
+      "api": "Trend Hunter",
+      "description": "Every Trend Hunter feature, plus a local SQLite corpus, FTS5 search, FAQ Q&A extraction, and agent-native JSON no...",
+      "path": "library/marketing/trendhunter",
+      "printer": "mvanhorn",
+      "printer_name": "Matt Van Horn",
+      "mcp": {
+        "binary": "trendhunter-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 9,
+        "public_tool_count": 9,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "trigger-dev",
       "category": "developer-tools",
       "api": "Trigger.dev",
