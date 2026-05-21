@@ -351,7 +351,7 @@ func syncResource(c syncFetcher, db *store.Store, resource, sinceTS string, full
 	// env) BEFORE the unresolved-key check below. Without this, locations_tags
 	// (path /locations/{locationId}/tags) would be silently skipped with a
 	// sync_warning even when the user supplied the location.
-	locID := resolveSyncLocationID(userParams)
+	locID := resolveSyncLocationID(userParams, resource)
 	if locID != "" {
 		path = strings.ReplaceAll(path, "{locationId}", locID)
 	}
@@ -1199,17 +1199,18 @@ func syncResourceMethod(resource string) string {
 }
 
 // resolveSyncLocationID returns the user-supplied locationId from
-// --global-param locationId=<id>, falling back to the GHL_LOCATION_ID env
-// var. PATCH(amend-2026-05-20: contacts + tags sync) — used to fill the
-// `{locationId}` path template in /locations/{locationId}/tags (and in
-// contacts POST search body) before the unresolved-key check skips the
-// resource. Returns "" when neither source carries the value.
-func resolveSyncLocationID(p *syncUserParams) string {
+// --global-param locationId=<id> or a matching per-resource locationId,
+// falling back to the GHL_LOCATION_ID env var. PATCH(amend-2026-05-20:
+// contacts + tags sync) — used to fill the `{locationId}` path template in
+// /locations/{locationId}/tags (and in contacts POST search body) before the
+// unresolved-key check skips the resource. Returns "" when neither source
+// carries the value.
+func resolveSyncLocationID(p *syncUserParams, resource string) string {
 	if p != nil {
 		if v, ok := p.trueGlobal["locationId"]; ok && v != "" {
 			return v
 		}
-		if perResource, ok := p.perResource["contacts"]; ok {
+		if perResource, ok := p.perResource[resource]; ok {
 			if v, ok := perResource["locationId"]; ok && v != "" {
 				return v
 			}

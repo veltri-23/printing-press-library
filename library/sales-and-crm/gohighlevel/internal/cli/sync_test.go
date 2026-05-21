@@ -124,3 +124,23 @@ func TestAnnotateLocationsTagsItems_AddsLocationIDForTypedUpsert(t *testing.T) {
 		t.Fatalf("generic resource data %q missing injected locations_id", generic)
 	}
 }
+
+func TestResolveSyncLocationID_UsesCurrentResourceParam(t *testing.T) {
+	t.Setenv("GHL_LOCATION_ID", "")
+
+	p := &syncUserParams{
+		flatGlobal: map[string]string{},
+		trueGlobal: map[string]string{},
+		perResource: map[string]map[string]string{
+			"contacts":       {"locationId": "contact-location"},
+			"locations_tags": {"locationId": "tag-location"},
+		},
+	}
+
+	if got := resolveSyncLocationID(p, "contacts"); got != "contact-location" {
+		t.Fatalf("contacts locationId = %q, want contact-location", got)
+	}
+	if got := resolveSyncLocationID(p, "locations_tags"); got != "tag-location" {
+		t.Fatalf("locations_tags locationId = %q, want tag-location", got)
+	}
+}

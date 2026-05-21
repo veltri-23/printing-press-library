@@ -43,7 +43,7 @@ func newSQLCmd(flags *rootFlags) *cobra.Command {
 				}
 			}
 			ctx := cmd.Context()
-			s, err := openGHLStore(ctx)
+			s, err := openGHLStoreReadOnly()
 			if err != nil {
 				return err
 			}

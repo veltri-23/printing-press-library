@@ -32,6 +32,15 @@ func openGHLStore(ctx context.Context) (*store.Store, error) {
 	return s, nil
 }
 
+func openGHLStoreReadOnly() (*store.Store, error) {
+	dbPath := defaultDBPath("gohighlevel-pp-cli")
+	s, err := store.OpenReadOnly(dbPath)
+	if err != nil {
+		return nil, fmt.Errorf("opening local cache read-only at %s: %w", dbPath, err)
+	}
+	return s, nil
+}
+
 // nullStr returns the underlying string or "" for NULL.
 func nullStr(ns sql.NullString) string {
 	if ns.Valid {
