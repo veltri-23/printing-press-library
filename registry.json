@@ -7112,6 +7112,58 @@
       }
     },
     {
+      "name": "tesla",
+      "category": "devices",
+      "api": "Tesla",
+      "description": "Every Tesla mobile-app feature, plus a charging-cost ledger and supercharger queue watcher no other Tesla CLI ships.",
+      "search_terms": [
+        "tesla",
+        "tesla-pp-cli",
+        "Every Tesla mobile-API feature, plus offline charging history and a SQLite-backed vehicle log no other Tesla CLI has",
+        "Ready-to-drive composite",
+        "ready",
+        "Single yes/no answer to \"can I leave in 5 minutes?\" with reasoned blocker list - SOC vs trip distance, plugged-in, doors closed, sentry off, cabin within 3F of target, no mid-install update",
+        "Charging cost ledger",
+        "cost ledger",
+        "Per-session cost, monthly spend, home-vs-Supercharger ratio with tariff-window aware $/kWh",
+        "Cost counterfactual",
+        "cost what-if",
+        "\"If you had only charged at home you would have saved $X over the last 90 days.\" Re-runs charge rows with home $/kWh substituted for Supercharger sessions",
+        "Supercharger queue watch",
+        "supercharger watch",
+        "Single-poll snapshot of free stalls at a saved Supercharger; --watch repeats every N seconds with JSON-lines transitions",
+        "Drive-and-charge timeline",
+        "timeline",
+        "Stitched drives + charges from synced vehicle_states polls - start/end, distance, energy, efficiency, address-resolved lat/lng",
+        "Vampire-drain monitor",
+        "vampire",
+        "SOC delta vs idle time, flags suspicious sentry sessions or app-wake events",
+        "Keys audit",
+        "Lists every enrolled key with last-seen, role, form-factor; flags keys not seen >90d as stale candidates for removal",
+        "Reachability doctor",
+        "doctor",
+        "Detects signed-command-required errors, classifies the vehicle as REST-friendly vs signed-command-required, prints tesla-control enrollment URL when needed"
+      ],
+      "path": "library/devices/tesla",
+      "printer": "mvanhorn",
+      "printer_name": "Matt Van Horn",
+      "mcp": {
+        "binary": "tesla-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 80,
+        "public_tool_count": 0,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "TESLA_AUTH_TOKEN"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "ticketmaster",
       "category": "media-and-entertainment",
       "api": "Ticketmaster",
