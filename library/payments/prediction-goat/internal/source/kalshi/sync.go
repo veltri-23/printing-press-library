@@ -27,6 +27,35 @@ func SyncMarkets(ctx context.Context, c *Client, st KalshiStore, maxPages int) (
 	if err != nil {
 		return count, fmt.Errorf("kalshi sync markets: %w", err)
 	}
+
+	// PATCH(series-driven-kalshi-markets-sync-walk): /markets natural
+	// ordering puts high-volume factory families (KXMVE* esports) first,
+	// so the bare paginator never reaches named-event families like
+	// KXMENWORLDCUP-*, KXBTC*, KXOSCAR*. After the first-pass populates
+	// the high-frequency markets, fan out per kalshi_series.ticker to
+	// cover the long tail. The walk is gated behind the SeriesWalkStore
+	// interface so callers that only implement Upsert (a few tests) keep
+	// working unchanged — non-walk-capable stores just skip the second
+	// pass.
+	if walkStore, ok := st.(SeriesWalkStore); ok {
+		// maxSeries=0 means "every series" in production. Under dogfood
+		// the per-series fan-out is capped so the matrix's per-command
+		// budget isn't blown.
+		maxSeries := 0
+		if cliutil.IsDogfoodEnv() {
+			maxSeries = 3
+		}
+		walked, walkErr := SyncMarketsBySeries(ctx, c, walkStore, maxSeries)
+		count += walked
+		if walkErr != nil {
+			// Walk errors are non-fatal: the first-pass already populated
+			// the high-frequency markets, so the index isn't empty even
+			// if the long-tail fan-out partially failed. Surface the
+			// error so callers can log/exit non-zero if they choose.
+			return count, fmt.Errorf("kalshi sync markets series walk: %w", walkErr)
+		}
+	}
+
 	return count, nil
 }
 

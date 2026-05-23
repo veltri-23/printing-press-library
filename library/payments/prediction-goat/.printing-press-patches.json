@@ -33,6 +33,18 @@
       "files": ["internal/store/store.go", "internal/store/fts_content_test.go"],
       "validated_outcome": "go test ./internal/store/... passes (91 tests). The new TestFTSContent_PreventsFTSFalsePositives end-to-end test exercises the FTS engine with seeded KXFUSION/KXOSCARCOUNTCONCLAVE/KXBTCMAX100/KXMENWORLDCUP-26-PT fixtures and confirms KXFUSION is excluded from 'oscar' query results.",
       "upstream_issue": "Generator templates for printed CLIs that ship resources_fts should use a curated extractor by default instead of indexing raw JSON; the resource-type-aware key set generalizes to non-prediction-market CLIs as well."
+    },
+    {
+      "id": "series-driven-kalshi-markets-sync-walk",
+      "summary": "Add SyncMarketsBySeries: a second-pass series-driven Kalshi markets sync that iterates the kalshi_series table and fetches /markets?series_ticker=<X> per series so named-event families (KXMENWORLDCUP-*, KXBTC*, KXOSCAR*) are no longer starved by the natural /markets pagination order.",
+      "reason": "Kalshi's /markets?status=open is dominated by high-volume KXMVE esports factory families; in one observed sync 54,216 markets landed and 99.9% were a single prefix while KXMENWORLDCUP-26-PT, KXBTC*, and KXOSCAR* were entirely absent. The walk uses the already-correct kalshi_series corpus as the iteration seed, runs after the first-pass /markets fetch with a bounded 8-worker pool, and persists per-series cursors to sync_state so an interrupted run resumes without duplicating work.",
+      "files": [
+        "internal/source/kalshi/series_walk.go",
+        "internal/source/kalshi/series_walk_test.go",
+        "internal/source/kalshi/client.go",
+        "internal/source/kalshi/sync.go"
+      ],
+      "validated_outcome": "go test ./internal/source/kalshi/... passes (8 new tests including resume, rate-limit, empty-series-no-error, and named-event-families-land coverage). go test ./... passes (313 tests). go vet ./... clean. verify_skill.py still passes."
     }
   ]
 }

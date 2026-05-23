@@ -33,6 +33,34 @@ func New() *Client {
 	}
 }
 
+// GetMarketsBySeries fetches one page of markets for the given series ticker.
+// Mirrors the live-side query parameter shape used by kalshi events list
+// (--series → series_ticker). Passing cursor="" requests the first page; a
+// non-empty cursor advances pagination. status="" defaults to "open" so the
+// series walk only seeds the index with live tradable markets.
+func (c *Client) GetMarketsBySeries(ctx context.Context, ticker, status, cursor string, limit int) ([]byte, error) {
+	if c == nil {
+		c = New()
+	}
+	params := url.Values{}
+	if ticker != "" {
+		params.Set("series_ticker", ticker)
+	}
+	if status == "" {
+		status = "open"
+	}
+	params.Set("status", status)
+	if limit > 0 {
+		params.Set("limit", fmt.Sprintf("%d", limit))
+	} else {
+		params.Set("limit", "1000")
+	}
+	if cursor != "" {
+		params.Set("cursor", cursor)
+	}
+	return c.Get(ctx, "/markets", params)
+}
+
 func (c *Client) Get(ctx context.Context, path string, params url.Values) ([]byte, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
