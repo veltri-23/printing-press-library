@@ -251,9 +251,11 @@ func TestFTSContent_PreventsFTSFalsePositives(t *testing.T) {
 	}
 }
 
-// TestSchemaVersionAt3 pins the version bump so future migrations have
-// a clean baseline.
-func TestSchemaVersionAt3(t *testing.T) {
+// TestSchemaVersionAt4 pins the version bump so future migrations have
+// a clean baseline. v4 added the search_learnings table (U8 LLM-driven
+// reranking signal); the rebuild migration introduced in v3 (curated
+// FTS content) still runs against pre-v3 DBs because v4 supersedes it.
+func TestSchemaVersionAt4(t *testing.T) {
 	t.Parallel()
 	dbPath := filepath.Join(t.TempDir(), "version.db")
 	s, err := OpenWithContext(context.Background(), dbPath)
@@ -265,7 +267,7 @@ func TestSchemaVersionAt3(t *testing.T) {
 	if err != nil {
 		t.Fatalf("SchemaVersion: %v", err)
 	}
-	if v != 3 {
-		t.Errorf("SchemaVersion = %d, want 3", v)
+	if v != 4 {
+		t.Errorf("SchemaVersion = %d, want 4", v)
 	}
 }

@@ -101,7 +101,19 @@ func newCompareCmd(flags *rootFlags) *cobra.Command {
 			// every PM and Kalshi compareVenue before we serialize the
 			// pairs. See freshness.go for the design.
 			outcome := refreshComparePairs(cmd.Context(), nil, pairs)
+			// Rerank layer: apply taught learnings before envelope assembly.
+			// compare is bilateral by design, so synthetic inserts are
+			// skipped; boosts reorder, hides drop. See teach.go.
+			var applied int
+			var hasHigh bool
+			if !noLearnActive(flags) {
+				pairs, applied, hasHigh = applyLearningsForCompare(cmd.Context(), db, topic, pairs)
+			}
 			meta := buildFreshnessMeta(outcome, indexSyncedAt(db))
+			if meta != nil {
+				meta.LearningsApplied = applied
+				meta.TeachHint = teachHintFor(topic, applied, hasHigh, len(pairs))
+			}
 			result := compareResult{Topic: topic, Pairs: pairs, Meta: meta}
 			if flags.asJSON || !isTerminal(cmd.OutOrStdout()) {
 				if err := printJSONFiltered(cmd.OutOrStdout(), result, flags); err != nil {

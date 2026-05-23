@@ -98,7 +98,20 @@ func newTopicCmd(flags *rootFlags) *cobra.Command {
 			// the upstream APIs so the cached discovery index never serves
 			// stale prices. See freshness.go for the design.
 			outcome := refreshTopicHits(cmd.Context(), nil, results)
+			// Rerank layer: apply taught learnings before envelope assembly.
+			// Boosts move a hit to position 0 (or insert a synthetic hit
+			// when the FTS layer missed it entirely); hides drop hits;
+			// aliases rewrite IDs. See teach.go for the LLM contract.
+			var applied int
+			var hasHigh bool
+			if !noLearnActive(flags) {
+				results, applied, hasHigh = applyLearningsForTopic(cmd.Context(), db, topic, results)
+			}
 			meta := buildFreshnessMeta(outcome, indexSyncedAt(db))
+			if meta != nil {
+				meta.LearningsApplied = applied
+				meta.TeachHint = teachHintFor(topic, applied, hasHigh, len(results))
+			}
 			result := topicResult{Topic: topic, Count: len(results), Hits: results, Meta: meta}
 			if flags.asJSON || !isTerminal(cmd.OutOrStdout()) {
 				if err := printJSONFiltered(cmd.OutOrStdout(), result, flags); err != nil {
