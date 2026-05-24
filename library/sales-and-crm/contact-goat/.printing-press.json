@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_at": "2026-04-19T21:05:44.741872Z",
-  "printing_press_version": "1.3.2",
+  "printing_press_version": "4.14.0+learn-loop",
   "api_name": "contact-goat",
   "display_name": "Contact GOAT",
   "cli_name": "contact-goat-pp-cli",
