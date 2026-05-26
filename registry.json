@@ -3592,6 +3592,45 @@
       "printer_name": "Matt Van Horn"
     },
     {
+      "name": "intercom",
+      "category": "sales-and-crm",
+      "api": "Intercom",
+      "description": "Every Intercom resource as a typed CLI with offline sync and EU/AU regions.",
+      "search_terms": [
+        "intercom",
+        "intercom-pp-cli",
+        "Every Intercom resource as a typed CLI with offline sync and EU/AU regions.",
+        "Incident-tag dry-run",
+        "conversations incident-tag",
+        "Tag every conversation mentioning a phrase in a time window with one safe-by-default command.",
+        "Articles git round-trip",
+        "articles pull",
+        "Flatten every help-center article into a markdown tree you can edit in git, then push changes back.",
+        "Contact 360",
+        "One nested payload joining a contact across companies, conversations, tickets, notes, and tags.",
+        "SLA analytics",
+        "conversations sla",
+        "First-response and resolution-time metrics grouped by team or admin, computed over the local store."
+      ],
+      "path": "library/sales-and-crm/intercom",
+      "printer": "rob-coco",
+      "printer_name": "Rob Zehner",
+      "mcp": {
+        "binary": "intercom-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 133,
+        "public_tool_count": 0,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "INTERCOM_ACCESS_TOKEN"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "jimmy-johns",
       "category": "food-and-dining",
       "api": "Jimmy John's",
