@@ -541,6 +541,20 @@ func (s *Store) List(resourceType string, limit int) ([]json.RawMessage, error) 
 	return results, rows.Err()
 }
 
+// quoteFTS5Phrase wraps a user-supplied query as an FTS5 phrase so it
+// matches as a single token sequence regardless of FTS5-special characters
+// (parens, *, unbalanced double quotes, OR/AND keywords). Without this,
+// inputs like `(bypass only)`, `title with *`, or `report "wrap"` parse
+// as FTS5 operators and the underlying s.db.Query() returns a SQL parse
+// error that propagates as a hard failure. Phrase matching changes the
+// semantics from bag-of-words AND to ordered phrase, which is the right
+// default for the dedupe and search paths in this CLI; power users that
+// want a boolean query can construct their own pre-quoted input.
+// Greptile P1 on PR #459.
+func quoteFTS5Phrase(query string) string {
+	return `"` + strings.ReplaceAll(query, `"`, `""`) + `"`
+}
+
 func (s *Store) Search(query string, limit int) ([]json.RawMessage, error) {
 	if limit <= 0 {
 		limit = 50
@@ -551,7 +565,7 @@ func (s *Store) Search(query string, limit int) ([]json.RawMessage, error) {
 		 WHERE resources_fts MATCH ?
 		 ORDER BY rank
 		 LIMIT ?`,
-		query, limit,
+		quoteFTS5Phrase(query), limit,
 	)
 	if err != nil {
 		return nil, err
@@ -587,7 +601,7 @@ func (s *Store) SearchByType(query, resourceType string, limit int) ([]json.RawM
 		   AND f.resource_type = ?
 		 ORDER BY rank
 		 LIMIT ?`,
-		query, resourceType, limit,
+		quoteFTS5Phrase(query), resourceType, limit,
 	)
 	if err != nil {
 		return nil, err

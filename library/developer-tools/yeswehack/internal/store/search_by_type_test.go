@@ -97,3 +97,39 @@ func TestSearchByType_UnknownTypeReturnsEmpty(t *testing.T) {
 		t.Errorf("unknown-type hits = %d, want 0", len(hits))
 	}
 }
+
+// TestSearchByType_FTS5SpecialCharsNoCrash locks the fix for the
+// greptile P1 on PR #459: raw user-supplied titles containing FTS5
+// syntax characters (unbalanced parens, double quotes, asterisks,
+// keywords) must not propagate a SQL parse error through report
+// dedupe / submit. The quoteFTS5Phrase helper wraps every query as a
+// phrase so any token sequence is parseable.
+func TestSearchByType_FTS5SpecialCharsNoCrash(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "data.db")
+	s, err := Open(dbPath)
+	if err != nil {
+		t.Fatalf("open: %v", err)
+	}
+	defer s.Close()
+
+	_, _, _ = s.UpsertBatch("hacktivity", []json.RawMessage{
+		json.RawMessage(`{"id":"h1","title":"SQL injection bypass"}`),
+		json.RawMessage(`{"id":"h2","title":"XSS reflected"}`),
+	})
+
+	cases := []string{
+		"(bypass only)",                // unbalanced subexpression
+		`report "wrap" injection`,      // internal double quote
+		"title with * in it",           // bare asterisk
+		"OR injection",                 // keyword position
+		"NOT a valid query AND broken", // keyword combo
+		`""`,                           // literal empty quotes
+	}
+	for _, q := range cases {
+		hits, err := s.SearchByType(q, "hacktivity", 10)
+		if err != nil {
+			t.Errorf("SearchByType(%q) returned error: %v (want no crash)", q, err)
+		}
+		_ = hits
+	}
+}
