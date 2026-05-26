@@ -4175,6 +4175,44 @@
       }
     },
     {
+      "name": "midjourney",
+      "category": "ai",
+      "api": "Midjourney",
+      "description": "Inspect Midjourney jobs, queue, folders, and discovery feeds from the terminal",
+      "search_terms": [
+        "midjourney",
+        "midjourney-pp-cli",
+        "Inspect Midjourney jobs, queue, folders, and discovery feeds from the terminal",
+        "Submit Midjourney image jobs",
+        "imagine",
+        "Submit Midjourney imagine jobs through the browser-observed /api/submit-jobs flow, including model/version, style, reference, draft, and tuning flags.",
+        "Rerun existing jobs",
+        "rerun",
+        "Submit the observed Midjourney reroll payload for an existing job ID.",
+        "Export rendered images",
+        "download",
+        "Export rendered Midjourney job images through Chrome CDP when direct CDN fetches are blocked by Cloudflare or CORS."
+      ],
+      "path": "library/ai/midjourney",
+      "printer": "dave-agent-cerebro",
+      "printer_name": "Dave Fano",
+      "mcp": {
+        "binary": "midjourney-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 12,
+        "public_tool_count": 0,
+        "auth_type": "api_key",
+        "env_vars": [
+          "MIDJOURNEY_COOKIE_HEADER"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "mobalytics-lol",
       "category": "media-and-entertainment",
       "api": "mobalytics-lol",
