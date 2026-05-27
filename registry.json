@@ -2228,6 +2228,64 @@
       }
     },
     {
+      "name": "drudgereport",
+      "category": "media-and-entertainment",
+      "api": "Drudge Report",
+      "description": "Drudge Report in your terminal, with the editorial signal (splash, red, slot, tenure) the live page broadcasts but...",
+      "search_terms": [
+        "drudgereport",
+        "Drudge Report",
+        "drudgereport-pp-cli",
+        "Drudge Report in your terminal, with the editorial signal (splash, red, slot, tenure) the live page broadcasts but no other scraper preserves.",
+        "Splash now",
+        "splash",
+        "Just the current center-slot splash headline with image, outbound URL, red flag, and how long it has been on splash.",
+        "Breaking (red items)",
+        "breaking",
+        "Every headline currently set in red by Drudge's editor, ordered by slot importance.",
+        "Ranked headlines",
+        "headlines",
+        "All current headlines ranked by composite editorial weight (slot + red + image), not by chronology.",
+        "Promotions and demotions since last fetch",
+        "tail",
+        "Slot transitions and color changes between consecutive snapshots: promoted to splash, demoted from splash, went red, disappeared, appeared.",
+        "Splash tenure",
+        "tenure",
+        "How long the current splash has been the splash, plus the all-time longest-tenured splash leaderboard.",
+        "Source leaderboard with deltas",
+        "sources",
+        "Outbound-domain frequency leaderboard over a window with rising/falling delta vs the prior window, optionally crosstabbed by slot.",
+        "On-this-date",
+        "on-date",
+        "Reconstruct Drudge at any past timestamp the CLI has observed: splash, red items, ranked headlines as of that moment.",
+        "Editorial-bent index",
+        "bent",
+        "Ratio of red items by outbound domain over a window: which outlets Drudge tends to break vs which he tends to merely column.",
+        "Story timeline",
+        "story",
+        "Every slot_event for one story_id ordered by timestamp: when it appeared, where it moved, when it went red, when it dropped, total tenure.",
+        "Weekly digest",
+        "digest",
+        "One-pager: splash count, longest-tenured splash, top 5 outbound domains, biggest red-surge stories over the week."
+      ],
+      "path": "library/media-and-entertainment/drudgereport",
+      "printer": "mvanhorn",
+      "printer_name": "Matt Van Horn",
+      "mcp": {
+        "binary": "drudgereport-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 2,
+        "public_tool_count": 2,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "dub",
       "category": "marketing",
       "api": "Dub",
@@ -7810,6 +7868,39 @@
       }
     },
     {
+      "name": "superhuman",
+      "category": "productivity",
+      "api": "Superhuman",
+      "description": "The Superhuman CLI that doesn't log you out, with a local inbox, agent-native I/O, and triage rules the web app...",
+      "search_terms": [
+        "superhuman",
+        "superhuman-pp-cli",
+        "Workflow compound commands",
+        "workflow",
+        "Compound commands that combine multiple API operations into one verb (see `workflow --help`).",
+        "Capability discovery via `which`",
+        "which",
+        "Resolve a natural-language capability query to the best matching command from this CLI's curated feature index."
+      ],
+      "path": "library/productivity/superhuman",
+      "printer": "mvanhorn",
+      "printer_name": "Matt Van Horn",
+      "mcp": {
+        "binary": "superhuman-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 11,
+        "public_tool_count": 0,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "SUPERHUMAN_JWT"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "surgegraph",
       "category": "ai",
       "api": "Surgegraph Facade",
@@ -9018,6 +9109,60 @@
         ],
         "mcp_ready": "full",
         "spec_format": "openapi3"
+      }
+    },
+    {
+      "name": "zoho-expense",
+      "category": "productivity",
+      "api": "Zoho Expense",
+      "description": "Upload receipts, auto-tag expenses from learned merchant memory",
+      "search_terms": [
+        "zoho-expense",
+        "Zoho Expense",
+        "zoho-expense-pp-cli",
+        "Upload receipts, tag expenses, and bundle monthly reports on Zoho Expense from the terminal",
+        "Invoice batch ingest",
+        "invoice ingest",
+        "Batch upload a folder of invoices to Zoho Expense, SHA256-dedup against the local store, poll autoscan in parallel, and auto-tag from learned merchant memory — the headline workflow for AI agents that ingest invoices from email.",
+        "Merchant memory",
+        "merchant list",
+        "Build a local merchant→category/project/tag mapping from sync history; pre-fill tags on first sight of a new merchant.",
+        "Merchant mapping training",
+        "merchant map",
+        "Train the local merchant→category mapping for future auto-tag (one merchant at a time, or bulk from a CSV).",
+        "Receipt hash gate",
+        "receipt upload",
+        "SHA256-hash incoming receipts at upload, refuse duplicates (use --force to override).",
+        "Monthly close",
+        "close",
+        "Bundle a month's unreported expenses into an expense report in one shot — flags still-processing autoscans, flags untagged items, creates the report, attaches, optionally submits.",
+        "GST CGST/SGST split",
+        "gst-split",
+        "India-specific: parse an expense's tax_id and line items, compute CGST/SGST (intra-state) or IGST (inter-state) shares, emit the breakdown or update the expense.",
+        "Untagged expense audit",
+        "expense-untagged",
+        "List expenses missing category_id or project_id; `--auto-fix` applies the merchant→tag memory map and PUTs back to Zoho."
+      ],
+      "path": "library/productivity/zoho-expense",
+      "printer": "amitav13",
+      "printer_name": "Amitav Khandelwal",
+      "mcp": {
+        "binary": "zoho-expense-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 70,
+        "public_tool_count": 0,
+        "auth_type": "oauth2",
+        "env_vars": [
+          "ZOHO_EXPENSE_CLIENT_ID",
+          "ZOHO_EXPENSE_CLIENT_SECRET",
+          "ZOHO_EXPENSE_REFRESH_TOKEN",
+          "ZOHO_EXPENSE_ORGANIZATION_ID"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
       }
     },
     {
