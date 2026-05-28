@@ -366,7 +366,7 @@ func newStoreAuditCmd(flags *rootFlags) *cobra.Command {
 		if err := db.DB().QueryRow(fmt.Sprintf(`SELECT COUNT(*), ROUND(COALESCE(SUM(CAST(json_extract(data,'%s') AS REAL)),0),2), ROUND(COALESCE(SUM(CAST(json_extract(data,'%s') AS REAL)),0),2) FROM orders WHERE %s`, jsonTotalAmount, jsonRefundAmount, windowClause(days))).Scan(&orders, &revenue, &refunds); err != nil {
 			return err
 		}
-		if err := db.DB().QueryRow(`SELECT COUNT(*) FROM fulfillment_orders WHERE UPPER(COALESCE(status,'')) NOT IN ('CLOSED','CANCELLED','CANCELED') AND created_at <= ?`, time.Now().Add(-24*time.Hour).UTC().Format(time.RFC3339)).Scan(&riskyFulfillments); err != nil {
+		if err := db.DB().QueryRow(`SELECT COUNT(*) FROM fulfillment_orders WHERE UPPER(COALESCE(status,'')) NOT IN ('CLOSED','CANCELLED','CANCELED') AND UPPER(COALESCE(request_status,'')) NOT IN ('FULFILLED','CLOSED','CANCELLED','CANCELED') AND created_at <= ?`, time.Now().Add(-24*time.Hour).UTC().Format(time.RFC3339)).Scan(&riskyFulfillments); err != nil {
 			return err
 		}
 		if err := db.DB().QueryRow(fmt.Sprintf(`

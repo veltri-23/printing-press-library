@@ -93,6 +93,7 @@ func newReportHealthScoreCmd(flags *rootFlags) *cobra.Command {
 		previousStart := now.AddDate(0, 0, -(days * 2)).Format(time.RFC3339)
 		var revenue, prevRevenue, refunds sql.NullFloat64
 		var customers, repeaters sql.NullInt64
+		var riskyFulfillments int
 		if err := db.DB().QueryRow(fmt.Sprintf(`SELECT ROUND(COALESCE(SUM(CAST(json_extract(data,'%s') AS REAL)),0),2), ROUND(COALESCE(SUM(CAST(COALESCE(json_extract(data,'%s'),'0') AS REAL)),0),2) FROM orders WHERE created_at >= ?`, jsonTotalAmount, jsonRefundAmount), currentStart).Scan(&revenue, &refunds); err != nil {
 			return err
 		}
@@ -100,6 +101,10 @@ func newReportHealthScoreCmd(flags *rootFlags) *cobra.Command {
 			return err
 		}
 		if err := db.DB().QueryRow(fmt.Sprintf(`WITH per AS (SELECT json_extract(data,'%s') cid, COUNT(*) orders FROM orders WHERE created_at >= ? AND json_extract(data,'%s') IS NOT NULL GROUP BY cid) SELECT COUNT(*), SUM(CASE WHEN orders>1 THEN 1 ELSE 0 END) FROM per`, jsonCustomerID, jsonCustomerID), currentStart).Scan(&customers, &repeaters); err != nil {
+			return err
+		}
+		fulfillmentCutoff := now.Add(-24 * time.Hour).Format(time.RFC3339)
+		if err := db.DB().QueryRow(`SELECT COUNT(*) FROM fulfillment_orders WHERE UPPER(COALESCE(status,'')) NOT IN ('CLOSED','CANCELLED','CANCELED') AND UPPER(COALESCE(request_status,'')) NOT IN ('FULFILLED','CLOSED','CANCELLED','CANCELED') AND created_at <= ?`, fulfillmentCutoff).Scan(&riskyFulfillments); err != nil {
 			return err
 		}
 		revenueTrend := 0.0
@@ -115,13 +120,16 @@ func newReportHealthScoreCmd(flags *rootFlags) *cobra.Command {
 			refundRate = refunds.Float64 / revenue.Float64 * 100
 		}
 		score := 50.0 + revenueTrend*0.25 + repeatRate*0.3 - refundRate*1.5
+		if riskyFulfillments > 0 {
+			score -= 20
+		}
 		if score < 0 {
 			score = 0
 		}
 		if score > 100 {
 			score = 100
 		}
-		return printOutputWithFlags(cmd.OutOrStdout(), mustJSON(map[string]any{"days": days, "score": round2(score), "components": map[string]any{"revenue": round2(revenue.Float64), "previous_revenue": round2(prevRevenue.Float64), "revenue_trend_pct": round2(revenueTrend), "repeat_rate_pct": round2(repeatRate), "refund_rate_pct": round2(refundRate)}}), flags)
+		return printOutputWithFlags(cmd.OutOrStdout(), mustJSON(map[string]any{"days": days, "score": round2(score), "components": map[string]any{"revenue": round2(revenue.Float64), "previous_revenue": round2(prevRevenue.Float64), "revenue_trend_pct": round2(revenueTrend), "repeat_rate_pct": round2(repeatRate), "refund_rate_pct": round2(refundRate), "fulfillment_risk": riskyFulfillments}}), flags)
 	}}
 	addDaysFlag(cmd, &days, 30)
 	return cmd
