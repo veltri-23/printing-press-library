@@ -47,6 +47,7 @@ type runCommandOptions struct {
 	priceOnly   bool
 	download    string
 	downloadDir string
+	record      bool
 }
 
 type wavespeedProjectConfig struct {
@@ -54,6 +55,12 @@ type wavespeedProjectConfig struct {
 	DefaultModel string                           `json:"defaultModel,omitempty"`
 	OutputDir    string                           `json:"outputDir,omitempty"`
 	Aliases      map[string]wavespeedProjectAlias `json:"aliases,omitempty"`
+	// ActiveBrand names the brand profile (stored in library.db) that novel
+	// commands and `run` merge by default. Set by `brand apply`.
+	ActiveBrand string `json:"activeBrand,omitempty"`
+	// Record is the library record policy: "always", "novel-only" (default),
+	// or "never". See recordPolicyFor.
+	Record string `json:"record,omitempty"`
 }
 
 type wavespeedProjectAlias struct {
@@ -111,59 +118,55 @@ func newRunCmd(flags *rootFlags) *cobra.Command {
 				return err
 			}
 
-			var pricing json.RawMessage
-			if opts.price || opts.priceOnly {
-				pricing, _, err = c.PostQueryWithParams(cmd.Context(), "/model/pricing", nil, map[string]any{
+			// price-only short-circuits before submission.
+			if opts.priceOnly {
+				pricing, _, err := c.PostQueryWithParams(cmd.Context(), "/model/pricing", nil, map[string]any{
 					"model_id": modelID,
 					"inputs":   inputs,
 				})
 				if err != nil {
 					return classifyAPIError(err, flags)
 				}
-				if opts.priceOnly {
-					return printOutputWithFlags(cmd.OutOrStdout(), pricing, flags)
-				}
-				if wantsHumanTable(cmd.OutOrStdout(), flags) {
-					fmt.Fprintln(cmd.ErrOrStderr(), "Pricing estimate:")
-					_ = printOutput(cmd.ErrOrStderr(), pricing, true)
-				}
+				return printOutputWithFlags(cmd.OutOrStdout(), pricing, flags)
 			}
 
-			result, _, err := c.PostWithParams(cmd.Context(), modelRunPath(modelID), nil, inputs)
+			res, err := submitAndAwait(cmd.Context(), c, submitRequest{
+				modelID:       modelID,
+				inputs:        inputs,
+				estimatePrice: opts.price,
+				wait:          opts.wait,
+				waitTimeout:   opts.waitTimeout,
+				pollInitial:   opts.pollInitial,
+				download:      cmd.Flags().Changed("download"),
+				downloadSpec:  runDownloadSpec(opts, project, cmd.Flags().Changed("download-dir")),
+			})
 			if err != nil {
 				return classifyAPIError(err, flags)
 			}
 
-			if opts.wait {
-				taskID := extractPredictionID(result)
-				if taskID == "" {
-					return apiErr(fmt.Errorf("run response did not include a prediction id"))
-				}
-				result, err = waitForPrediction(cmd.Context(), c, taskID, opts.waitTimeout, opts.pollInitial)
-				if err != nil {
-					return classifyAPIError(err, flags)
+			if len(res.Pricing) > 0 && wantsHumanTable(cmd.OutOrStdout(), flags) {
+				fmt.Fprintln(cmd.ErrOrStderr(), "Pricing estimate:")
+				_ = printOutput(cmd.ErrOrStderr(), res.Pricing, true)
+			}
+			for _, item := range res.Downloads {
+				fmt.Fprintf(cmd.ErrOrStderr(), "downloaded %s\n", item.Path)
+			}
+
+			// run records to the library only when --record is passed (opt-in),
+			// the inverse of novel commands which record by default. A record
+			// failure is logged and never fails a successful generation.
+			if opts.record {
+				if recErr := recordRunGeneration(modelID, inputs, res); recErr != nil {
+					fmt.Fprintf(cmd.ErrOrStderr(), "warning: library record failed: %v\n", recErr)
 				}
 			}
 
-			var downloads []downloadedFile
-			if cmd.Flags().Changed("download") {
-				downloadSpec := runDownloadSpec(opts, project, cmd.Flags().Changed("download-dir"))
-				downloads, err = downloadRunOutputs(cmd.Context(), c, unwrapWaveSpeedData(result), downloadSpec)
-				if err != nil {
-					return err
-				}
-				for _, item := range downloads {
-					fmt.Fprintf(cmd.ErrOrStderr(), "downloaded %s\n", item.Path)
-				}
-			}
-
-			status := extractPredictionStatus(result)
-			output := runOutputEnvelope(pricing, result, downloads)
+			output := runOutputEnvelope(res.Pricing, res.Result, res.Downloads)
 			if err := printOutputWithFlags(cmd.OutOrStdout(), output, flags); err != nil {
 				return err
 			}
-			if isFailedPredictionStatus(status) {
-				return apiErr(fmt.Errorf("prediction finished with status %q", status))
+			if res.Failed {
+				return apiErr(fmt.Errorf("prediction finished with status %q", res.Status))
 			}
 			return nil
 		},
@@ -182,6 +185,7 @@ func newRunCmd(flags *rootFlags) *cobra.Command {
 		flag.NoOptDefVal = "true"
 	}
 	cmd.Flags().StringVar(&opts.downloadDir, "download-dir", ".", "Directory for files saved by --download without a path")
+	cmd.Flags().BoolVar(&opts.record, "record", false, "Record this generation to the library DB (novel commands record by default; run is opt-in)")
 	installRunModelHelp(cmd, flags, &opts)
 
 	return cmd
@@ -1284,6 +1288,84 @@ func modelRunPath(modelID string) string {
 		parts[i] = url.PathEscape(part)
 	}
 	return "/" + strings.Join(parts, "/")
+}
+
+// submitRequest is the full input to one generation: optional price estimate,
+// model + resolved inputs, optional wait-to-terminal, optional download.
+type submitRequest struct {
+	modelID       string
+	inputs        map[string]any
+	estimatePrice bool
+	wait          bool
+	waitTimeout   time.Duration
+	pollInitial   time.Duration
+	download      bool
+	downloadSpec  string
+}
+
+// submitResult is the structured outcome of submitAndAwait. It prints nothing
+// itself; callers (run's RunE and every novel command) decide how to render or
+// record it.
+type submitResult struct {
+	Pricing   json.RawMessage
+	Result    json.RawMessage
+	Downloads []downloadedFile
+	Status    string
+	// Failed reports a prediction that reached a failed terminal status. It is
+	// NOT a transport error: the request succeeded, the model reported failure.
+	// Callers can record the attempt to the library before surfacing it.
+	Failed bool
+}
+
+// submitAndAwait runs the generation chain end-to-end and returns structured
+// data WITHOUT printing. Transport/API errors are returned raw for the caller
+// to classify via classifyAPIError; a failed prediction is reported through
+// submitResult.Failed so the attempt can still be recorded. SQLite/library
+// recording is deliberately not done here — that is the caller's concern, so a
+// record failure can never abort a successful generation.
+func submitAndAwait(ctx context.Context, c *client.Client, req submitRequest) (submitResult, error) {
+	var res submitResult
+
+	if req.estimatePrice {
+		pricing, _, err := c.PostQueryWithParams(ctx, "/model/pricing", nil, map[string]any{
+			"model_id": req.modelID,
+			"inputs":   req.inputs,
+		})
+		if err != nil {
+			return res, err
+		}
+		res.Pricing = pricing
+	}
+
+	result, _, err := c.PostWithParams(ctx, modelRunPath(req.modelID), nil, req.inputs)
+	if err != nil {
+		return res, err
+	}
+	res.Result = result
+
+	if req.wait {
+		taskID := extractPredictionID(result)
+		if taskID == "" {
+			return res, fmt.Errorf("run response did not include a prediction id")
+		}
+		result, err = waitForPrediction(ctx, c, taskID, req.waitTimeout, req.pollInitial)
+		if err != nil {
+			return res, err
+		}
+		res.Result = result
+	}
+
+	if req.download {
+		downloads, err := downloadRunOutputs(ctx, c, unwrapWaveSpeedData(result), req.downloadSpec)
+		if err != nil {
+			return res, err
+		}
+		res.Downloads = downloads
+	}
+
+	res.Status = extractPredictionStatus(res.Result)
+	res.Failed = isFailedPredictionStatus(res.Status)
+	return res, nil
 }
 
 func waitForPrediction(ctx context.Context, c *client.Client, taskID string, timeout, initialInterval time.Duration) (json.RawMessage, error) {
