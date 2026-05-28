@@ -52,6 +52,9 @@ func TestNovelPhase2OpsCommands(t *testing.T) {
 	shipping := arr(runNovelCommand(t, seed.DBPath, "ops", "shipping-anomalies", "--days", "30", "--limit", "10"))
 	row := findRow(t, shipping, "order_name", "#1004")
 	assertFloat(t, row["shipping_amount"], 60)
+	if row["country"] != "US" {
+		t.Fatalf("shipping-anomalies country = %v, want US from synced shippingAddress.countryCode", row["country"])
+	}
 }
 
 func TestNovelPhase2MerchandisingCommands(t *testing.T) {

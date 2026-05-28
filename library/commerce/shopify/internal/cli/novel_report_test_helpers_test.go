@@ -35,7 +35,7 @@ func seedNovelReportDB(t *testing.T) novelSeed {
 		if discounted {
 			discounts = `[{"__typename":"DiscountCodeApplication","targetType":"LINE_ITEM"}]`
 		}
-		data := fmt.Sprintf(`{"id":%q,"name":%q,"totalPriceSet":{"shopMoney":{"amount":"%.2f","currencyCode":"USD"}},"totalRefundedSet":{"shopMoney":{"amount":"%.2f","currencyCode":"USD"}},"customer":{"id":%q,"email":%q},"shippingAddress":{"countryCodeV2":%q,"provinceCode":%q,"city":"Testville"},"shippingLines":{"nodes":[{"title":"Standard","originalPriceSet":{"shopMoney":{"amount":"%.2f","currencyCode":"USD"}}}]},"tags":%s,"discountApplications":{"nodes":%s},"lineItems":{"nodes":%s}}`, id, name, total, refund, customerID, email, country, province, shipping, mustMarshalString(t, tags), discounts, items)
+		data := fmt.Sprintf(`{"id":%q,"name":%q,"totalPriceSet":{"shopMoney":{"amount":"%.2f","currencyCode":"USD"}},"totalRefundedSet":{"shopMoney":{"amount":"%.2f","currencyCode":"USD"}},"customer":{"id":%q,"email":%q},"shippingAddress":{"countryCode":%q,"provinceCode":%q,"city":"Testville"},"shippingLines":{"nodes":[{"title":"Standard","originalPriceSet":{"shopMoney":{"amount":"%.2f","currencyCode":"USD"}}}]},"tags":%s,"discountApplications":{"nodes":%s},"lineItems":{"nodes":%s}}`, id, name, total, refund, customerID, email, country, province, shipping, mustMarshalString(t, tags), discounts, items)
 		if _, err := db.Exec(`INSERT INTO orders (id,data,name,created_at,processed_at,display_financial_status,currency_code,source_name,note) VALUES (?,?,?,?,?,?,?,?,?)`, id, data, name, ts(created), ts(created), status, "USD", source, ""); err != nil {
 			t.Fatalf("insert order %s: %v", id, err)
 		}

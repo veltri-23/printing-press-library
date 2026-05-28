@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	jsonShippingAddressCountry  = "$.shippingAddress.countryCodeV2"
+	jsonShippingAddressCountry  = "$.shippingAddress.countryCode"
 	jsonShippingAddressProvince = "$.shippingAddress.provinceCode"
 	jsonShippingAddressCity     = "$.shippingAddress.city"
 	jsonShippingLines           = "$.shippingLines.nodes"
