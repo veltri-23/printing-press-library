@@ -110,8 +110,8 @@ func scoreListingCompleteness(raw string) (int, string, string, int, int, bool, 
 	text := strings.ToLower(raw)
 	asin := stringField(obj, "asin")
 	title := stringField(obj, "title", "itemName", "item_name")
-	images := strings.Count(text, "image")
-	bullets := strings.Count(text, "bullet")
+	images := countListingAttributeEntries(obj, "image", "images", "image_url", "imageUrl")
+	bullets := countListingAttributeEntries(obj, "bullet", "bullets", "bullet_point", "bulletPoint", "bullet_points", "bulletPoints")
 	hasAPlus := strings.Contains(text, "a_plus") || strings.Contains(text, "aplus") || strings.Contains(text, "enhanced")
 	score := 100
 	var missing []string
@@ -135,6 +135,44 @@ func scoreListingCompleteness(raw string) (int, string, string, int, int, bool, 
 		score = 0
 	}
 	return score, asin, title, images, bullets, hasAPlus, missing
+}
+
+func countListingAttributeEntries(v any, keys ...string) int {
+	wanted := map[string]struct{}{}
+	for _, key := range keys {
+		wanted[strings.ToLower(key)] = struct{}{}
+	}
+	var count func(any) int
+	count = func(value any) int {
+		total := 0
+		switch typed := value.(type) {
+		case map[string]any:
+			for key, child := range typed {
+				if _, ok := wanted[strings.ToLower(key)]; ok {
+					switch entries := child.(type) {
+					case []any:
+						total += len(entries)
+					case string:
+						if strings.TrimSpace(entries) != "" {
+							total++
+						}
+					default:
+						if child != nil {
+							total++
+						}
+					}
+					continue
+				}
+				total += count(child)
+			}
+		case []any:
+			for _, child := range typed {
+				total += count(child)
+			}
+		}
+		return total
+	}
+	return count(v)
 }
 
 func stringField(obj map[string]any, keys ...string) string {

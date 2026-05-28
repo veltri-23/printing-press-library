@@ -29,13 +29,12 @@ func newSalesDashboardCmd(flags *rootFlags) *cobra.Command {
 	var reportTimeout time.Duration
 	cmd := &cobra.Command{Use: "dashboard", Short: "Aggregate Sales and Traffic report metrics", RunE: func(cmd *cobra.Command, args []string) error {
 		return runNovelCommand(cmd, flags, novelRunOptions{DBPath: dbPath, MarketplaceID: marketplaceID, ReportTimeout: reportTimeout}, func(ctx context.Context, r *novelCommandRunner) (any, error) {
-			if days > 30 {
-				days = 30
-			}
+			days = normalizeSalesTrafficDays(days)
 			if err := r.ensureReports(ctx, salesTrafficSpecs(marketplaceID, days)...); err != nil {
 				return nil, err
 			}
-			return computeSalesDashboard(r.sqlDB, asin, groupBy)
+			sinceDate := time.Now().UTC().AddDate(0, 0, -days).Format("2006-01-02")
+			return computeSalesDashboard(r.sqlDB, asin, groupBy, sinceDate)
 		})
 	}}
 	addNovelCommonFlags(cmd, &marketplaceID, &dbPath, &reportTimeout)
@@ -89,13 +88,12 @@ func newSalesConversionFunnelCmd(flags *rootFlags) *cobra.Command {
 	var reportTimeout time.Duration
 	cmd := &cobra.Command{Use: "conversion-funnel", Short: "Analyze sessions to buy-box to order conversion", RunE: func(cmd *cobra.Command, args []string) error {
 		return runNovelCommand(cmd, flags, novelRunOptions{DBPath: dbPath, MarketplaceID: marketplaceID, ReportTimeout: reportTimeout}, func(ctx context.Context, r *novelCommandRunner) (any, error) {
-			if days > 30 {
-				days = 30
-			}
+			days = normalizeSalesTrafficDays(days)
 			if err := r.ensureReports(ctx, salesTrafficSpecs(marketplaceID, days)...); err != nil {
 				return nil, err
 			}
-			return computeConversionFunnel(r.sqlDB, asin)
+			sinceDate := time.Now().UTC().AddDate(0, 0, -days).Format("2006-01-02")
+			return computeConversionFunnel(r.sqlDB, asin, sinceDate)
 		})
 	}}
 	addNovelCommonFlags(cmd, &marketplaceID, &dbPath, &reportTimeout)
@@ -104,15 +102,25 @@ func newSalesConversionFunnelCmd(flags *rootFlags) *cobra.Command {
 	return cmd
 }
 
-func computeSalesDashboard(db *sql.DB, asin, groupBy string) ([]map[string]any, error) {
+func normalizeSalesTrafficDays(days int) int {
+	if days <= 0 {
+		return 30
+	}
+	if days > 30 {
+		return 30
+	}
+	return days
+}
+
+func computeSalesDashboard(db *sql.DB, asin, groupBy, sinceDate string) ([]map[string]any, error) {
 	key := "date"
 	if strings.EqualFold(groupBy, "asin") {
 		key = "asin"
 	}
-	query := "SELECT " + key + ", SUM(sessions), SUM(page_views), AVG(buy_box_percentage), SUM(units_ordered), SUM(ordered_product_sales), AVG(unit_session_percentage) FROM sales_traffic"
-	args := []any{}
+	query := "SELECT " + key + ", SUM(sessions), SUM(page_views), AVG(buy_box_percentage), SUM(units_ordered), SUM(ordered_product_sales), AVG(unit_session_percentage) FROM sales_traffic WHERE date >= ?"
+	args := []any{sinceDate}
 	if asin != "" {
-		query += " WHERE asin=?"
+		query += " AND asin=?"
 		args = append(args, asin)
 	}
 	query += " GROUP BY " + key + " ORDER BY " + key
@@ -134,11 +142,11 @@ func computeSalesDashboard(db *sql.DB, asin, groupBy string) ([]map[string]any, 
 	return out, rows.Err()
 }
 
-func computeConversionFunnel(db *sql.DB, asin string) ([]map[string]any, error) {
-	query := `SELECT asin, SUM(sessions), SUM(page_views), AVG(buy_box_percentage), SUM(units_ordered) FROM sales_traffic`
-	args := []any{}
+func computeConversionFunnel(db *sql.DB, asin, sinceDate string) ([]map[string]any, error) {
+	query := `SELECT asin, SUM(sessions), SUM(page_views), AVG(buy_box_percentage), SUM(units_ordered) FROM sales_traffic WHERE date >= ?`
+	args := []any{sinceDate}
 	if asin != "" {
-		query += " WHERE asin=?"
+		query += " AND asin=?"
 		args = append(args, asin)
 	}
 	query += " GROUP BY asin"

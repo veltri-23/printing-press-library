@@ -505,14 +505,16 @@ func (o *ReportOrchestrator) pollUntilDone(ctx context.Context, reportID string,
 
 func (o *ReportOrchestrator) waitForCreateSlot(ctx context.Context) error {
 	o.mu.Lock()
-	defer o.mu.Unlock()
 	if o.createMinGap <= 0 || o.lastCreate.IsZero() {
+		o.mu.Unlock()
 		return nil
 	}
 	wait := o.createMinGap - o.now().Sub(o.lastCreate)
 	if wait <= 0 {
+		o.mu.Unlock()
 		return nil
 	}
+	o.mu.Unlock()
 	o.progress("waiting %s for Reports API createReport rate limit", wait.Round(time.Second))
 	return o.sleep(ctx, wait)
 }
