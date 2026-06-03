@@ -96,11 +96,13 @@ func runDdlDrift(cmd *cobra.Command, flags *rootFlags, since, dbPath string) err
 		       json_extract(cur.data, '$.url')
 		FROM resources cur
 		LEFT JOIN resources_history prev
-		   ON prev.rowid = (
-		       SELECT rowid FROM resources_history
-		       WHERE id = cur.id AND resource_type = cur.resource_type
-		         AND captured_at < cur.synced_at
-		       ORDER BY captured_at DESC LIMIT 1
+		   ON prev.id = (
+		       SELECT id FROM resources_history rh
+		       WHERE rh.resource_id   = cur.id
+		         AND rh.resource_type = cur.resource_type
+		         AND rh.captured_at   < cur.synced_at
+		       ORDER BY rh.captured_at DESC
+		       LIMIT 1
 		   )
 		WHERE cur.resource_type = 'ddl'
 		  AND cur.synced_at >= ?
@@ -133,9 +135,6 @@ func runDdlDrift(cmd *cobra.Command, flags *rootFlags, since, dbPath string) err
 		} else {
 			report.Nuovi = append(report.Nuovi, it)
 		}
-	}
-	if err := rows.Err(); err != nil {
-		return fmt.Errorf("lettura drift: %w", err)
 	}
 	sort.SliceStable(report.Mossi, func(i, j int) bool {
 		return parseICaroDate(report.Mossi[i].DataA) > parseICaroDate(report.Mossi[j].DataA)

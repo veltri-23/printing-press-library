@@ -119,7 +119,8 @@ func pairCofirmatari(ctx context.Context, db *sql.DB, typ string, legisl, limit 
 		FROM resources
 		WHERE resource_type = ?
 		` + whereLegisl + `
-		  AND json_extract(data, '$.firmatari') IS NOT NULL AND json_extract(data, '$.firmatari') != ''`
+		  AND json_extract(data, '$.firmatari') IS NOT NULL
+		  AND json_extract(data, '$.firmatari') != ''`
 	rows, err := db.QueryContext(ctx, q, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query cofirmatari: %w", err)
@@ -148,7 +149,7 @@ func pairCofirmatari(ctx context.Context, db *sql.DB, typ string, legisl, limit 
 		}
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("lettura cofirmatari: %w", err)
+		return nil, fmt.Errorf("lettura righe: %w", err)
 	}
 	result := make([]analyticsRow, 0, len(counts))
 	for k, v := range counts {
@@ -174,7 +175,8 @@ func groupOratori(ctx context.Context, db *sql.DB, legisl, limit int) ([]analyti
 		FROM resources
 		WHERE resource_type = 'resoconti'
 		` + whereLegisl + `
-		  AND json_extract(data, '$.oratori') IS NOT NULL AND json_extract(data, '$.oratori') != ''`
+		  AND json_extract(data, '$.oratori') IS NOT NULL
+		  AND json_extract(data, '$.oratori') != ''`
 	rows, err := db.QueryContext(ctx, q, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query oratori: %w", err)
@@ -195,15 +197,7 @@ func groupOratori(ctx context.Context, db *sql.DB, legisl, limit int) ([]analyti
 		}
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("lettura oratori: %w", err)
-	}
-	if len(counts) == 0 {
-		return nil, fmt.Errorf(
-			"nessun dato oratori disponibile nel sync locale.\n" +
-				"Il portale Icaro espone gli oratori solo nel documento completo, non nella pagina lista;\n" +
-				"il sync non può quindi raccoglierli.\n" +
-				"Per l'attività di un deputato specifico usa:\n" +
-				"  ars-sicilia-pp-cli deputato profilo \"Nome Cognome\" --legisl 18 --json")
+		return nil, fmt.Errorf("lettura righe oratori: %w", err)
 	}
 	result := make([]analyticsRow, 0, len(counts))
 	for k, v := range counts {
@@ -245,7 +239,7 @@ func groupByAnno(ctx context.Context, db *sql.DB, typ string, legisl, limit int)
 		result = append(result, analyticsRow{Chiave: anno.String, Conteggio: n})
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("lettura anni: %w", err)
+		return nil, fmt.Errorf("lettura righe anno: %w", err)
 	}
 	return result, nil
 }

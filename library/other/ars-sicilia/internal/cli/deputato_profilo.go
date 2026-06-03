@@ -121,7 +121,7 @@ func runDeputatoProfilo(cmd *cobra.Command, flags *rootFlags, name string, legis
 	if arc := icaro.BySlug("resoconti"); arc != nil {
 		c, err := icaro.New(nil)
 		if err != nil {
-			return err
+			return nil
 		}
 		params := map[string]string{"testo": name}
 		if legisl > 0 {
