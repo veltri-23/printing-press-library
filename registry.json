@@ -9912,6 +9912,56 @@
       }
     },
     {
+      "name": "sumble",
+      "category": "sales-and-crm",
+      "api": "Sumble",
+      "description": "Every Sumble v6 feature, plus the credit-awareness the API itself won't give you",
+      "search_terms": [
+        "sumble",
+        "sumble-pp-cli",
+        "Every Sumble v6 feature, plus the credit-awareness the API itself won't give you: cost estimates before every billed call, a running balance, a budget guard, and a local SQLite cache so you never pay twice.",
+        "Pre-call cost estimate",
+        "cost-estimate",
+        "See exactly how many credits a billed Sumble call will cost before you run it.",
+        "Running credit balance",
+        "balance",
+        "Show remaining Sumble credits and recent burn without spending any.",
+        "Budget ceiling guard",
+        "budget",
+        "Set a credit ceiling so any call whose estimate exceeds it is refused before it dials.",
+        "Spend report",
+        "spend",
+        "Break down credits spent over time by endpoint and by day.",
+        "Stale-cache report",
+        "stale",
+        "List cached organizations, people, and jobs older than Sumble's freshness window.",
+        "Tech-stack diff",
+        "stack-diff",
+        "Compare two cached organizations' technology stacks — shared and unique technologies.",
+        "Free-first reconcile",
+        "reconcile",
+        "Resolve a CSV of company names/URLs to Sumble IDs via the cheap match endpoint, then report which still need a billed enrich."
+      ],
+      "path": "library/sales-and-crm/sumble",
+      "printer": "cpard",
+      "printer_name": "Kostas Pardalis",
+      "mcp": {
+        "binary": "sumble-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 19,
+        "public_tool_count": 0,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "SUMBLE_API_KEY"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "suno",
       "category": "media-and-entertainment",
       "api": "Suno",
