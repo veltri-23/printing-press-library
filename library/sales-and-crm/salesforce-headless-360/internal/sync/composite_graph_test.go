@@ -69,3 +69,22 @@ func assertLen(t *testing.T, records []json.RawMessage, want int, name string) {
 		t.Fatalf("%s records len = %d, want %d", name, len(records), want)
 	}
 }
+
+// TestParseGraphResponseSurfacesNodeErrors locks F-021: an unsuccessful
+// graph must surface per-subrequest Salesforce error detail (errorCode +
+// message) instead of an opaque "was not successful".
+func TestParseGraphResponseSurfacesNodeErrors(t *testing.T) {
+	payload := []byte(`{"graphs":[{"graphId":"acme-graph","isSuccessful":false,"graphResponse":{"compositeResponse":[
+		{"referenceId":"Account","httpStatusCode":400,"body":[{"message":"No such column 'AnnualRevenue' on entity 'Account'","errorCode":"INVALID_FIELD"}]},
+		{"referenceId":"Contacts","httpStatusCode":200,"body":{"totalSize":0,"done":true,"records":[]}}
+	]}}]}`)
+	_, err := ParseGraphResponse(payload)
+	if err == nil {
+		t.Fatal("expected error for unsuccessful graph")
+	}
+	for _, want := range []string{"acme-graph", "Account", "HTTP 400", "INVALID_FIELD", "AnnualRevenue"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("error %q missing %q", err.Error(), want)
+		}
+	}
+}

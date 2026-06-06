@@ -230,7 +230,12 @@ func isCertificateUnavailable(err error) bool {
 		return false
 	}
 	msg := strings.ToUpper(err.Error())
-	return strings.Contains(msg, "INVALID_TYPE") || strings.Contains(msg, "NOT_FOUND")
+	// INVALID_FIELD / "No such column" covers Tooling API Certificate schema
+	// drift (e.g. v63.0 dropping CertificateData) — fall through to CMDT
+	// just like a missing sobject type. Observed live: HTTP 400 "No such
+	// column 'CertificateData' on sobject of type Certificate" (F-022).
+	return strings.Contains(msg, "INVALID_TYPE") || strings.Contains(msg, "NOT_FOUND") ||
+		strings.Contains(msg, "INVALID_FIELD") || strings.Contains(msg, "NO SUCH COLUMN")
 }
 
 func registerResult(record KeyRecord, idempotent bool) *RegisterResult {

@@ -124,7 +124,7 @@ if "$CLI" sync --account "$ACME_ID" 2>&1 | tee "${TMPDIR}/sync.out" | grep -q "c
   record 3 "Composite Graph in sync" PASS "graph request observed"
 else
   # Sync may be silent on the graph path; check the local SQLite sync log as fallback
-  if sqlite3 "$HOME/.local/share/salesforce-headless-360-pp-cli/sf360.db" \
+  if sqlite3 "$HOME/.local/share/salesforce-headless-360-pp-cli/data.db" \
        "SELECT count(*) FROM sync_checkpoints WHERE account_id = '$ACME_ID';" 2>/dev/null | grep -qE '^[1-9]'; then
     record 3 "Composite Graph in sync" PASS "sync checkpoint written (sync ran)"
   else
@@ -133,7 +133,7 @@ else
 fi
 
 # 4. sharing cross-check (presence of the table is enough; rows depend on profile)
-if sqlite3 "$HOME/.local/share/salesforce-headless-360-pp-cli/sf360.db" \
+if sqlite3 "$HOME/.local/share/salesforce-headless-360-pp-cli/data.db" \
     "SELECT count(*) FROM sharing_drop_audit;" > "${TMPDIR}/4.out" 2>&1; then
   record 4 "UI API sharing cross-check (table present)" PASS "$(cat "${TMPDIR}/4.out") drop rows"
 else
@@ -160,7 +160,7 @@ else
 fi
 
 # 6. compliance map loaded
-rows=$(sqlite3 "$HOME/.local/share/salesforce-headless-360-pp-cli/sf360.db" \
+rows=$(sqlite3 "$HOME/.local/share/salesforce-headless-360-pp-cli/data.db" \
     "SELECT count(*) FROM compliance_field_map;" 2>/dev/null || echo 0)
 if [ "$rows" -gt 0 ]; then
   record 6 "Tooling compliance map loads" PASS "$rows fields"

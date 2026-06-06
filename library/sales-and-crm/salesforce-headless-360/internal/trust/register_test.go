@@ -132,3 +132,28 @@ func TestRegisterIsIdempotentForActiveDeviceKey(t *testing.T) {
 		t.Fatalf("unexpected posts: %#v", secondClient.posts)
 	}
 }
+
+// TestRegisterFallsBackToCMDTOnCertificateSchemaDrift locks F-022: a
+// Tooling API whose Certificate sobject no longer carries CertificateData
+// (observed live at v63.0: HTTP 400 "No such column 'CertificateData' on
+// sobject of type Certificate") must fall through to the CMDT path instead
+// of failing registration.
+func TestRegisterFallsBackToCMDTOnCertificateSchemaDrift(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	client := &fakeOrgClient{
+		post: func(path string, body any) (json.RawMessage, int, error) {
+			if path == "/services/data/v63.0/tooling/sobjects/Certificate" {
+				return nil, 400, &sfclient.APIError{Method: "POST", Path: path, StatusCode: 400, Body: `[{"message":"No such column 'CertificateData' on sobject of type Certificate","errorCode":"INVALID_FIELD"}]`}
+			}
+			return json.RawMessage(`{"id":"m00TEST","success":true,"errors":[]}`), 201, nil
+		},
+	}
+
+	result, err := RegisterKey(client, fixedRegisterOptions())
+	if err != nil {
+		t.Fatalf("RegisterKey: %v", err)
+	}
+	if result.Source != "cmdt" {
+		t.Fatalf("source = %s, want cmdt", result.Source)
+	}
+}

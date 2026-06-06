@@ -63,13 +63,13 @@ salesforce-headless-360-pp-cli --org sf360-test sync --account <ACME_ID> --verbo
 Expected:
 - Verbose log shows exactly one POST to `/services/data/v63.0/composite/graph`.
 - Pagination fallback only triggers if a child relationship has > 2000 rows.
-- SQLite `sf360.db` populated across all Customer 360 tables.
+- SQLite `data.db` populated across all Customer 360 tables.
 - No 401, no Sforce-Limit-Info above 80%.
 
 ### 4. UI API sharing cross-check
 
 ```bash
-sqlite3 ~/.local/share/salesforce-headless-360-pp-cli/sf360.db \
+sqlite3 ~/.local/share/salesforce-headless-360-pp-cli/data.db \
   "SELECT count(*) FROM sharing_drop_audit WHERE account_id = '<ACME_ID>';"
 ```
 
@@ -93,7 +93,7 @@ Expected:
 
 ```bash
 salesforce-headless-360-pp-cli --org sf360-test sync --account <ACME_ID>
-sqlite3 ~/.local/share/salesforce-headless-360-pp-cli/sf360.db \
+sqlite3 ~/.local/share/salesforce-headless-360-pp-cli/data.db \
   "SELECT count(*) FROM compliance_field_map;"
 ```
 
@@ -331,7 +331,7 @@ Skip reasons: org not provisioned for Data Cloud (most common).
 ### O4. Slack linkage
 
 ```bash
-sqlite3 ~/.local/share/salesforce-headless-360-pp-cli/sf360.db \
+sqlite3 ~/.local/share/salesforce-headless-360-pp-cli/data.db \
   "SELECT count(*) FROM slack_relations WHERE entity_id = '<ACME_ID>';"
 ```
 

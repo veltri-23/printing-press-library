@@ -134,11 +134,24 @@ func ParseGraphResponse(data json.RawMessage) (*GraphResult, error) {
 	}
 	for _, graph := range envelope.Graphs {
 		if !graph.IsSuccessful {
+			// Surface per-subrequest Salesforce error detail (errorCode +
+			// message) so a failure like a customized org dropping a queried
+			// field (e.g. Account.AnnualRevenue removed) is diagnosable from
+			// the CLI output instead of an opaque "was not successful".
+			var details []string
+			for _, item := range graph.GraphResponse.CompositeResponse {
+				if item.HTTPStatusCode >= 400 {
+					details = append(details, fmt.Sprintf("%s (HTTP %d): %s", item.ReferenceID, item.HTTPStatusCode, nodeErrorDetail(item.Body)))
+				}
+			}
+			if len(details) > 0 {
+				return nil, fmt.Errorf("composite graph %s was not successful: %s", graph.GraphID, strings.Join(details, "; "))
+			}
 			return nil, fmt.Errorf("composite graph %s was not successful", graph.GraphID)
 		}
 		for _, item := range graph.GraphResponse.CompositeResponse {
 			if item.HTTPStatusCode >= 400 {
-				return nil, fmt.Errorf("composite node %s returned HTTP %d", item.ReferenceID, item.HTTPStatusCode)
+				return nil, fmt.Errorf("composite node %s returned HTTP %d: %s", item.ReferenceID, item.HTTPStatusCode, nodeErrorDetail(item.Body))
 			}
 			page, err := parseQueryPage(item.Body)
 			if err != nil {
@@ -159,6 +172,40 @@ func ParseGraphResponse(data json.RawMessage) (*GraphResult, error) {
 		return result.PageRefs[i].SObject < result.PageRefs[j].SObject
 	})
 	return result, nil
+}
+
+// nodeErrorDetail renders a composite subrequest's error body. Salesforce
+// returns query errors as [{"message": ..., "errorCode": ...}]; anything
+// that doesn't match that shape falls back to the raw body, truncated.
+func nodeErrorDetail(body json.RawMessage) string {
+	var errs []struct {
+		Message   string `json:"message"`
+		ErrorCode string `json:"errorCode"`
+	}
+	if json.Unmarshal(body, &errs) == nil && len(errs) > 0 {
+		parts := make([]string, 0, len(errs))
+		for _, e := range errs {
+			switch {
+			case e.ErrorCode != "" && e.Message != "":
+				parts = append(parts, e.ErrorCode+": "+e.Message)
+			case e.Message != "":
+				parts = append(parts, e.Message)
+			case e.ErrorCode != "":
+				parts = append(parts, e.ErrorCode)
+			}
+		}
+		if len(parts) > 0 {
+			return strings.Join(parts, "; ")
+		}
+	}
+	s := strings.TrimSpace(string(body))
+	if len(s) > 300 {
+		s = s[:300] + "..."
+	}
+	if s == "" {
+		return "(no error body)"
+	}
+	return s
 }
 
 func objectName(referenceID string, records []json.RawMessage) string {
