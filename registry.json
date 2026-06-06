@@ -8045,6 +8045,33 @@
       }
     },
     {
+      "name": "qbo",
+      "category": "accounting",
+      "api": "qbo",
+      "description": "Fixture-first, read-only QuickBooks Online CLI for agents.",
+      "search_terms": [
+        "qbo",
+        "qbo-pp-cli",
+        "Fixture-first, read-only QuickBooks Online CLI for agents.",
+        "Fixture-only read surface",
+        "qbo-pp-cli status",
+        "Reports read-only, no-live-OAuth safety status for agent use.",
+        "Local JSON fixture reads",
+        "qbo-pp-cli accounts list --fixture testdata/fixtures/qbo/accounts.json",
+        "Reads deterministic local accounting fixtures without credentials or network access.",
+        "Report fixture reads",
+        "qbo-pp-cli reports trial-balance --fixture testdata/fixtures/qbo/trial_balance.json",
+        "Exposes accounting report fixtures as JSON envelopes for agent workflows."
+      ],
+      "path": "library/accounting/qbo",
+      "printer": "jeffreydebolt",
+      "printer_name": "Jeff DeBolt",
+      "creator": {
+        "handle": "jeffreydebolt",
+        "name": "Jeff DeBolt"
+      }
+    },
+    {
       "name": "rappi",
       "category": "food-and-dining",
       "api": "Rappi",
@@ -11561,6 +11588,33 @@
         ],
         "mcp_ready": "full",
         "spec_format": "openapi3"
+      }
+    },
+    {
+      "name": "xero",
+      "category": "accounting",
+      "api": "xero",
+      "description": "Fixture-first, read-only Xero CLI for agents.",
+      "search_terms": [
+        "xero",
+        "xero-pp-cli",
+        "Fixture-first, read-only Xero CLI for agents.",
+        "Fixture-only read surface",
+        "xero-pp-cli status",
+        "Reports read-only, no-live-OAuth safety status for agent use.",
+        "Local JSON fixture reads",
+        "xero-pp-cli accounts list --fixture testdata/fixtures/xero/accounts.json",
+        "Reads deterministic local accounting fixtures without credentials or network access.",
+        "Report fixture reads",
+        "xero-pp-cli reports trial-balance --fixture testdata/fixtures/xero/trial_balance.json",
+        "Exposes accounting report fixtures as JSON envelopes for agent workflows."
+      ],
+      "path": "library/accounting/xero",
+      "printer": "jeffreydebolt",
+      "printer_name": "Jeff DeBolt",
+      "creator": {
+        "handle": "jeffreydebolt",
+        "name": "Jeff DeBolt"
       }
     },
     {
