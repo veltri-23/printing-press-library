@@ -69,8 +69,7 @@ Only single read-only statements are permitted.`, "\n"),
 				return usageErr(fmt.Errorf("only a single read-only SELECT/WITH query is allowed"))
 			}
 
-			ctx := cmd.Context()
-			s, err := openRoadsideStore(ctx)
+			s, err := openRoadsideStoreReadOnly()
 			if err != nil {
 				return err
 			}

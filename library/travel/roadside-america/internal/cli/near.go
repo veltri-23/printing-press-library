@@ -105,6 +105,9 @@ distance-sorted and filtered to --radius miles, using RoadsideAmerica.com's own
 
 			out := make([]roadside.Attraction, 0, len(atts))
 			for _, a := range atts {
+				// DistanceMi == 0 means the site's distance label was unparseable;
+				// keep it — nearbyAttractions.php already geo-bounds results to the
+				// requested delta (~radius), so an unlabeled entry is still nearby.
 				if a.DistanceMi > 0 && a.DistanceMi > float64(radius) {
 					continue
 				}

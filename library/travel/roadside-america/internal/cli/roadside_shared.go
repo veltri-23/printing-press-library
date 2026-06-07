@@ -51,6 +51,21 @@ func openRoadsideStore(ctx context.Context) (*store.Store, error) {
 	return s, nil
 }
 
+// openRoadsideStoreReadOnly opens the cache in driver-level read-only mode
+// (mode=ro), so a malformed read-only query can never mutate the local cache
+// even if the SQL guard misses an edge case. Friendly error when no cache yet.
+func openRoadsideStoreReadOnly() (*store.Store, error) {
+	p := roadsideDBPath()
+	if _, err := os.Stat(p); err != nil {
+		return nil, notFoundErr(fmt.Errorf("no local cache yet at %s; run 'sync', 'state', or 'near' first", p))
+	}
+	s, err := store.OpenReadOnly(p)
+	if err != nil {
+		return nil, fmt.Errorf("opening local cache (read-only): %w", err)
+	}
+	return s, nil
+}
+
 // --- fetch + parse (live) ---
 
 func fetchStateAttractions(ctx context.Context, c *client.Client, state string) ([]roadside.Attraction, error) {

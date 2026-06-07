@@ -58,10 +58,16 @@ population path for the offline 'category', 'stats', 'search', and 'random
 				states = parseStateList(resources)
 			}
 			valid := make([]string, 0, len(states))
+			dropped := make([]string, 0)
 			for _, s := range states {
 				if roadside.ValidState(s) {
 					valid = append(valid, strings.ToUpper(s))
+				} else {
+					dropped = append(dropped, s)
 				}
+			}
+			if len(dropped) > 0 {
+				fmt.Fprintf(cmd.ErrOrStderr(), "warning: ignoring unrecognized state/province code(s): %s\n", strings.Join(dropped, ", "))
 			}
 			if len(valid) == 0 {
 				if full || (statesCSV == "" && resources == "") {
