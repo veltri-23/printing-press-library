@@ -870,14 +870,42 @@ func policyDecision(ref refParts) string {
 }
 
 func denyRef(ref refParts) (bool, string) {
-	lower := strings.ToLower(ref.Raw + " " + ref.Vault + " " + ref.Item + " " + ref.Section + " " + ref.Field)
-	if regexp.MustCompile(`\b(prod|production)\b`).MatchString(lower) {
+	if hasProductionComponent(ref) {
 		return true, "production values require a human-approved workflow"
 	}
-	if regexp.MustCompile(`\b(credit|card|cvv|cvc|csc|pan|payment|payments|bank|security[_ -]?code|account|expiry?|expiration)\b`).MatchString(lower) {
+	lower := strings.ToLower(strings.Join(refComponents(ref), " "))
+	if regexp.MustCompile(`\b(credit|card|cvv|cvc|csc|pan|payment|payments|bank|security[_ -]?code|expiry?|expiration)\b`).MatchString(lower) {
 		return true, "payment-card values are blocked"
 	}
 	return false, ""
+}
+
+func hasProductionComponent(ref refParts) bool {
+	for _, part := range refComponents(ref) {
+		if isProductionComponent(part) {
+			return true
+		}
+	}
+	return false
+}
+
+func isProductionComponent(part string) bool {
+	for _, token := range regexp.MustCompile(`[^a-z0-9]+`).Split(strings.ToLower(part), -1) {
+		if token == "" {
+			continue
+		}
+		if strings.HasPrefix(token, "production") {
+			return true
+		}
+		if strings.HasPrefix(token, "prod") && !strings.HasPrefix(token, "product") && !strings.HasPrefix(token, "producer") {
+			return true
+		}
+	}
+	return false
+}
+
+func refComponents(ref refParts) []string {
+	return []string{ref.Vault, ref.Item, ref.Section, ref.Field}
 }
 
 func newNovelAccessScopeCmd(flags *rootFlags) *cobra.Command {

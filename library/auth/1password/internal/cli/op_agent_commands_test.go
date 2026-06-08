@@ -71,12 +71,54 @@ func TestDenyRefBlocksCardValues(t *testing.T) {
 }
 
 func TestDenyRefBlocksProductionValues(t *testing.T) {
-	ref, err := parseRef("op://Production/API/token")
-	if err != nil {
-		t.Fatalf("parseRef error = %v", err)
+	tests := []string{
+		"op://Production/API/token",
+		"op://ProductionVault/deploy-key/token",
+		"op://Vault/prodapi/token",
+		"op://Vault/App/prodserver/token",
 	}
-	if denied, _ := denyRef(ref); !denied {
-		t.Fatalf("denyRef(%q) = false, want true", ref.Raw)
+	for _, raw := range tests {
+		ref, err := parseRef(raw)
+		if err != nil {
+			t.Fatalf("parseRef(%q) error = %v", raw, err)
+		}
+		if denied, _ := denyRef(ref); !denied {
+			t.Fatalf("denyRef(%q) = false, want true", ref.Raw)
+		}
+	}
+}
+
+func TestDenyRefAllowsNonCardAccountReferences(t *testing.T) {
+	tests := []string{
+		"op://Work/service-account/key",
+		"op://Corp/aws-account-id/value",
+		"op://Personal/google-account/password",
+	}
+	for _, raw := range tests {
+		ref, err := parseRef(raw)
+		if err != nil {
+			t.Fatalf("parseRef(%q) error = %v", raw, err)
+		}
+		if denied, reason := denyRef(ref); denied {
+			t.Fatalf("denyRef(%q) = true (%s), want false", ref.Raw, reason)
+		}
+	}
+}
+
+func TestDenyRefAllowsNonProductionProdSubstrings(t *testing.T) {
+	tests := []string{
+		"op://Work/product-catalog/api-key",
+		"op://Work/productivity-app/token",
+		"op://Work/producer-api/token",
+	}
+	for _, raw := range tests {
+		ref, err := parseRef(raw)
+		if err != nil {
+			t.Fatalf("parseRef(%q) error = %v", raw, err)
+		}
+		if denied, reason := denyRef(ref); denied {
+			t.Fatalf("denyRef(%q) = true (%s), want false", ref.Raw, reason)
+		}
 	}
 }
 
