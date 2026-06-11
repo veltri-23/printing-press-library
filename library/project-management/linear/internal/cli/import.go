@@ -91,7 +91,9 @@ that fails is logged to stderr and counted, but does not stop the import.`,
 			}
 
 			// trust-mode strict requires a session so every imported fixture
-			// is recoverable by pp-cleanup, matching `issues create`.
+			// is recoverable by pp-cleanup. Dry-runs create nothing, so the
+			// session requirement is skipped when --dry-run is active (unlike
+			// `issues create`, which always creates and so always checks).
 			if flags.trustMode == "strict" && !flags.dryRun {
 				if resolvePPSession(flags, session) == "" {
 					return fmt.Errorf("trust-mode=strict: pass --session <tag> (or set PP_SESSION env) so imported fixtures are recoverable by pp-cleanup")

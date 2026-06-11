@@ -72,13 +72,19 @@ func TestIssueRecordToInput(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Snapshot the original record so we can detect in-place mutation
+			// regardless of which case triggers it (rename-immune).
+			original := make(map[string]any, len(tt.record))
+			for k, v := range tt.record {
+				original[k] = v
+			}
 			got := issueRecordToInput(tt.record)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("issueRecordToInput mismatch\n got: %#v\nwant: %#v", got, tt.want)
 			}
 			// Must not mutate the caller's record map.
-			if _, leaked := tt.record["teamId"]; leaked && tt.record["title"] == "x" && tt.name == "team alias maps to teamId" {
-				t.Errorf("issueRecordToInput mutated the input record: %#v", tt.record)
+			if !reflect.DeepEqual(tt.record, original) {
+				t.Errorf("issueRecordToInput mutated the input record\n before: %#v\n  after: %#v", original, tt.record)
 			}
 		})
 	}
