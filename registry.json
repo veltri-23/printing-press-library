@@ -225,6 +225,37 @@
       }
     },
     {
+      "name": "agent-desktop",
+      "category": "developer-tools",
+      "api": "Agent Desktop",
+      "description": "Printing Press bridge for the Rust agent-desktop desktop automation CLI.",
+      "search_terms": [
+        "agent-desktop",
+        "Agent Desktop",
+        "agent-desktop-pp-cli",
+        "Printing Press bridge for the Rust agent-desktop desktop automation CLI. Installs or delegates to the real remote package instead of reimplementing desktop automation.",
+        "Remote release bootstrap",
+        "install",
+        "Installs the real agent-desktop package from the public npm/GitHub release channel, with explicit version pinning or latest resolution.",
+        "Agent-safe installation diagnosis",
+        "doctor",
+        "Reports whether the real agent-desktop binary is on PATH without mutating the host.",
+        "Exit-code preserving delegation",
+        "run",
+        "Delegates arguments to the real agent-desktop binary and preserves its exit code for agent retry logic.",
+        "Distribution context",
+        "info",
+        "Explains that this catalog entry is a bridge to the existing Rust CLI, npm package, and GitHub release assets."
+      ],
+      "path": "library/developer-tools/agent-desktop",
+      "printer": "lahfir",
+      "printer_name": "Lahfir",
+      "creator": {
+        "handle": "lahfir",
+        "name": "Lahfir"
+      }
+    },
+    {
       "name": "agentpool",
       "category": "developer-tools",
       "api": "AgentPool",
