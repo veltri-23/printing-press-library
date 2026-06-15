@@ -1,4 +1,4 @@
-module lobsters-pp-cli
+module github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters
 
 go 1.26.3
 

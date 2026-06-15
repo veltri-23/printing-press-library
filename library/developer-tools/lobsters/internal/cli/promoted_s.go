@@ -17,7 +17,7 @@ func newSPromotedCmd(flags *rootFlags) *cobra.Command {
 		Use:         "s <short_id>",
 		Short:       "Get story details and comments",
 		Long:        "Shortcut for 's get-story'. Get story details and comments",
-		Example:     "  lobsters-pp-cli s 550e8400-e29b-41d4-a716-446655440000",
+		Example:     "  lobsters-pp-cli s 5hvste",
 		Annotations: map[string]string{"pp:endpoint": "s.get-story", "pp:method": "GET", "pp:path": "/s/{short_id}.json", "mcp:read-only": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, err := flags.newClient()

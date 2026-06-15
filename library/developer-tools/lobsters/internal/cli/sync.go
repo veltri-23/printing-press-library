@@ -6,8 +6,8 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/store"
 	"github.com/spf13/cobra"
-	"lobsters-pp-cli/internal/store"
 	"net/url"
 	"os"
 	"regexp"

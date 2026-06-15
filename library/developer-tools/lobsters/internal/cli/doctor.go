@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/client"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/config"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/store"
 	"github.com/spf13/cobra"
-	"lobsters-pp-cli/internal/client"
-	"lobsters-pp-cli/internal/config"
-	"lobsters-pp-cli/internal/store"
 )
 
 // looksLikeDoctorInterstitial reports whether the response body matches a known

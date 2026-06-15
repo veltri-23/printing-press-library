@@ -14,11 +14,11 @@ import (
 
 	mcplib "github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"lobsters-pp-cli/internal/cli"
-	"lobsters-pp-cli/internal/client"
-	"lobsters-pp-cli/internal/config"
-	"lobsters-pp-cli/internal/mcp/cobratree"
-	"lobsters-pp-cli/internal/store"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/cli"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/client"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/config"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/mcp/cobratree"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/store"
 )
 
 // RegisterTools registers all API operations as MCP tools.
@@ -204,11 +204,11 @@ func makeAPIHandler(method, pathTemplate string, bindings []mcpParamBinding, pos
 			case strings.Contains(msg, "HTTP 401"):
 				return mcplib.NewToolResultError("authentication failed: " + msg +
 					"\nhint: check your API credentials." +
-					"\n      Run 'lobsters-public-json-pp-cli doctor' to check auth status."), nil
+					"\n      Run 'lobsters-pp-cli doctor' to check auth status."), nil
 			case strings.Contains(msg, "HTTP 403"):
 				return mcplib.NewToolResultError("permission denied: " + msg +
 					"\nhint: this API is configured without credentials; the service may be blocking the request by rate limit, geography, bot protection, or endpoint policy." +
-					"\n      Run 'lobsters-public-json-pp-cli doctor' to check auth status."), nil
+					"\n      Run 'lobsters-pp-cli doctor' to check auth status."), nil
 			case strings.Contains(msg, "HTTP 404"):
 				if method == "DELETE" {
 					return mcplib.NewToolResultText("already deleted (no-op)"), nil
@@ -242,7 +242,7 @@ func makeAPIHandler(method, pathTemplate string, bindings []mcpParamBinding, pos
 
 func newMCPClient() (*client.Client, error) {
 	home, _ := os.UserHomeDir()
-	cfgPath := filepath.Join(home, ".config", "lobsters-public-json-pp-cli", "config.toml")
+	cfgPath := filepath.Join(home, ".config", "lobsters-pp-cli", "config.toml")
 	cfg, err := config.Load(cfgPath)
 	if err != nil {
 		return nil, fmt.Errorf("loading config: %w", err)
@@ -259,7 +259,7 @@ func newMCPClient() (*client.Client, error) {
 
 func dbPath() string {
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".local", "share", "lobsters-public-json-pp-cli", "data.db")
+	return filepath.Join(home, ".local", "share", "lobsters-pp-cli", "data.db")
 }
 
 // Note: MCP tools use their own dbPath() because they are in a separate package (main, not cli).
@@ -391,12 +391,12 @@ func handleSQL(ctx context.Context, req mcplib.CallToolRequest) (*mcplib.CallToo
 
 func handleContext(_ context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToolResult, error) {
 	ctx := map[string]any{
-		"api":         "lobsters-public-json",
+		"api":         "lobsters",
 		"description": "Read-only JSON surfaces for Lobsters stories, tags, and comments.",
 		"archetype":   "content",
 		"tool_count":  5,
 		// tool_surface tells agents which surface a capability lives on.
-		"tool_surface": "MCP exposes typed endpoint tools plus a runtime mirror of user-facing CLI commands. Endpoint tools keep typed schemas; command-mirror tools shell out to the companion lobsters-public-json-pp-cli binary.",
+		"tool_surface": "MCP exposes typed endpoint tools plus a runtime mirror of user-facing CLI commands. Endpoint tools keep typed schemas; command-mirror tools shell out to the companion lobsters-pp-cli binary.",
 		"resources": []map[string]any{
 			{
 				"name":        "hottest-json",

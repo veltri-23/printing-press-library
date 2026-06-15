@@ -5,25 +5,24 @@ package types
 
 import "encoding/json"
 
-
 type Comment struct {
-	Comment string `json:"comment"`
-	CommentPlain string `json:"comment_plain"`
+	Comment       string `json:"comment"`
+	CommentPlain  string `json:"comment_plain"`
 	CommenterUser string `json:"commenter_user"`
-	CreatedAt string `json:"created_at"`
-	Score int `json:"score"`
-	ShortId string `json:"short_id"`
+	CreatedAt     string `json:"created_at"`
+	Score         int    `json:"score"`
+	ShortId       string `json:"short_id"`
 }
 
 type Story struct {
-	CommentCount int `json:"comment_count"`
-	Comments json.RawMessage `json:"comments"`
-	CreatedAt string `json:"created_at"`
-	Flags int `json:"flags"`
-	Score int `json:"score"`
-	ShortId string `json:"short_id"`
-	SubmitterUser string `json:"submitter_user"`
-	Tags json.RawMessage `json:"tags"`
-	Title string `json:"title"`
-	Url string `json:"url"`
+	CommentCount  int             `json:"comment_count"`
+	Comments      json.RawMessage `json:"comments"`
+	CreatedAt     string          `json:"created_at"`
+	Flags         int             `json:"flags"`
+	Score         int             `json:"score"`
+	ShortId       string          `json:"short_id"`
+	SubmitterUser string          `json:"submitter_user"`
+	Tags          json.RawMessage `json:"tags"`
+	Title         string          `json:"title"`
+	Url           string          `json:"url"`
 }

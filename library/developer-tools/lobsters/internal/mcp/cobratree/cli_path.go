@@ -12,7 +12,7 @@ import (
 // SiblingCLIPath resolves the companion CLI via sibling-of-executable,
 // LOBSTERS_PUBLIC_JSON_CLI_PATH env var, then PATH.
 func SiblingCLIPath() (string, error) {
-	const cliName = "lobsters-public-json-pp-cli"
+	const cliName = "lobsters-pp-cli"
 	if exe, err := os.Executable(); err == nil {
 		candidate := filepath.Join(filepath.Dir(exe), cliName)
 		if _, err := os.Stat(candidate); err == nil {

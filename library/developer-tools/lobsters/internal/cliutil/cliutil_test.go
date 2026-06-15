@@ -673,6 +673,27 @@ func TestAdaptiveLimiter_WaitEnforcesPacing(t *testing.T) {
 	}
 }
 
+func TestAdaptiveLimiter_WaitSerializesConcurrentCallers(t *testing.T) {
+	l := NewAdaptiveLimiter(20.0)
+	const callers = 3
+	start := time.Now()
+
+	var wg sync.WaitGroup
+	wg.Add(callers)
+	for i := 0; i < callers; i++ {
+		go func() {
+			defer wg.Done()
+			l.Wait()
+		}()
+	}
+	wg.Wait()
+
+	elapsed := time.Since(start)
+	if elapsed < 90*time.Millisecond {
+		t.Errorf("concurrent Wait() calls finished in %v, want serialized pacing", elapsed)
+	}
+}
+
 func TestRateLimitError_ErrorMessage(t *testing.T) {
 	cases := []struct {
 		name string

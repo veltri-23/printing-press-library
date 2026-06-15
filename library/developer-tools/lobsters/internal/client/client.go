@@ -9,6 +9,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/cliutil"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/config"
 	"io"
 	"math"
 	"net/http"
@@ -17,8 +19,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"lobsters-pp-cli/internal/cliutil"
-	"lobsters-pp-cli/internal/config"
 )
 
 type Client struct {
@@ -30,8 +30,6 @@ type Client struct {
 	cacheDir   string
 	limiter    *cliutil.AdaptiveLimiter
 }
-
-
 
 // APIError carries HTTP status information for structured exit codes.
 type APIError struct {
@@ -109,7 +107,7 @@ func (c *Client) cacheKey(path string, params map[string]string) string {
 	}
 	sort.Strings(paramKeys)
 	for _, k := range paramKeys {
-		key += k + "=" + params[k]
+		key += "|" + k + "=" + params[k]
 	}
 	h := sha256.Sum256([]byte(key))
 	return hex.EncodeToString(h[:8])
@@ -382,7 +380,6 @@ func sanitizeJSONResponse(body []byte) []byte {
 	}
 	return body
 }
-
 
 // maskToken redacts all but the last 4 characters of a token for safe display.
 func maskToken(token string) string {

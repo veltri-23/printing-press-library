@@ -207,7 +207,7 @@ Verifies configuration and connectivity to the API.
 
 ## Configuration
 
-Config file: `~/.config/lobsters-public-json-pp-cli/config.toml`
+Config file: `~/.config/lobsters-pp-cli/config.toml`
 
 Static request headers can be configured under `headers`; per-command header overrides take precedence.
 

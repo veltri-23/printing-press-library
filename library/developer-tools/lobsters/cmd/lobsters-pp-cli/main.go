@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"lobsters-pp-cli/internal/cli"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/cli"
 )
 
 func main() {

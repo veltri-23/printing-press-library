@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/store"
 	"github.com/spf13/cobra"
-	"lobsters-pp-cli/internal/store"
 )
 
 func newWorkflowCmd(flags *rootFlags) *cobra.Command {

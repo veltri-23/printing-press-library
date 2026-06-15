@@ -13,9 +13,9 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/client"
+	"github.com/mvanhorn/printing-press-library/library/developer-tools/lobsters/internal/config"
 	"github.com/spf13/cobra"
-	"lobsters-pp-cli/internal/client"
-	"lobsters-pp-cli/internal/config"
 )
 
 var version = "1.0.0"

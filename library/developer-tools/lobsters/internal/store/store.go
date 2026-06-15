@@ -698,6 +698,7 @@ func sqliteFieldValue(v any) any {
 func lookupFieldValue(obj map[string]any, snakeKey string) any {
 	return LookupFieldValue(obj, snakeKey)
 }
+
 // upsertHottestJsonTx writes the typed-table portion of a hottest_json upsert
 // inside an existing transaction. The caller is responsible for the generic
 // resources insert (via upsertGenericResourceTx) and for committing the tx.
@@ -755,6 +756,7 @@ func (s *Store) UpsertHottestJson(data json.RawMessage) error {
 
 	return tx.Commit()
 }
+
 // upsertNewestTx writes the typed-table portion of a newest upsert
 // inside an existing transaction. The caller is responsible for the generic
 // resources insert (via upsertGenericResourceTx) and for committing the tx.
@@ -812,6 +814,7 @@ func (s *Store) UpsertNewest(data json.RawMessage) error {
 
 	return tx.Commit()
 }
+
 // upsertPageTx writes the typed-table portion of a page upsert
 // inside an existing transaction. The caller is responsible for the generic
 // resources insert (via upsertGenericResourceTx) and for committing the tx.
@@ -869,6 +872,7 @@ func (s *Store) UpsertPage(data json.RawMessage) error {
 
 	return tx.Commit()
 }
+
 // upsertSTx writes the typed-table portion of a s upsert
 // inside an existing transaction. The caller is responsible for the generic
 // resources insert (via upsertGenericResourceTx) and for committing the tx.
@@ -926,6 +930,7 @@ func (s *Store) UpsertS(data json.RawMessage) error {
 
 	return tx.Commit()
 }
+
 // upsertTTx writes the typed-table portion of a t upsert
 // inside an existing transaction. The caller is responsible for the generic
 // resources insert (via upsertGenericResourceTx) and for committing the tx.
@@ -993,8 +998,7 @@ func (s *Store) UpsertT(data json.RawMessage) error {
 // Includes both flat resources and dependent (parent-child) resources so a
 // child path-item annotated with x-resource-id resolves the same as a flat
 // path-item.
-var resourceIDFieldOverrides = map[string]string{
-}
+var resourceIDFieldOverrides = map[string]string{}
 
 // genericIDFieldFallbacks is the runtime safety net for resources that did
 // NOT receive a templated IDField. API-specific names belong in spec
