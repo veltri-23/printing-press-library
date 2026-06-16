@@ -19,7 +19,15 @@
     },
     {
       "path": "internal/store/upsert_batch_test.go",
-      "summary": "Use the production hottest-json resource name and short_id payload shape in the typed-table regression test."
+      "summary": "Use production hottest-json and tag-page Story payload shapes with short_id in typed-table regression tests."
+    },
+    {
+      "path": "internal/store/store.go",
+      "summary": "Map the t tag-page resource to short_id because /t/{tag}.json returns Story objects, not tag records."
+    },
+    {
+      "path": "internal/cli/sync.go",
+      "summary": "Map the t tag-page resource to short_id for single-object ID extraction symmetry."
     }
   ],
   "validated_outcome": "go test ./... and publish validation rerun after patch"

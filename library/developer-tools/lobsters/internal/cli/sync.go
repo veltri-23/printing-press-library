@@ -831,7 +831,7 @@ var resourceIDFieldOverrides = map[string]string{
 	"newest":       "short_id",
 	"page":         "short_id",
 	"s":            "short_id",
-	"t":            "tag",
+	"t":            "short_id",
 }
 
 // genericIDFieldFallbacks is the runtime safety net for resources that did

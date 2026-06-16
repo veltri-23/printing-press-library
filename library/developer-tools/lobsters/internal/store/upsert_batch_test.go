@@ -431,11 +431,9 @@ func TestUpsertBatch_PopulatesSTable(t *testing.T) {
 	}
 }
 
-// TestUpsertBatch_PopulatesTTable verifies that UpsertBatch
-// dispatches paginated items into both the generic resources table AND the
-// typed t table. Regression for issue #268: before the fix, paginated
-// syncs only filled the generic resources table, so domain commands that
-// query the typed table saw zero rows.
+// TestUpsertBatch_PopulatesTTable verifies that the tag-page Story payloads
+// from /t/{tag}.json dispatch into both the generic resources table AND the
+// typed t table using short_id as the primary key.
 func TestUpsertBatch_PopulatesTTable(t *testing.T) {
 	dbPath := filepath.Join(t.TempDir(), "data.db")
 	s, err := Open(dbPath)
@@ -445,12 +443,19 @@ func TestUpsertBatch_PopulatesTTable(t *testing.T) {
 	defer s.Close()
 
 	items := []json.RawMessage{
-		json.RawMessage(`{"id": "test-001"}`),
-		json.RawMessage(`{"id": "test-002"}`),
-		json.RawMessage(`{"id": "test-003"}`),
+		json.RawMessage(`{"short_id": "test-001", "title": "one", "tags": ["go"]}`),
+		json.RawMessage(`{"short_id": "test-002", "title": "two", "tags": ["go"]}`),
+		json.RawMessage(`{"short_id": "test-003", "title": "three", "tags": ["go"]}`),
 	}
-	if _, _, err := s.UpsertBatch("t", items); err != nil {
+	stored, extractFailures, err := s.UpsertBatch("t", items)
+	if err != nil {
 		t.Fatalf("UpsertBatch: %v", err)
+	}
+	if stored != len(items) {
+		t.Fatalf("stored = %d, want %d", stored, len(items))
+	}
+	if extractFailures != 0 {
+		t.Fatalf("extractFailures = %d, want 0", extractFailures)
 	}
 
 	db := s.DB()
