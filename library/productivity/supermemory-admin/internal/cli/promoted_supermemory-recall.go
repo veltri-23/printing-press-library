@@ -105,7 +105,7 @@ func newSupermemoryRecallPromotedCmd(flags *rootFlags) *cobra.Command {
 			if bodySearchMode != "" {
 				body["searchMode"] = bodySearchMode
 			}
-			if bodyThreshold != 0.0 {
+			if cmd.Flags().Changed("threshold") {
 				body["threshold"] = bodyThreshold
 			}
 			data, statusCode, err := c.PostWithParams(cmd.Context(), path, params, body)

@@ -4,9 +4,13 @@
 package cli
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"strings"
 	"testing"
 )
 
@@ -75,6 +79,37 @@ func TestExitCode_UsageError_WrappedAsCode2(t *testing.T) {
 	wrapped := usageErr(errors.New("unknown flag: --foob"))
 	if got := ExitCode(wrapped); got != 2 {
 		t.Errorf("ExitCode(usageErr(...)) = %d, want 2 (POSIX usage convention)", got)
+	}
+}
+
+func TestSupermemoryRecallPreservesExplicitZeroThreshold(t *testing.T) {
+	cmd := newRootCmd(&rootFlags{})
+	var stdout bytes.Buffer
+	cmd.SetOut(&stdout)
+	cmd.SetErr(&stdout)
+	cmd.SetArgs([]string{"supermemory-recall", "--q", "test", "--threshold", "0.0", "--agent", "--dry-run"})
+
+	originalStderr := os.Stderr
+	stderrReader, stderrWriter, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("pipe: %v", err)
+	}
+	os.Stderr = stderrWriter
+	defer func() { os.Stderr = originalStderr }()
+
+	if err := cmd.Execute(); err != nil {
+		t.Fatalf("Execute: %v\noutput:\n%s", err, stdout.String())
+	}
+	if err := stderrWriter.Close(); err != nil {
+		t.Fatalf("close stderr writer: %v", err)
+	}
+	stderrBytes, err := io.ReadAll(stderrReader)
+	if err != nil {
+		t.Fatalf("read stderr: %v", err)
+	}
+	stderr := string(stderrBytes)
+	if !strings.Contains(stderr, `"threshold": 0`) {
+		t.Fatalf("dry-run body did not preserve explicit zero threshold:\n%s", stderr)
 	}
 }
 

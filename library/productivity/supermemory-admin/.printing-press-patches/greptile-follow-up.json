@@ -6,6 +6,8 @@
     "internal/cli/agent_context.go",
     "internal/cli/sync.go",
     "internal/cli/root.go",
+    "internal/cli/promoted_supermemory-recall.go",
+    "internal/cli/root_test.go",
     "internal/client/client.go",
     "internal/mcp/cobratree/shellout.go"
   ],
@@ -13,6 +15,7 @@
     "Removed unreachable auth fallback from agent context.",
     "Emits a structured sync_warning when --latest-only is ignored because --since is set.",
     "Blocks MCP callers from overriding timeout and rate-limit root flags.",
-    "Sets User-Agent from the CLI runtime version instead of a static API version."
+    "Sets User-Agent from the CLI runtime version instead of a static API version.",
+    "Preserves explicit --threshold 0.0 in the promoted recall request body."
   ]
 }
