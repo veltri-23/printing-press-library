@@ -4602,6 +4602,12 @@
         "handle": "mvanhorn",
         "name": "Matt Van Horn"
       },
+      "contributors": [
+        {
+          "handle": "lloydarmbrust",
+          "name": "Lloyd Armbrust"
+        }
+      ],
       "mcp": {
         "binary": "flight-goat-pp-mcp",
         "transports": [
