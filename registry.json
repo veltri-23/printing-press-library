@@ -8771,6 +8771,51 @@
       }
     },
     {
+      "name": "oura",
+      "category": "health",
+      "api": "Oura",
+      "description": "Personal health data from the Oura Ring - sleep, readiness, daily activity, heart rate, workouts, SpO2, stress, and resilience.",
+      "search_terms": [
+        "oura",
+        "oura-pp-cli",
+        "Personal health data from the Oura Ring - sleep, readiness, daily activity, heart rate, workouts, SpO2, stress, and resilience.",
+        "Local SQLite Sync",
+        "sync",
+        "Mirror Oura usercollection data into a local SQLite store for offline search and analysis",
+        "Full-Text Search",
+        "search",
+        "FTS5 full-text search across locally synced Oura records",
+        "Local Analytics",
+        "analytics",
+        "Aggregate group-by and count queries over locally synced health data",
+        "Compound Workflows",
+        "workflow",
+        "Chain multiple Oura API operations into one agent-friendly command"
+      ],
+      "path": "library/health/oura",
+      "printer": "coopdogGGs",
+      "printer_name": "ryanc00per",
+      "creator": {
+        "handle": "coopdogGGs",
+        "name": "ryanc00per"
+      },
+      "mcp": {
+        "binary": "oura-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 75,
+        "public_tool_count": 0,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "OURA_OAUTH2"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "outlook-calendar",
       "category": "productivity",
       "api": "Outlook Calendar",
@@ -14104,6 +14149,10 @@
         {
           "handle": "bobeglz",
           "name": "Roberto González Grajeda"
+        },
+        {
+          "handle": "tmchow",
+          "name": "Trevin Chow"
         }
       ],
       "mcp": {
