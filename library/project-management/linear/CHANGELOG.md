@@ -2,6 +2,10 @@
 
 This file is maintained by printing-press-library release automation. Do not hand-edit release sections in normal PRs.
 
+## 2026.6.3 - 2026-06-20
+
+- fix(linear): refresh issues search before duplicate checks (#1293).
+
 ## 2026.6.2 - 2026-06-16
 
 - fix(linear): harden agent read and write flows (#1128).
