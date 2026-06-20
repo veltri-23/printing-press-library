@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/mvanhorn/printing-press-library/library/developer-tools/framer/internal/client"
 	"github.com/mvanhorn/printing-press-library/library/developer-tools/framer/internal/store"
@@ -72,7 +71,6 @@ Requires FRAMER_PROJECT_URL and FRAMER_API_KEY environment variables.`,
 				return fmt.Errorf("parsing sync response: %w", err)
 			}
 
-			now := time.Now().UTC().Format(time.RFC3339)
 			counts := make(map[string]int)
 
 			// Capture pre-sync state for diff reporting
@@ -132,16 +130,7 @@ Requires FRAMER_PROJECT_URL and FRAMER_API_KEY environment variables.`,
 					}
 
 					dataBytes, _ := json.Marshal(obj)
-					_, err := db.DB().ExecContext(context.Background(),
-						`INSERT INTO resources (id, resource_type, data, synced_at, updated_at)
-						 VALUES (?, ?, ?, ?, ?)
-						 ON CONFLICT (id, resource_type) DO UPDATE SET
-						   data = excluded.data,
-						   synced_at = excluded.synced_at,
-						   updated_at = excluded.updated_at`,
-						id, resourceType, string(dataBytes), now, now,
-					)
-					if err != nil {
+					if err := db.Upsert(resourceType, id, json.RawMessage(dataBytes)); err != nil {
 						return fmt.Errorf("upserting %s %s: %w", resourceType, id, err)
 					}
 					counts[resourceType]++
