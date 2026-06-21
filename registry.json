@@ -12720,6 +12720,48 @@
       }
     },
     {
+      "name": "supermemory-admin",
+      "category": "productivity",
+      "api": "Supermemory",
+      "description": "The Memory API for the AI era",
+      "search_terms": [
+        "supermemory-admin",
+        "Supermemory",
+        "supermemory-admin-pp-cli",
+        "The Memory API for the AI era",
+        "Project-scoped Memory Admin",
+        "SUPERMEMORY_ADMIN_PROJECT=<project-id> supermemory-admin-pp-cli supermemory-recall",
+        "Scope every CLI and MCP request to one Supermemory project with the x-sm-project header, without hand-editing raw headers.",
+        "Recall Search for Agents",
+        "supermemory-recall",
+        "Run low-latency memory recall from a compact, agent-friendly CLI surface with selectable JSON output.",
+        "Local Memory Operations Cache",
+        "sync + search",
+        "Sync compatible Supermemory resources into local SQLite for offline search and inspection."
+      ],
+      "path": "library/productivity/supermemory-admin",
+      "printer": "hnshah",
+      "printer_name": "Hiten Shah",
+      "creator": {
+        "handle": "hnshah",
+        "name": "Hiten Shah"
+      },
+      "mcp": {
+        "binary": "supermemory-admin-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 36,
+        "public_tool_count": 0,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "SUPERMEMORY_ADMIN_TOKEN"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "surgegraph",
       "category": "ai",
       "api": "Surgegraph Facade",
