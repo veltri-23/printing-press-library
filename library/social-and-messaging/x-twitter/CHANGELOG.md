@@ -2,6 +2,10 @@
 
 This file is maintained by printing-press-library release automation. Do not hand-edit release sections in normal PRs.
 
+## 2026.6.11 - 2026-06-24
+
+- fix(x-twitter): fall back to app-only bearer when OAuth2 user-context token is expired (#1340).
+
 ## 2026.6.10 - 2026-06-18
 
 - fix(x-twitter): refresh oauth2 user-context tokens (#1273).
