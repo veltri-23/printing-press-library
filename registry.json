@@ -2233,6 +2233,12 @@
         "Combines several boardgamegeek.com/xmlapi2 calls behind one agent-friendly command"
       ],
       "path": "library/media-and-entertainment/boardgamegeek",
+      "release": {
+        "cli_name": "boardgamegeek-pp-cli",
+        "version": "2026.6.1",
+        "released_at": "2026-06-24T00:44:18Z",
+        "source_commit": "df8fb811194af726ca3206e4ff398c2ffd608223"
+      },
       "printer": "coopdogGGs",
       "printer_name": "Ryan Cooper",
       "creator": {
@@ -5453,9 +5459,9 @@
       "path": "library/travel/flight-goat",
       "release": {
         "cli_name": "flight-goat-pp-cli",
-        "version": "2026.6.4",
-        "released_at": "2026-06-21T08:16:26Z",
-        "source_commit": "acb84091ff016c6e7aea5f8cf6956a694aa0d1c7"
+        "version": "2026.6.5",
+        "released_at": "2026-06-24T00:44:18Z",
+        "source_commit": "df8fb811194af726ca3206e4ff398c2ffd608223"
       },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
@@ -5814,6 +5820,57 @@
         ],
         "mcp_ready": "full",
         "spec_format": "internal"
+      }
+    },
+    {
+      "name": "gainsight",
+      "category": "sales-and-crm",
+      "api": "Gainsight Read",
+      "description": "Read-first Gainsight NXT API surface for customer success account, relationship, person, timeline",
+      "search_terms": [
+        "gainsight",
+        "Gainsight Read",
+        "gainsight-pp-cli",
+        "Read-first Gainsight NXT API surface for customer success account, relationship, person, timeline",
+        "Agent command discovery",
+        "which",
+        "Map a natural-language capability request to the exact generated CLI command before executing it.",
+        "Structured agent context",
+        "agent-context",
+        "Emit machine-readable command, auth, and profile metadata so agents can plan calls without scraping help text.",
+        "Local SQLite sync framework",
+        "sync",
+        "Sync selected API resources into a local SQLite store for repeatable offline inspection and analysis.",
+        "SQL analytics on synced records",
+        "analytics",
+        "Run read-only SQL against synced API records for compound questions the upstream API does not expose directly."
+      ],
+      "path": "library/sales-and-crm/gainsight",
+      "release": {
+        "cli_name": "gainsight-pp-cli",
+        "version": "",
+        "released_at": "",
+        "source_commit": ""
+      },
+      "printer": "debgotwired",
+      "printer_name": "Deb Mukherjee",
+      "creator": {
+        "handle": "debgotwired",
+        "name": "Deb Mukherjee"
+      },
+      "mcp": {
+        "binary": "gainsight-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 11,
+        "public_tool_count": 0,
+        "auth_type": "api_key",
+        "env_vars": [
+          "GAINSIGHT_ACCESS_KEY_AUTH"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
       }
     },
     {
