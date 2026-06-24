@@ -70,6 +70,14 @@ func TestWriteShieldIngestResultIncludesCorpusInJSONMode(t *testing.T) {
 	}
 }
 
+func TestShieldScanMaxRiskHelpClarifiesPerEntityMax(t *testing.T) {
+	cmd := newShieldScanCmd(&rootFlags{})
+	flag := cmd.Flags().Lookup("max-risk")
+	if flag == nil || !strings.Contains(flag.Usage, "per-entity max risk") || !strings.Contains(flag.Usage, "not volume-weighted") {
+		t.Fatalf("max-risk usage = %q", flag.Usage)
+	}
+}
+
 func newTestOutputCmd(out *bytes.Buffer) *cobra.Command {
 	cmd := &cobra.Command{}
 	cmd.SetOut(out)

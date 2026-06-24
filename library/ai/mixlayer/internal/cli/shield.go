@@ -55,7 +55,7 @@ func newShieldScanCmd(flags *rootFlags) *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().IntVar(&maxRisk, "max-risk", 0, "Exit non-zero when detected risk exceeds this value")
+	cmd.Flags().IntVar(&maxRisk, "max-risk", 0, "Exit non-zero when the per-entity max risk exceeds this value (not volume-weighted)")
 	return cmd
 }
 

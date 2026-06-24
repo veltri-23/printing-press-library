@@ -70,7 +70,14 @@ func TestRedactUsesSharedVaultAcrossTranches(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(first.Text, "PERSON_1") || !strings.Contains(second.Text, "PERSON_1") {
-		t.Fatalf("shared vault did not keep PERSON_1 consistent: %q / %q", first.Text, second.Text)
+	personToken := ""
+	for _, entity := range first.Entities {
+		if entity.Kind == "PERSON" {
+			personToken = entity.Token
+			break
+		}
+	}
+	if personToken == "" || !strings.Contains(first.Text, personToken) || !strings.Contains(second.Text, personToken) {
+		t.Fatalf("shared vault did not keep PERSON token consistent: token=%q first=%q second=%q", personToken, first.Text, second.Text)
 	}
 }

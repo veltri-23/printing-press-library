@@ -291,29 +291,22 @@ func vaultEntryByHash(ctx context.Context, q vaultQueryer, hash string) (VaultEn
 }
 
 func nextVaultToken(ctx context.Context, q vaultQueryer, kind string) (string, error) {
-	rows, err := q.QueryContext(ctx, `SELECT token FROM vault WHERE kind = ?`, kind)
-	if err != nil {
-		return "", err
-	}
-	defer rows.Close()
-	maxSeen := 0
-	prefix := kind + "_"
-	for rows.Next() {
-		var token string
-		if err := rows.Scan(&token); err != nil {
+	for attempts := 0; attempts < 10; attempts++ {
+		var suffix [4]byte
+		if _, err := rand.Read(suffix[:]); err != nil {
 			return "", err
 		}
-		if strings.HasPrefix(token, prefix) {
-			var n int
-			if _, err := fmt.Sscanf(strings.TrimPrefix(token, prefix), "%d", &n); err == nil && n > maxSeen {
-				maxSeen = n
-			}
+		token := fmt.Sprintf("%s_%s", kind, hex.EncodeToString(suffix[:]))
+		var existing string
+		err := q.QueryRowContext(ctx, `SELECT token FROM vault WHERE token = ?`, token).Scan(&existing)
+		if err == sql.ErrNoRows {
+			return token, nil
+		}
+		if err != nil {
+			return "", err
 		}
 	}
-	if err := rows.Err(); err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%s_%d", kind, maxSeen+1), nil
+	return "", fmt.Errorf("could not allocate unique vault token for %s", kind)
 }
 
 func (s *Store) VaultEntries(ctx context.Context, reveal bool) ([]VaultEntry, error) {

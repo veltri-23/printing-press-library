@@ -5,9 +5,14 @@ package cli
 import "testing"
 
 func TestValidateReadOnlySQLRejectsCTEWrappedDML(t *testing.T) {
-	query := "WITH x AS (DELETE FROM runs WHERE 1=1) SELECT 1"
-	if err := validateReadOnlySQL(query); err == nil {
-		t.Fatal("validateReadOnlySQL accepted CTE-wrapped DELETE")
+	queries := []string{
+		"WITH x AS (DELETE FROM runs WHERE 1=1) SELECT 1",
+		"SELECT * FROM pragma_table_info('vault')",
+	}
+	for _, query := range queries {
+		if err := validateReadOnlySQL(query); err == nil {
+			t.Fatalf("validateReadOnlySQL accepted %q", query)
+		}
 	}
 }
 

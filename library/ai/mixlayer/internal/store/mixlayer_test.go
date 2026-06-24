@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"sync"
 	"testing"
 )
@@ -53,6 +54,25 @@ func TestNewIDDoesNotCollideInTightLoop(t *testing.T) {
 			t.Fatalf("NewID collision at iteration %d: %s", i, id)
 		}
 		seen[id] = true
+	}
+}
+
+func TestEnsureVaultEntryUsesLessGuessableTokens(t *testing.T) {
+	ctx := context.Background()
+	s, err := Open(filepath.Join(t.TempDir(), "data.db"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	entry, err := s.EnsureVaultEntry(ctx, "EMAIL", "agent@example.com")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !regexp.MustCompile(`^EMAIL_[0-9a-f]{8}$`).MatchString(entry.Token) {
+		t.Fatalf("token = %q, want EMAIL_<8 hex chars>", entry.Token)
+	}
+	if entry.Token == "EMAIL_1" {
+		t.Fatalf("token = %q, want non-sequential token", entry.Token)
 	}
 }
 

@@ -103,7 +103,7 @@ func stripSQLQuotedText(query string) string {
 
 var (
 	allowedReadSQLPrefixRe = regexp.MustCompile(`(?i)^(select|with)\b`)
-	forbiddenSQLKeywordRe  = regexp.MustCompile(`(?i)\b(insert|update|delete|drop|create|alter|replace|truncate|pragma|attach|detach|vacuum)\b`)
+	forbiddenSQLKeywordRe  = regexp.MustCompile(`(?i)\b(insert|update|delete|drop|create|alter|replace|truncate|pragma|attach|detach|vacuum)\b|pragma_`)
 )
 
 func rowsToMaps(rows *sql.Rows) ([]map[string]any, error) {
