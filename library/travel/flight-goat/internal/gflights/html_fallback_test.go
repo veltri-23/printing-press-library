@@ -93,6 +93,15 @@ func TestParseOffersResponseDetectsCompactBlockedEnvelope(t *testing.T) {
 	}
 }
 
+func TestParseDatesResponseDetectsCompactBlockedEnvelope(t *testing.T) {
+	body := []byte(googleResponsePrefix + `
+[["wrb.fr",null,null,null,null,[13]],["di",39],["af.httprm",38,"redacted",6]]`)
+	_, err := parseDatesResponse(body, "USD")
+	if !errors.Is(err, errShoppingBlocked) {
+		t.Fatalf("parseDatesResponse error = %v, want errShoppingBlocked", err)
+	}
+}
+
 // The existing old-format fixtures must keep parsing — the blocked-envelope
 // detection must not regress the happy path.
 func TestParseOffersResponseOldFormatStillParses(t *testing.T) {
