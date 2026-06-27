@@ -498,8 +498,12 @@ func compactListFields(items []map[string]any) json.RawMessage {
 		// Defense in depth: never let compaction blank a record. If no
 		// allow-listed field matched but the record carried data, keep the
 		// original rather than emitting an empty object an agent can't use.
+		// Copy the entries rather than aliasing item so compact stays
+		// independently owned, matching the rest of the loop.
 		if len(compact) == 0 && len(item) > 0 {
-			compact = item
+			for k, v := range item {
+				compact[k] = v
+			}
 		}
 		filtered = append(filtered, compact)
 	}

@@ -66,3 +66,20 @@ func TestCompactListFields_StripsVerboseWhenIdentifierPresent(t *testing.T) {
 		t.Errorf("expected description to be stripped, item=%v", got[0])
 	}
 }
+
+// When a record carries a verbose field but no allow-listed field at all, the
+// no-blank guard fires and the whole record is preserved intact -- including
+// the verbose field. Documents that --compact only strips verbose fields when
+// it has an allow-listed field to fall back on.
+func TestCompactListFields_GuardPreservesVerboseWhenNoIdentifier(t *testing.T) {
+	raw := json.RawMessage(`[{"description":"long text","some_novel_key":"x"}]`)
+	got := decodeList(t, compactFields(raw))
+	if len(got[0]) == 0 {
+		t.Fatalf("record was blanked: %v", got[0])
+	}
+	for _, k := range []string{"description", "some_novel_key"} {
+		if _, ok := got[0][k]; !ok {
+			t.Errorf("expected field %q to be preserved by the no-blank guard, item=%v", k, got[0])
+		}
+	}
+}
