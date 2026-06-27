@@ -373,6 +373,43 @@
       }
     },
     {
+      "name": "air-quality",
+      "category": "other",
+      "api": "Air Quality",
+      "description": "Source-aware air-quality recipes for OpenAQ v3 measurements, nearby monitor discovery, point comparison, and AirNow AQI setup/observations.",
+      "search_terms": [
+        "air-quality",
+        "Air Quality",
+        "air-quality-pp-cli",
+        "Source-aware air-quality recipes for OpenAQ v3 measurements, nearby monitor discovery, point comparison, and AirNow AQI setup/observations.",
+        "OpenAQ current snapshot",
+        "current",
+        "Finds a nearby OpenAQ location and returns latest physical pollutant measurements with source caveats.",
+        "Nearby monitoring locations",
+        "nearest",
+        "Lists nearby OpenAQ locations with provider, coordinate, and sensor metadata.",
+        "Location latest measurements",
+        "location",
+        "Fetches a known OpenAQ location by ID and its latest measurements.",
+        "Recent sensor history",
+        "history",
+        "Fetches a bounded recent OpenAQ measurement window for one sensor.",
+        "Two-point comparison",
+        "compare",
+        "Compares nearest OpenAQ snapshots for two coordinate pairs without converting measurements into AQI.",
+        "AirNow current AQI setup",
+        "airnow current",
+        "Fetches AirNow current observations by ZIP when configured and otherwise returns setup guidance with non-regulatory caveats."
+      ],
+      "path": "library/other/air-quality",
+      "printer": "sdhilip200",
+      "printer_name": "Dhilip Subramanian",
+      "creator": {
+        "handle": "sdhilip200",
+        "name": "Dhilip Subramanian"
+      }
+    },
+    {
       "name": "airbnb",
       "category": "travel",
       "api": "Airbnb Vrbo",
@@ -5908,9 +5945,9 @@
       "path": "library/other/fred",
       "release": {
         "cli_name": "fred-pp-cli",
-        "version": "2026.6.1",
-        "released_at": "2026-06-21T08:16:26Z",
-        "source_commit": "acb84091ff016c6e7aea5f8cf6956a694aa0d1c7"
+        "version": "2026.6.2",
+        "released_at": "2026-06-26T07:50:55Z",
+        "source_commit": "f026a8339d712b44c99a86c09e21b2a74ce34ee9"
       },
       "printer": "LukeTheoJohnson",
       "printer_name": "Luke J",
@@ -6260,6 +6297,12 @@
         "Distribuzione di un tema per sede, sezione, tipo e anno."
       ],
       "path": "library/productivity/giustizia-amministrativa",
+      "release": {
+        "cli_name": "giustizia-amministrativa-pp-cli",
+        "version": "2026.6.1",
+        "released_at": "2026-06-26T07:45:56Z",
+        "source_commit": "e0b2a3af206d4cc640eaf2e2c1c2616b26b1b72f"
+      },
       "printer": "aborruso",
       "printer_name": "aborruso",
       "creator": {
@@ -7680,6 +7723,59 @@
       },
       "mcp": {
         "binary": "hotelist-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 1,
+        "public_tool_count": 1,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
+      "name": "ht-ml",
+      "category": "cloud",
+      "api": "ht-ml.app",
+      "description": "The only ht-ml.app tool that remembers what you published, a local registry of every site, its once-only update_key, and full version history, plus one-command publish-with-assets.",
+      "search_terms": [
+        "ht-ml",
+        "ht-ml.app",
+        "ht-ml-pp-cli",
+        "The only ht-ml.app tool that remembers what you published, a local registry of every site, its once-only update_key, and full version history, plus one-command publish-with-assets.",
+        "Site registry inventory",
+        "list",
+        "See every site you've ever published, with health flags for orphaned sites and broken assets.",
+        "Key vault & recovery",
+        "keys export",
+        "Reveal a single write key, or export/import a passphrase-sealed vault of all your update_keys for disaster recovery and a second machine.",
+        "One-shot asset reconcile",
+        "assets sync",
+        "Parse a site's HTML, find every referenced-but-missing image or video, and upload them all in one pass.",
+        "Broken-asset audit",
+        "assets audit",
+        "Across all your sites, list the ones with publicly-visible broken or missing images.",
+        "Version rollback",
+        "rollback",
+        "Revert a live site to any prior HTML version stored locally, with the update_key resolved for you.",
+        "Living-doc republish by alias",
+        "republish",
+        "Publish a recurring document under a stable local alias: update in place if the alias exists, or create it once and bind it.",
+        "Pre-publish secret/PII scan",
+        "scan",
+        "Mechanically scan HTML for leaked secrets and PII before it becomes a public, permanent URL."
+      ],
+      "path": "library/cloud/ht-ml",
+      "printer": "bobeglz",
+      "printer_name": "bobe",
+      "creator": {
+        "handle": "bobeglz",
+        "name": "bobe"
+      },
+      "mcp": {
+        "binary": "ht-ml-pp-mcp",
         "transports": [
           "stdio",
           "http"
