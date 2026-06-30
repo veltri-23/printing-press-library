@@ -305,7 +305,9 @@ func newDoctorCmd(flags *rootFlags) *cobra.Command {
 }
 
 func doctorLiveCredentialStatus(c *client.Client) (bool, string) {
-	status, err := validateBrowserSession(c, browserSessionValidationPath)
+	noCacheClient := *c
+	noCacheClient.NoCache = true
+	status, err := validateBrowserSession(&noCacheClient, browserSessionValidationPath)
 	if err != nil {
 		if status != 0 && (status < 200 || status >= 300) {
 			return false, fmt.Sprintf("live credential probe returned HTTP %d", status)
