@@ -515,6 +515,7 @@ func compactListFields(items []map[string]any) json.RawMessage {
 		"condition": true, "seller": true, "bids": true, "best_offer": true,
 		"auction": true, "buy_it_now": true, "time_left": true, "ends_at": true,
 		"sold_date": true, "image_url": true, "location": true, "shipping": true,
+		// Comp-summary statistical fields (listings/comp command).
 		"mean": true, "median": true, "sample_size": true, "p25": true,
 		"p75": true, "std_dev": true,
 	}
