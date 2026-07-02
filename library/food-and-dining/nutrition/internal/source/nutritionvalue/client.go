@@ -152,32 +152,42 @@ func parseSearchRows(body string) []SearchResult {
 	return out
 }
 
-// nameOverlap returns a crude token-overlap ratio between two food names, used
-// to guard against attaching the wrong NutritionValue.org row when an exact id
-// match is unavailable.
-func nameOverlap(a, b string) float64 {
-	toks := func(s string) map[string]bool {
-		m := map[string]bool{}
-		for _, t := range strings.FieldsFunc(strings.ToLower(s), func(r rune) bool {
-			return r == ' ' || r == ',' || r == '_' || r == '-' || r == '(' || r == ')'
-		}) {
-			if len(t) >= 3 {
-				m[t] = true
-			}
+func nameTokens(s string) map[string]bool {
+	m := map[string]bool{}
+	for _, t := range strings.FieldsFunc(strings.ToLower(s), func(r rune) bool {
+		return r == ' ' || r == ',' || r == '_' || r == '-' || r == '(' || r == ')'
+	}) {
+		if len(t) >= 3 {
+			m[t] = true
 		}
-		return m
 	}
-	ta, tb := toks(a), toks(b)
+	return m
+}
+
+// nameOverlap returns how much of the query name is covered by the candidate
+// name (shared tokens over query tokens). Coverage, not Jaccard: a candidate
+// with extra qualifiers ("Bananas, ripe and slightly ripe, raw" for query
+// "Bananas, raw") should still score high. The single-shared-token trap that
+// coverage alone would fall into (any "Fish*" scoring 1.0 for query "Fish") is
+// handled by the caller's minimum-shared-token guard, not by diluting the score.
+func nameOverlap(a, b string) float64 {
+	ta, tb := nameTokens(a), nameTokens(b)
 	if len(ta) == 0 {
 		return 0
 	}
+	hit := sharedTokenCount(ta, tb)
+	return float64(hit) / float64(len(ta))
+}
+
+// sharedTokenCount counts tokens present in both sets.
+func sharedTokenCount(ta, tb map[string]bool) int {
 	hit := 0
 	for t := range ta {
 		if tb[t] {
 			hit++
 		}
 	}
-	return float64(hit) / float64(len(ta))
+	return hit
 }
 
 // searchQuery derives a NutritionValue.org search term from a USDA description
@@ -267,6 +277,7 @@ func (c *Client) FoodByID(ctx context.Context, id, description string) (*FoodDet
 		// FDC id). Only accept the best result if its name clearly overlaps the
 		// USDA description; otherwise refuse rather than attach a different
 		// food's analytics to this id.
+		queryTokens := nameTokens(query)
 		best := results[0]
 		bestScore := nameOverlap(query, best.Name)
 		for _, r := range results[1:] {
@@ -274,7 +285,13 @@ func (c *Client) FoodByID(ctx context.Context, id, description string) (*FoodDet
 				best, bestScore = r, s
 			}
 		}
-		if bestScore < 0.5 {
+		// Require both a high coverage AND at least two shared tokens, so a
+		// single shared token (e.g. query "Fish" vs "Fish oil, cod liver") can
+		// never clear the bar and attach the wrong food's analytics. Very short
+		// queries (one usable token) cannot meet the two-token floor and are
+		// refused — a safe miss beats a wrong enrichment.
+		shared := sharedTokenCount(queryTokens, nameTokens(best.Name))
+		if bestScore < 0.5 || shared < 2 {
 			return nil, fmt.Errorf("no confident NutritionValue.org match for %q (best candidate %q)", query, best.Name)
 		}
 		chosen = best

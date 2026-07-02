@@ -74,6 +74,34 @@ func TestParseRankRows(t *testing.T) {
 	}
 }
 
+func TestNameOverlapCoverage(t *testing.T) {
+	// Exact same multi-token name scores 1.0.
+	if got := nameOverlap("Cheese, cheddar", "Cheese, cheddar"); got != 1.0 {
+		t.Errorf("identical names: got %v, want 1.0", got)
+	}
+	// A close multi-token match with extra qualifiers still scores high on
+	// coverage (all query tokens are present in the candidate).
+	if got := nameOverlap("Bananas, raw", "Bananas, ripe and slightly ripe, raw"); got < 0.5 {
+		t.Errorf("close match should have high coverage: got %v", got)
+	}
+	// No overlap scores 0.
+	if got := nameOverlap("Cheddar cheese", "Grilled salmon"); got != 0 {
+		t.Errorf("disjoint names: got %v, want 0", got)
+	}
+}
+
+func TestSharedTokenGuard(t *testing.T) {
+	// The two-token floor is what stops a single shared token from clearing the
+	// fallback: "Fish" shares only one token with "Fish oil, cod liver".
+	if got := sharedTokenCount(nameTokens("Fish"), nameTokens("Fish oil, cod liver, raw")); got >= 2 {
+		t.Errorf("single-token query should share <2 tokens: got %d", got)
+	}
+	// A real multi-word match shares 2+ tokens.
+	if got := sharedTokenCount(nameTokens("Bananas, raw"), nameTokens("Bananas, ripe and slightly ripe, raw")); got < 2 {
+		t.Errorf("multi-word match should share >=2 tokens: got %d", got)
+	}
+}
+
 func TestNutrientPageName(t *testing.T) {
 	cases := map[string]string{
 		"protein":   "Protein",
