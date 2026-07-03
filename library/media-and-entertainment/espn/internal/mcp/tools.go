@@ -813,7 +813,7 @@ func handleAbout(_ context.Context, req mcplib.CallToolRequest) (*mcplib.CallToo
 	about := map[string]any{
 		"api":               "espn",
 		"description":       "ESPN Sports API CLI - scores, standings, news, and game data across 17 sports and 139 leagues",
-		"tool_count":        7,
+		"tool_count":        15,
 		"tool_surface":      "MCP exposes the endpoints listed under `resources` (plus sync/search/sql/context utilities when present). Items under `cli_only_capabilities` require running the companion espn-pp-cli binary; the MCP cannot invoke them.",
 		"public_tool_count": 0,
 		"cli_only_capabilities": []map[string]string{
@@ -845,7 +845,7 @@ func handleContext(_ context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToo
 		"api":         "espn",
 		"description": "ESPN Sports API CLI — scores, standings, news, and game data across 17 sports and 139 leagues",
 		"archetype":   "content",
-		"tool_count":  11,
+		"tool_count":  15,
 		"paths":       paths,
 		// tool_surface tells agents which surface a capability lives on.
 		"tool_surface": "MCP exposes typed endpoint tools plus a runtime mirror of user-facing CLI commands. Endpoint tools keep typed schemas; command-mirror tools shell out to the companion espn-pp-cli binary.",
