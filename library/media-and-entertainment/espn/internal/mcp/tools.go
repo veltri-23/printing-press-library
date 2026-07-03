@@ -844,7 +844,7 @@ func handleContext(_ context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToo
 	ctx := map[string]any{
 		"api":         "espn",
 		"description": "ESPN Sports API CLI — scores, standings, news, and game data across 17 sports and 139 leagues",
-		"archetype":   "project-management",
+		"archetype":   "content",
 		"tool_count":  11,
 		"paths":       paths,
 		// tool_surface tells agents which surface a capability lives on.
@@ -918,9 +918,9 @@ func handleContext(_ context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToo
 			"Prefer sql/search over repeated API calls when the data is already synced.",
 		},
 		"playbook": []map[string]string{
-			{"topic": "Finding stale work", "insight": "Use the stale command or sql query to find items not updated recently. More reliable than scanning list results manually."},
-			{"topic": "Load analysis", "insight": "When analyzing team workload, filter by assignee and status. Raw counts without status filtering are misleading."},
-			{"topic": "Bulk operations", "insight": "For bulk status changes, prefer update endpoints over delete+create. Most PM APIs track history on updates."},
+			{"topic": "Live scores by date", "insight": "Use scoreboard <sport> <league> with --dates YYYYMMDD (or a YYYYMMDD-YYYYMMDD range) for a specific day. The flag is --dates, not --date."},
+			{"topic": "Richest game payload", "insight": "Use summary <sport> <league> <eventId> for the fullest single response: box score, leaders, scoring plays, odds, and win probability."},
+			{"topic": "Offline analysis", "insight": "Run sync once to populate the local store, then rivals, streak, and search answer from synced data without live API calls."},
 		},
 	}
 	return toolResultJSON(ctx)

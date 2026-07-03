@@ -229,6 +229,9 @@ type colInfo struct {
 func pragmaColumns(ctx context.Context, db interface {
 	QueryContext(context.Context, string, ...any) (*sql.Rows, error)
 }, table string) (map[string]colInfo, error) {
+	if !validIdentifierRE.MatchString(table) {
+		return nil, fmt.Errorf("pragmaColumns: invalid table name %q", table)
+	}
 	rows, err := db.QueryContext(ctx, `PRAGMA table_info(`+table+`)`)
 	if err != nil {
 		return nil, fmt.Errorf("pragma table_info(%s): %w", table, err)
