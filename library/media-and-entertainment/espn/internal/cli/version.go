@@ -10,7 +10,9 @@ import (
 )
 
 // version is the printed CLI's version, overridable at build time via ldflags.
-var version = "1.0.0"
+// Preserved from the public-library release ledger (.printing-press-release.json)
+// on reprint; the library's post-merge release workflow owns subsequent bumps.
+var version = "2026.6.2"
 
 // newVersionCmd prints the CLI name and version. Shared by the HTTP and device
 // generators so both printed-CLI shapes carry an identical version command.

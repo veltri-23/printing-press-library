@@ -387,6 +387,24 @@ func TestDeriveFlagCorrections_Negatives(t *testing.T) {
 			},
 		},
 		{
+			name: "no suggestion and only an unrelated new success flag",
+			entries: []learn.JournalEntry{
+				func() learn.JournalEntry {
+					e := failedDateEntry("sess-a", deriveTS(30*time.Minute))
+					e.SuggestedFlag = ""
+					return e
+				}(),
+				func() learn.JournalEntry {
+					e := correctedDatesEntry("sess-a", deriveTS(29*time.Minute))
+					// The only new success flag (--sport) is far from --date in
+					// edit distance; the cap must reject inference rather than
+					// alias --date -> --sport.
+					e.ArgvShape = map[string]string{"sport": "str"}
+					return e
+				}(),
+			},
+		},
+		{
 			name: "failed flag is a real flag on a sibling command",
 			entries: []learn.JournalEntry{
 				failedDateEntry("sess-a", deriveTS(30*time.Minute)),

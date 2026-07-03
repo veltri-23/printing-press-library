@@ -281,6 +281,19 @@ func inferCorrectedFlagFromNewSuccessFlag(failed, success JournalEntry) string {
 			ambiguous = true
 		}
 	}
+	// Cap the inferred correction to a meaningful edit distance. An
+	// unrelated new success flag (e.g. --sport when --date failed) must
+	// not be promoted as a correction: distance beyond half the shorter
+	// name's length means the two share no meaningful overlap.
+	if bestName != "" {
+		maxDistance := min(len([]rune(failedName)), len([]rune(bestName))) / 2
+		if maxDistance < 1 {
+			maxDistance = 1
+		}
+		if bestDistance > maxDistance {
+			return ""
+		}
+	}
 	if bestName == "" || ambiguous {
 		return ""
 	}
