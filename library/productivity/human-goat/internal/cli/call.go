@@ -71,6 +71,7 @@ func newMagicCallCmd(flags *rootFlags) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("call with Magic: %w", err)
 			}
+			persistMagicRequest(ctx, req)
 			out := magicCallSummary(req)
 			if flags.asJSON {
 				return printJSONFiltered(cmd.OutOrStdout(), out, flags)

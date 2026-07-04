@@ -86,6 +86,7 @@ func newMagicSendCmd(flags *rootFlags) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("send Magic task: %w", err)
 			}
+			persistMagicRequest(ctx, req)
 			out := magicRequestSummary(req)
 			if flags.asJSON {
 				return printJSONFiltered(cmd.OutOrStdout(), out, flags)

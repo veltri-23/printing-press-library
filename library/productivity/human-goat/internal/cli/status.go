@@ -6,11 +6,16 @@
 package cli
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/mvanhorn/printing-press-library/library/productivity/human-goat/internal/source/magic"
 	"github.com/mvanhorn/printing-press-library/library/productivity/human-goat/internal/source/taskrabbit"
+	"github.com/mvanhorn/printing-press-library/library/productivity/human-goat/internal/store"
 )
 
 func newNovelStatusCmd(flags *rootFlags) *cobra.Command {
@@ -33,24 +38,19 @@ func newNovelStatusCmd(flags *rootFlags) *cobra.Command {
 				return usageErr(fmt.Errorf("status does not accept positional arguments"))
 			}
 
-			out := statusOutput{
-				Tasks:     make([]statusRow, 0),
-				MagicNote: "Magic requests are tracked per-id; run `track <id>` for a specific request.",
-			}
+			out := statusOutput{Tasks: make([]statusRow, 0)}
 
+			// TaskRabbit: page through all current bookings rather than the first page.
 			c, err := flags.newClient()
 			if err != nil {
 				fmt.Fprintf(cmd.ErrOrStderr(), "taskrabbit: %v\n", err)
 			} else {
 				tr := taskrabbit.New(c)
-				bookings, err := tr.ListTasks(cmd.Context(), 1, 20, map[string]any{}, "en-US")
+				bookings, err := listAllBookings(cmd.Context(), tr)
 				if err != nil {
 					fmt.Fprintf(cmd.ErrOrStderr(), "taskrabbit: %v\n", err)
 				} else {
 					for _, booking := range bookings {
-						if flagOpen {
-							// TaskRabbit's task list is already scoped to current bookings.
-						}
 						out.Tasks = append(out.Tasks, statusRow{
 							Source: "taskrabbit",
 							ID:     booking.ID,
@@ -60,6 +60,13 @@ func newNovelStatusCmd(flags *rootFlags) *cobra.Command {
 					}
 				}
 			}
+
+			// Magic: the API has no list endpoint, so the local store is the inbox.
+			// Read the request IDs recorded by send/call/dispatch, then refresh each
+			// one live so the reported status reflects current progress.
+			magicRows, magicNote := magicStatusRows(cmd, flagOpen)
+			out.Tasks = append(out.Tasks, magicRows...)
+			out.MagicNote = magicNote
 
 			if flags.asJSON || flags.agent {
 				return printJSONFiltered(cmd.OutOrStdout(), out, flags)
@@ -71,7 +78,9 @@ func newNovelStatusCmd(flags *rootFlags) *cobra.Command {
 			if err := flags.printTable(cmd, []string{"SOURCE", "ID", "STATUS", "TITLE"}, tableRows); err != nil {
 				return err
 			}
-			fmt.Fprintln(cmd.ErrOrStderr(), out.MagicNote)
+			if out.MagicNote != "" {
+				fmt.Fprintln(cmd.ErrOrStderr(), out.MagicNote)
+			}
 			return nil
 		},
 	}
@@ -79,9 +88,88 @@ func newNovelStatusCmd(flags *rootFlags) *cobra.Command {
 	return cmd
 }
 
+// listAllBookings pages through TaskRabbit bookings so status is not capped at
+// the first page. Bounded so a paging bug can't loop forever.
+func listAllBookings(ctx context.Context, tr *taskrabbit.Client) ([]taskrabbit.Booking, error) {
+	const perPage = 50
+	const maxPages = 40
+	var all []taskrabbit.Booking
+	for page := 1; page <= maxPages; page++ {
+		batch, err := tr.ListTasks(ctx, page, perPage, map[string]any{}, "en-US")
+		if err != nil {
+			return nil, err
+		}
+		all = append(all, batch...)
+		if len(batch) < perPage {
+			break
+		}
+	}
+	return all, nil
+}
+
+// magicStatusRows loads the locally-recorded Magic requests and refreshes each
+// one live. It returns the rows plus a human-facing note describing why the
+// list may be empty (no store, no API key, or nothing tracked yet).
+func magicStatusRows(cmd *cobra.Command, openOnly bool) ([]statusRow, string) {
+	dbPath := defaultDBPath("human-goat-pp-cli")
+	if _, err := os.Stat(dbPath); err != nil {
+		return nil, "Magic: no locally tracked requests yet (send/call/dispatch record them here)."
+	}
+	db, err := store.OpenReadOnlyContext(cmd.Context(), dbPath)
+	if err != nil {
+		return nil, fmt.Sprintf("Magic: could not open local store: %v", err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query(`SELECT data FROM resources WHERE resource_type = 'magic'`)
+	if err != nil {
+		return nil, fmt.Sprintf("Magic: could not read local store: %v", err)
+	}
+	var ids []string
+	for rows.Next() {
+		var data []byte
+		if err := rows.Scan(&data); err != nil {
+			_ = rows.Close()
+			return nil, fmt.Sprintf("Magic: could not scan local store: %v", err)
+		}
+		var stored magic.Request
+		if err := json.Unmarshal(data, &stored); err == nil && stored.ID != "" {
+			ids = append(ids, stored.ID)
+		}
+	}
+	_ = rows.Close()
+	if len(ids) == 0 {
+		return nil, "Magic: no locally tracked requests yet (send/call/dispatch record them here)."
+	}
+
+	client, err := magic.NewClient()
+	if err != nil {
+		return nil, fmt.Sprintf("Magic: %d tracked request(s), but live refresh unavailable: %v", len(ids), err)
+	}
+
+	out := make([]statusRow, 0, len(ids))
+	for _, id := range ids {
+		req, err := client.GetRequest(cmd.Context(), id)
+		if err != nil {
+			fmt.Fprintf(cmd.ErrOrStderr(), "magic %s: %v\n", id, err)
+			continue
+		}
+		if openOnly && !magic.IsInProgress(req.Status) {
+			continue
+		}
+		out = append(out, statusRow{
+			Source: "magic",
+			ID:     req.ID,
+			Status: req.Status,
+			Title:  req.Title,
+		})
+	}
+	return out, ""
+}
+
 type statusOutput struct {
 	Tasks     []statusRow `json:"tasks"`
-	MagicNote string      `json:"magic_note"`
+	MagicNote string      `json:"magic_note,omitempty"`
 }
 
 type statusRow struct {

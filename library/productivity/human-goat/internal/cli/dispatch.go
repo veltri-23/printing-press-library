@@ -73,6 +73,7 @@ func newNovelDispatchCmd(flags *rootFlags) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("dispatch Magic task: %w", err)
 			}
+			persistMagicRequest(ctx, req)
 			if flags.asJSON || flags.agent {
 				return printJSONFiltered(cmd.OutOrStdout(), magicRequestSummary(req), flags)
 			}

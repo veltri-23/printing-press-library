@@ -4,8 +4,17 @@
   "applied_at": "2026-07-04",
   "base_run_id": "20260703-152050-dff84056",
   "base_printing_press_version": "4.27.1",
-  "summary": "Spend cap estimates from the actual booked slot duration (not a flat 2h); cancel pages all active bookings for lookup+verify and fails fast on a missing CSRF token; spend applies the TaskRabbit all-in fee transform to poster_hourly_rate_cents.",
+  "summary": "Spend cap estimates from the actual booked slot duration (not a flat 2h); cancel pages all active bookings and fails fast on a missing CSRF token; spend applies the TaskRabbit all-in fee transform; status is a true cross-source inbox (paginated TaskRabbit + Magic requests persisted locally on send/call/dispatch and refreshed live via GetRequest, since the Magic API has no list endpoint).",
   "reason": "TaskRabbit bills by the booked slot duration and honors a per-Tasker 2-hour minimum, stores base hourly rate (not all-in) in booking rows, requires X-CSRF-Token on mutations, and paginates task lists at 50/page; the generated bodies hardcoded a 2h cap estimate, single-page lookups, a soft CSRF path, and base-rate spend totals.",
-  "files": ["internal/cli/hire.go", "internal/cli/cancel.go", "internal/cli/spend.go"],
+  "files": [
+    "internal/cli/hire.go",
+    "internal/cli/cancel.go",
+    "internal/cli/spend.go",
+    "internal/cli/status.go",
+    "internal/cli/magicstore.go",
+    "internal/cli/send.go",
+    "internal/cli/call.go",
+    "internal/cli/dispatch.go"
+  ],
   "validated_outcome": "go build/vet/test pass; addresses Greptile PR #1435 P1/P2 findings."
 }
