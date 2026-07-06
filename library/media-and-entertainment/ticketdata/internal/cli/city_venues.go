@@ -12,6 +12,12 @@ var cityVenues = map[string][]string{
 		"climate-pledge-arena",
 		"husky-stadiumwa",
 		"alaska-airlines-arena",
+		"moore-theatre",
+		"benaroya-hall-taper-auditorium",
+		"wamu-theater-seattle",
+		"paramount-theatre-seattle",
+		"showbox-sodo",
+		"the-neptune-theatre",
 	},
 	"new york": {
 		"madison-square-garden",
