@@ -7795,6 +7795,60 @@
       }
     },
     {
+      "name": "human-goat",
+      "category": "productivity",
+      "api": "Human-Goat",
+      "description": "Hire real humans from the terminal — autonomous TaskRabbit checkout with a verified undo, plus Magic remote errands, in one agent-native binary.",
+      "search_terms": [
+        "human-goat",
+        "human-goat-pp-cli",
+        "Hire real humans from the terminal — autonomous TaskRabbit checkout with a verified undo, plus Magic remote errands, in one agent-native binary.",
+        "Autonomous soup-to-nuts hire",
+        "hire",
+        "Say the job and the date; goat searches, ranks by review quality and honest all-in price, and checks out against the card on file with no prompt.",
+        "Verified cancel (the safety gate)",
+        "cancel",
+        "Cancels a booking and confirms it landed by re-reading status, reporting whether it was inside the free window and any fee.",
+        "Spend cap",
+        "Refuses to check out when the computed all-in total exceeds a configurable ceiling, printing the total and the cap.",
+        "All-in price",
+        "best",
+        "Folds TaskRabbit's hidden service (~15%) and trust-and-support (5-15%) fees into the displayed hourly rate, honoring the CA/MA service-fee-only rule.",
+        "Cross-source dispatch",
+        "dispatch",
+        "Routes a plain-language task to Magic (remote-doable) or TaskRabbit (in-person) by task shape, with a --via override.",
+        "Cross-source spend analytics",
+        "spend",
+        "SQL over local booking, invoice, and Magic-task history by category, tasker, source, or month, using true effective all-in $/hr for TaskRabbit.",
+        "Availability watch",
+        "watch",
+        "Polls recommendations for a category and date (optionally a favorite or a rate ceiling) and alerts when a match opens.",
+        "Unified in-flight inbox",
+        "status",
+        "One list of every in-flight task across TaskRabbit bookings and Magic requests, joined on the common task model and sorted by state."
+      ],
+      "path": "library/productivity/human-goat",
+      "printer": "mvanhorn",
+      "printer_name": "Matt Van Horn",
+      "creator": {
+        "handle": "mvanhorn",
+        "name": "Matt Van Horn"
+      },
+      "mcp": {
+        "binary": "human-goat-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 8,
+        "public_tool_count": 0,
+        "auth_type": "cookie",
+        "env_vars": [],
+        "mcp_ready": "partial",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "icloud",
       "category": "media-and-entertainment",
       "api": "Apple iCloud",
@@ -13584,9 +13638,9 @@
       "path": "library/developer-tools/scrape-creators",
       "release": {
         "cli_name": "scrape-creators-pp-cli",
-        "version": "2026.6.2",
-        "released_at": "2026-06-21T08:16:26Z",
-        "source_commit": "acb84091ff016c6e7aea5f8cf6956a694aa0d1c7"
+        "version": "2026.6.3",
+        "released_at": "2026-06-30T02:33:04Z",
+        "source_commit": "4ffe11c721d403474099c95793bf94837176b075"
       },
       "printer": "adrianhorning08",
       "printer_name": "Adrian Horning",
