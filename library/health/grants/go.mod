@@ -1,3 +1,3 @@
-module grants-pp-cli
+module github.com/mvanhorn/printing-press-library/library/health/grants
 
 go 1.22

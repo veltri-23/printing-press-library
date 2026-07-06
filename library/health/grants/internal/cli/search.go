@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"grants-pp-cli/internal/sources"
+	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/sources"
 )
 
 func cmdSearch(args []string) int {
@@ -43,7 +43,11 @@ func cmdSearch(args []string) int {
 		return fail(err)
 	}
 	if !cutoff.IsZero() {
+		fetched := len(opps)
 		opps = ClosingBefore(opps, cutoff)
+		if fetched == *rows {
+			fmt.Fprintf(os.Stderr, "warning: results may be truncated (deadline filter applied to first %d rows only)\n", *rows)
+		}
 	}
 
 	needDetails := *details || *minAward > 0 || *eligibility != ""

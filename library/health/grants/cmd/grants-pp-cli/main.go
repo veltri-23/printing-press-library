@@ -5,7 +5,7 @@ package main
 import (
 	"os"
 
-	"grants-pp-cli/internal/cli"
+	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/cli"
 )
 
 func main() {

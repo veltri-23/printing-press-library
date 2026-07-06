@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"grants-pp-cli/internal/sources"
+	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/sources"
 )
 
 func TestParseMoney(t *testing.T) {

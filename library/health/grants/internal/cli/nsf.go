@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"grants-pp-cli/internal/sources"
+	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/sources"
 )
 
 func cmdNSF(args []string) int {

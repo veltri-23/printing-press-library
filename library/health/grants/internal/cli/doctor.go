@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	"grants-pp-cli/internal/sources"
+	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/sources"
 )
 
 // doctor — mindhárom keyless API elérhetőségének élő ellenőrzése.

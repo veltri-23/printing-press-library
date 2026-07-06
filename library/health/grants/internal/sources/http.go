@@ -36,7 +36,7 @@ func do(build func() (*http.Request, error)) ([]byte, error) {
 			return nil, fmt.Errorf("%s: read: %w", req.URL.Host, err)
 		}
 		if resp.StatusCode >= 500 {
-			lastErr = fmt.Errorf("%s: HTTP %d", req.URL.Host, resp.StatusCode)
+			lastErr = fmt.Errorf("%s: HTTP %d: %.200s", req.URL.Host, resp.StatusCode, body)
 			time.Sleep(time.Second)
 			continue
 		}

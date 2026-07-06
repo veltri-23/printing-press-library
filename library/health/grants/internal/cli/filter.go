@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"grants-pp-cli/internal/sources"
+	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/sources"
 )
 
 // parseFlexible: flag.Parse megáll az első pozicionális argumentumnál — ezért a
