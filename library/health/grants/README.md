@@ -3,6 +3,8 @@
 > 🇭🇺 Nyitott kutatási pályázatok terminálból — kulcs nélkül, 3 ingyenes API-ból.
 > 🇬🇧 Open research grants from the terminal — keyless, from 3 free APIs.
 
+Created by [@laci141](https://github.com/laci141) (laci141).
+
 | Forrás | Mit ad |
 |---|---|
 | **Grants.gov** | nyitott szövetségi kiírások (NIH, NSF, mind) — határidő, keret, jogosultság |

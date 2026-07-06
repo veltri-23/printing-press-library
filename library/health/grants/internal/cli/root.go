@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-const version = "1.0.0"
+var version = "1.0.0"
 
 const usage = `grants-pp-cli %s — nyitott kutatási pályázatok, kulcs nélkül / open research grants, keyless
 
