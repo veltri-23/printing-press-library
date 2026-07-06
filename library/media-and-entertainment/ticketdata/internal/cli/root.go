@@ -291,6 +291,7 @@ See README.md or the bundled SKILL.md for recipes.`,
 	rootCmd.AddCommand(newSyncCmd(flags))
 	rootCmd.AddCommand(newNovelWatchCmd(flags))
 	rootCmd.AddCommand(newNovelZonesCmd(flags))
+	rootCmd.AddCommand(newProxyCmd(flags))
 	rootCmd.AddCommand(newVersionCmd())
 	// Self-learning loop commands. newLearnConfig (defined in
 	// learn_init.go) reads spec.Learn.TickerPatterns + Stopwords and

@@ -18,5 +18,7 @@ func newEventsCmd(flags *rootFlags) *cobra.Command {
 	cmd.AddCommand(newEventsGetCmd(flags))
 	cmd.AddCommand(newEventsHistoryCmd(flags))
 	cmd.AddCommand(newEventsSectionsCmd(flags))
+	cmd.AddCommand(newEventsListCmd(flags))
+	cmd.AddCommand(newEventsCityCmd(flags))
 	return cmd
 }
