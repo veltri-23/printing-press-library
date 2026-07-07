@@ -8,7 +8,9 @@ package store
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -628,6 +630,53 @@ func extractObjectID(obj map[string]any) string {
 	return ""
 }
 
+// PATCH(hacktivity-synthetic-id): YesWeHack hacktivity rows currently have no
+// stable upstream primary key. Without a deterministic synthetic key, sync and
+// write-through caching drop every row before the local analysis commands can
+// use them.
+func syntheticObjectID(resourceType string, obj map[string]any) string {
+	if resourceType != "hacktivity" {
+		return ""
+	}
+	parts := []string{
+		resourceType,
+		nestedString(obj, "date"),
+		nestedString(obj, "status"),
+		nestedString(obj, "bug_type.slug"),
+		nestedString(obj, "bug_type.name"),
+		nestedString(obj, "hunter.slug"),
+		nestedString(obj, "hunter.username"),
+		nestedString(obj, "program.slug"),
+	}
+	if strings.Join(parts[1:], "") == "" {
+		return ""
+	}
+	sum := sha256.Sum256([]byte(strings.Join(parts, "\x00")))
+	return "hacktivity:" + hex.EncodeToString(sum[:12])
+}
+
+func nestedString(obj map[string]any, path string) string {
+	cur := any(obj)
+	for _, part := range strings.Split(path, ".") {
+		m, ok := cur.(map[string]any)
+		if !ok {
+			return ""
+		}
+		cur, ok = m[part]
+		if !ok {
+			return ""
+		}
+	}
+	switch v := cur.(type) {
+	case string:
+		return v
+	case float64, bool:
+		return fmt.Sprintf("%v", v)
+	default:
+		return ""
+	}
+}
+
 // ftsRowID derives a deterministic rowid from a string ID for use with FTS5.
 // modernc.org/sqlite's FTS5 implementation may not support DELETE WHERE column=?
 // on virtual tables, so we use explicit rowids and DELETE WHERE rowid=? instead.
@@ -748,6 +797,9 @@ func (s *Store) UpsertBatch(resourceType string, items []json.RawMessage) (int, 
 					}
 				}
 			}
+		}
+		if id == "" {
+			id = syntheticObjectID(resourceType, obj)
 		}
 		if id == "" {
 			skippedCount++
