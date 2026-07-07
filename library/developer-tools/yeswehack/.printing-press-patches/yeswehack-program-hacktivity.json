@@ -20,7 +20,7 @@
     },
     {
       "id": "hacktivity-synthetic-id",
-      "summary": "Generate deterministic local IDs for hacktivity rows that do not include an upstream primary key.",
+      "summary": "Generate deterministic row-hash local IDs for hacktivity rows that do not include an upstream primary key.",
       "reason": "Hacktivity sync fetched rows but stored zero because each row lacked id, slug, name, uuid, or another generic fallback key.",
       "files": [
         "internal/store/store.go",
@@ -31,6 +31,16 @@
         "internal/cli/transcend_helpers.go"
       ],
       "validated_outcome": "sync --resources hacktivity --latest-only stored 50 rows without no-extractable-ID warnings; hacktivity trends and learn returned filtered project rows."
+    },
+    {
+      "id": "program-hacktivity-envelope-array",
+      "summary": "Normalize program hacktivity item envelopes to arrays before output and caching.",
+      "reason": "The project-specific endpoint can return an items/pagination envelope for single-page reads, while the table renderer and --all path expect a top-level array.",
+      "files": [
+        "internal/cli/program_hacktivity_helpers.go",
+        "internal/cli/program_hacktivity_helpers_test.go"
+      ],
+      "validated_outcome": "programs hacktivity <slug> returns a consistent array shape for single-page and --all reads."
     }
   ]
 }

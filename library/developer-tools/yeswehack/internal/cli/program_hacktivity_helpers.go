@@ -74,12 +74,14 @@ func annotateHacktivityProgramRows(data json.RawMessage, slug string) json.RawMe
 		return data
 	}
 	if rawItems, ok := envelope["items"].([]any); ok {
+		rows := make([]map[string]any, 0, len(rawItems))
 		for _, item := range rawItems {
 			if row, ok := item.(map[string]any); ok {
 				addHacktivityProgram(row, slug)
+				rows = append(rows, row)
 			}
 		}
-		if encoded, err := json.Marshal(envelope); err == nil {
+		if encoded, err := json.Marshal(rows); err == nil {
 			return encoded
 		}
 	}

@@ -10,19 +10,17 @@ import (
 func TestAnnotateHacktivityProgramRowsEnvelope(t *testing.T) {
 	raw := json.RawMessage(`{"pagination":{"page":1},"items":[{"date":"2026-07-06","status":"new","bug_type":{"slug":"cwe-79"},"hunter":{"slug":"h"}}]}`)
 	got := annotateHacktivityProgramRows(raw, "program-one")
-	var envelope struct {
-		Items []map[string]any `json:"items"`
+	var rows []map[string]any
+	if err := json.Unmarshal(got, &rows); err != nil {
+		t.Fatalf("unmarshal annotated rows: %v", err)
 	}
-	if err := json.Unmarshal(got, &envelope); err != nil {
-		t.Fatalf("unmarshal annotated envelope: %v", err)
+	if len(rows) != 1 {
+		t.Fatalf("rows = %d, want 1", len(rows))
 	}
-	if len(envelope.Items) != 1 {
-		t.Fatalf("items = %d, want 1", len(envelope.Items))
-	}
-	if slug := stringField(envelope.Items[0], "program.slug"); slug != "program-one" {
+	if slug := stringField(rows[0], "program.slug"); slug != "program-one" {
 		t.Fatalf("program.slug = %q, want program-one", slug)
 	}
-	if slug := stringField(envelope.Items[0], "program_slug"); slug != "program-one" {
+	if slug := stringField(rows[0], "program_slug"); slug != "program-one" {
 		t.Fatalf("program_slug = %q, want program-one", slug)
 	}
 }
