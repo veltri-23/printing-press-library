@@ -83,5 +83,5 @@ func (c *Client) Availability(ctx context.Context, businessID, csvServiceID, csv
 	if err != nil {
 		return nil, err
 	}
-	return ExtractSlots(d), nil
+	return ExtractSlots(d, appDate, csvSPID), nil
 }

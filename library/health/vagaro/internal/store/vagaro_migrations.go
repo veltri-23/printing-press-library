@@ -73,14 +73,17 @@ var vagaroTablesDDL = []string{
 	)`,
 	`CREATE INDEX IF NOT EXISTS idx_snapshots_biz_time ON services_snapshots(business_id, snapshot_at)`,
 	// watch_baselines stores the last-seen next-available slot for a
-	// business+service so watch can report when a sooner slot opens up.
+	// business+service+provider so watch can report when a sooner slot opens
+	// up. provider is part of the key because availability is provider-scoped;
+	// an empty provider means "any provider" and keys its own baseline.
 	`CREATE TABLE IF NOT EXISTS watch_baselines (
 		slug            TEXT NOT NULL,
 		service_id      TEXT NOT NULL,
+		provider        TEXT NOT NULL DEFAULT '',
 		next_available  TEXT,
 		before_target   TEXT,
 		recorded_at     TEXT NOT NULL,
-		PRIMARY KEY (slug, service_id)
+		PRIMARY KEY (slug, service_id, provider)
 	)`,
 }
 
@@ -123,10 +126,17 @@ func (s *Store) UpsertBusiness(ctx context.Context, b BusinessRecord) error {
 			(slug, business_id, name, rating, review_count, price_range, city, state, address, phone, category, synced_at)
 		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		 ON CONFLICT(slug) DO UPDATE SET
-			business_id=excluded.business_id, name=excluded.name, rating=excluded.rating,
-			review_count=excluded.review_count, price_range=excluded.price_range,
-			city=excluded.city, state=excluded.state, address=excluded.address,
-			phone=excluded.phone, category=excluded.category, synced_at=excluded.synced_at`,
+			business_id=COALESCE(NULLIF(excluded.business_id, ''), businesses.business_id),
+			name=COALESCE(NULLIF(excluded.name, ''), businesses.name),
+			rating=COALESCE(excluded.rating, businesses.rating),
+			review_count=COALESCE(excluded.review_count, businesses.review_count),
+			price_range=COALESCE(NULLIF(excluded.price_range, ''), businesses.price_range),
+			city=COALESCE(NULLIF(excluded.city, ''), businesses.city),
+			state=COALESCE(NULLIF(excluded.state, ''), businesses.state),
+			address=COALESCE(NULLIF(excluded.address, ''), businesses.address),
+			phone=COALESCE(NULLIF(excluded.phone, ''), businesses.phone),
+			category=COALESCE(NULLIF(excluded.category, ''), businesses.category),
+			synced_at=excluded.synced_at`,
 		b.Slug, b.BusinessID, nullIfEmpty(b.Name), nullIfZeroF(b.Rating), nullIfZero(b.ReviewCount),
 		nullIfEmpty(b.PriceRange), nullIfEmpty(b.City), nullIfEmpty(b.State),
 		nullIfEmpty(b.Address), nullIfEmpty(b.Phone), nullIfEmpty(b.Category), nowUTC(),
@@ -425,7 +435,9 @@ type WatchBaseline struct {
 }
 
 // GetWatchBaseline returns the stored baseline, found=false when none exists.
-func (s *Store) GetWatchBaseline(ctx context.Context, slug, serviceID string) (WatchBaseline, bool, error) {
+// provider scopes the key; an empty provider addresses the "any provider"
+// baseline, kept distinct from any provider-specific baseline.
+func (s *Store) GetWatchBaseline(ctx context.Context, slug, serviceID, provider string) (WatchBaseline, bool, error) {
 	var (
 		next   sql.NullString
 		before sql.NullString
@@ -433,7 +445,7 @@ func (s *Store) GetWatchBaseline(ctx context.Context, slug, serviceID string) (W
 	)
 	err := s.db.QueryRowContext(ctx,
 		`SELECT next_available, before_target, recorded_at FROM watch_baselines
-		 WHERE slug = ? AND service_id = ?`, slug, serviceID).Scan(&next, &before, &rec)
+		 WHERE slug = ? AND service_id = ? AND provider = ?`, slug, serviceID, provider).Scan(&next, &before, &rec)
 	if err == sql.ErrNoRows {
 		return WatchBaseline{}, false, nil
 	}
@@ -444,19 +456,21 @@ func (s *Store) GetWatchBaseline(ctx context.Context, slug, serviceID string) (W
 }
 
 // UpsertWatchBaseline records (or refreshes) the next-available baseline.
-func (s *Store) UpsertWatchBaseline(ctx context.Context, slug, serviceID, nextAvailable, beforeTarget string) error {
+// provider is part of the key; an empty provider keys the "any provider"
+// baseline distinct from any provider-specific one.
+func (s *Store) UpsertWatchBaseline(ctx context.Context, slug, serviceID, provider, nextAvailable, beforeTarget string) error {
 	s.writeMu.Lock()
 	defer s.writeMu.Unlock()
 	_, err := s.db.ExecContext(ctx,
-		`INSERT INTO watch_baselines (slug, service_id, next_available, before_target, recorded_at)
-		 VALUES (?, ?, ?, ?, ?)
-		 ON CONFLICT(slug, service_id) DO UPDATE SET
+		`INSERT INTO watch_baselines (slug, service_id, provider, next_available, before_target, recorded_at)
+		 VALUES (?, ?, ?, ?, ?, ?)
+		 ON CONFLICT(slug, service_id, provider) DO UPDATE SET
 			next_available=excluded.next_available, before_target=excluded.before_target,
 			recorded_at=excluded.recorded_at`,
-		slug, serviceID, nullIfEmpty(nextAvailable), nullIfEmpty(beforeTarget), nowUTC(),
+		slug, serviceID, provider, nullIfEmpty(nextAvailable), nullIfEmpty(beforeTarget), nowUTC(),
 	)
 	if err != nil {
-		return fmt.Errorf("upserting watch baseline %q/%q: %w", slug, serviceID, err)
+		return fmt.Errorf("upserting watch baseline %q/%q/%q: %w", slug, serviceID, provider, err)
 	}
 	return nil
 }

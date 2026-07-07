@@ -5,6 +5,7 @@ package vagaro
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -162,7 +163,7 @@ func TestParseReviews_venueFallback(t *testing.T) {
 
 func TestExtractSlots_structured(t *testing.T) {
 	d := json.RawMessage(`[{"BookingGroup":0,"AppDate":"24 Jul 2026","ServicepPoviderData":[{"AvailableTime":"10:00 AM,10:15 AM,10:00 AM,not a time","ServiceProviderID":43931725,"ServiceProviderName":"Ronnel Getz"}]},{"BookingGroup":1,"AppDate":"24 Jul 2026","ServicepPoviderData":[{"AvailableTime":"01:00 PM","ServiceProviderID":232533768,"ServiceProviderName":"George Kuhar"}]}]`)
-	groups := ExtractSlots(d)
+	groups := ExtractSlots(d, "Fri Jul-24-2026", "43931725")
 	require.Len(t, groups, 2)
 	assert.Equal(t, "24 Jul 2026", groups[0].Date)
 	assert.Equal(t, "Ronnel Getz", groups[0].Provider)
@@ -173,16 +174,33 @@ func TestExtractSlots_structured(t *testing.T) {
 }
 
 func TestExtractSlots_empty(t *testing.T) {
-	assert.Equal(t, []SlotGroup{}, ExtractSlots(json.RawMessage(`[]`)))
+	assert.Equal(t, []SlotGroup{}, ExtractSlots(json.RawMessage(`[]`), "Fri Jul-24-2026", ""))
 	// groups present but no times -> empty, non-nil
-	got := ExtractSlots(json.RawMessage(`[{"AppDate":"24 Jul 2026","ServicepPoviderData":[{"AvailableTime":""}]}]`))
+	got := ExtractSlots(json.RawMessage(`[{"AppDate":"24 Jul 2026","ServicepPoviderData":[{"AvailableTime":""}]}]`), "Fri Jul-24-2026", "")
 	assert.Equal(t, []SlotGroup{}, got)
 }
 
 func TestExtractSlots_htmlFragment(t *testing.T) {
 	d := json.RawMessage(`<div class="slot">10:00 AM</div><div class="slot">1:15 PM</div><div>10:00 AM</div>`)
-	groups := ExtractSlots(d)
+	// The fallback stamps the known query date (and provider) onto the group so
+	// callers can require a date match instead of matching a clock label on any
+	// day.
+	groups := ExtractSlots(d, "Fri Jul-24-2026", "43931725")
 	require.Len(t, groups, 1)
 	assert.Equal(t, []string{"10:00 AM", "1:15 PM"}, groups[0].Times)
+	assert.Equal(t, "Fri Jul-24-2026", groups[0].Date)
+	assert.Equal(t, "43931725", groups[0].ProviderID)
 	assert.Empty(t, groups[0].Provider)
+
+	// The stamped date is parseable, so a date-aware caller resolves the day.
+	dt, ok := ParseSlotDateTime(groups[0].Date, groups[0].Times[0])
+	require.True(t, ok)
+	assert.Equal(t, 2026, dt.Year())
+	assert.Equal(t, time.July, dt.Month())
+	assert.Equal(t, 24, dt.Day())
+
+	// A CSV of providers is ambiguous, so no single provider is stamped.
+	multi := ExtractSlots(d, "Fri Jul-24-2026", "43931725,99999999")
+	require.Len(t, multi, 1)
+	assert.Empty(t, multi[0].ProviderID)
 }

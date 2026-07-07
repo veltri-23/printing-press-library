@@ -190,7 +190,9 @@ func (c *Config) AuthHeader() string {
 		if c.AuthSource == "" {
 			c.AuthSource = "chrome-composed"
 		}
-		return ensureAuthScheme("Bearer", c.AccessToken)
+		// Vagaro composed cookie auth sends the raw s_utkn JWT with no scheme
+		// prefix; the client sets this value as the custom "s_utkn" header.
+		return c.AccessToken
 	}
 	return ""
 }
@@ -216,24 +218,6 @@ func applyAuthFormat(format string, replacements map[string]string) string {
 		return ""
 	}
 	return format
-}
-
-// ensureAuthScheme returns "<scheme> <token>" but skips the prefix when the
-// token already carries it case-insensitively, so a user who exports the
-// env var with the scheme already attached doesn't end up double-prefixed.
-// Empty scheme returns the token as-is.
-func ensureAuthScheme(scheme, token string) string {
-	if token == "" {
-		return ""
-	}
-	if scheme == "" {
-		return token
-	}
-	schemeWithSpace := scheme + " "
-	if len(token) >= len(schemeWithSpace) && strings.EqualFold(token[:len(schemeWithSpace)], schemeWithSpace) {
-		return token
-	}
-	return schemeWithSpace + token
 }
 
 func (c *Config) AgentcookieManagedByExternalStore() bool {

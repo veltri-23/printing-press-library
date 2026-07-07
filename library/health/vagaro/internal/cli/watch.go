@@ -101,7 +101,8 @@ baseline.`,
 			if err != nil {
 				return err
 			}
-			groups, err := c.Availability(ctx, businessID, serviceID, strings.TrimSpace(flagProvider), appDate)
+			provider := strings.TrimSpace(flagProvider)
+			groups, err := c.Availability(ctx, businessID, serviceID, provider, appDate)
 			if err != nil {
 				return classifyVagaroError(err, flags)
 			}
@@ -112,7 +113,7 @@ baseline.`,
 				out.Status = watchNoAvailability
 				out.Note = "no availability found for the current week"
 				// Persist the empty baseline so a later opening registers as "sooner".
-				_ = persistWatchBaseline(ctx, slug, serviceID, "", flagBefore)
+				_ = persistWatchBaseline(ctx, slug, serviceID, provider, "", flagBefore)
 				return emitVagaro(cmd, flags, out)
 			}
 			out.NextAvailable = currentLabel
@@ -127,11 +128,11 @@ baseline.`,
 				nextISO = currentLabel
 			}
 
-			baseline, found, berr := readWatchBaseline(ctx, slug, serviceID)
+			baseline, found, berr := readWatchBaseline(ctx, slug, serviceID, provider)
 			if berr != nil || !found {
 				out.Status = watchBaselineEstablished
 				out.Note = "baseline established; re-run to detect changes"
-				_ = persistWatchBaseline(ctx, slug, serviceID, nextISO, flagBefore)
+				_ = persistWatchBaseline(ctx, slug, serviceID, provider, nextISO, flagBefore)
 				return emitVagaro(cmd, flags, out)
 			}
 			out.PreviousNextAvailable = baseline.NextAvailable
@@ -144,7 +145,7 @@ baseline.`,
 			default:
 				out.Note = "next-available is unchanged from the baseline"
 			}
-			_ = persistWatchBaseline(ctx, slug, serviceID, nextISO, flagBefore)
+			_ = persistWatchBaseline(ctx, slug, serviceID, provider, nextISO, flagBefore)
 			return emitVagaro(cmd, flags, out)
 		},
 	}
@@ -208,16 +209,16 @@ func classifyWatchChange(baselineISO, currentISO string, current time.Time, curr
 	return watchLater
 }
 
-func readWatchBaseline(ctx context.Context, slug, serviceID string) (store.WatchBaseline, bool, error) {
+func readWatchBaseline(ctx context.Context, slug, serviceID, provider string) (store.WatchBaseline, bool, error) {
 	db, err := openStoreForRead(ctx, "vagaro-pp-cli")
 	if err != nil || db == nil {
 		return store.WatchBaseline{}, false, err
 	}
 	defer db.Close()
-	return db.GetWatchBaseline(ctx, slug, serviceID)
+	return db.GetWatchBaseline(ctx, slug, serviceID, provider)
 }
 
-func persistWatchBaseline(ctx context.Context, slug, serviceID, nextAvailable, before string) error {
+func persistWatchBaseline(ctx context.Context, slug, serviceID, provider, nextAvailable, before string) error {
 	db, err := store.OpenWithContext(ctx, defaultDBPath("vagaro-pp-cli"))
 	if err != nil {
 		return err
@@ -226,5 +227,5 @@ func persistWatchBaseline(ctx context.Context, slug, serviceID, nextAvailable, b
 	if err := db.EnsureVagaroTables(ctx); err != nil {
 		return err
 	}
-	return db.UpsertWatchBaseline(ctx, slug, serviceID, nextAvailable, before)
+	return db.UpsertWatchBaseline(ctx, slug, serviceID, provider, nextAvailable, before)
 }

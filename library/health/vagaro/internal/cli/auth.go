@@ -249,9 +249,18 @@ profile by name when the installed backend supports it.`,
 			for _, name := range requiredCookies {
 				composed = strings.ReplaceAll(composed, "{"+name+"}", cookieMap[name])
 			}
-			// Validate the composed auth before saving — catch stale/expired sessions
+			// Validate the composed auth before saving — catch stale/expired
+			// sessions against the authed appointments endpoint, sending the
+			// s_utkn JWT plus the session cookie jar the client would carry.
+			cookiePairs := make([]string, 0, len(requiredCookies))
+			for _, name := range requiredCookies {
+				if v, ok := cookieMap[name]; ok && v != "" {
+					cookiePairs = append(cookiePairs, name+"="+v)
+				}
+			}
+			cookieHeader := strings.Join(cookiePairs, "; ")
 			fmt.Fprintf(w, "Validating session...")
-			if err := validateComposedAuth(composed); err != nil {
+			if err := validateComposedAuth(composed, cookieHeader); err != nil {
 				loginURL := "https://" + strings.TrimPrefix(domain, ".")
 				fmt.Fprintf(w, " %s\n", red("expired"))
 				fmt.Fprintln(w, "")
@@ -437,7 +446,13 @@ func newAuthLogoutCmd(flags *rootFlags) *cobra.Command {
 			if err := cfg.ClearTokens(); err != nil {
 				return configErr(fmt.Errorf("clearing tokens: %w", err))
 			}
-			fmt.Fprintln(cmd.OutOrStdout(), "Logged out. Credentials cleared.")
+			// Also drop the persisted session cookie jar; clearing only the
+			// token would leave the .vagaro.com cookies on disk, so later
+			// commands would still ride the old session.
+			if err := client.ClearCookieJar(); err != nil {
+				return configErr(fmt.Errorf("clearing cookie jar: %w", err))
+			}
+			fmt.Fprintln(cmd.OutOrStdout(), "Logged out. Credentials and session cookies cleared.")
 			return nil
 		},
 	}
@@ -1108,26 +1123,42 @@ func extractViaCookieScoop(domain, profileDir string) (string, error) {
 	return result, nil
 }
 
-// validateComposedAuth makes a lightweight test request to verify the session is still active.
-// Uses the API base URL — any authenticated endpoint returning 401/403 indicates expiry.
-// A non-auth error (404, 500, timeout) is treated as "can't validate, assume OK" to avoid
-// blocking auth on unrelated API issues.
-func validateComposedAuth(authHeader string) error {
-	testURL := "https://www.vagaro.com"
-	req, err := http.NewRequest("HEAD", testURL, nil)
+// validateComposedAuth verifies the captured session against an *authenticated*
+// endpoint — the myaccount appointments API — rather than the public homepage.
+// A public HEAD returns 200 for any session (even an expired one), so it can't
+// tell a live session from a stale one; the appointments endpoint actually
+// requires the session and reports denial as 401/403 or a 2xx "Access denied" /
+// responseCode 1044 envelope.
+//
+// sUtkn is the raw s_utkn JWT; cookieHeader is the session cookie jar as a
+// "name=value; name=value" Cookie header. Returns nil when the probe looks
+// authenticated, a non-nil error when the endpoint rejects the session, and nil
+// on transport/build errors so unrelated connectivity issues don't block login.
+func validateComposedAuth(sUtkn, cookieHeader string) error {
+	body := map[string]any{
+		"pageSize": 1, "pageNumber": 1, "pastAppointment": true,
+		"myOrSharedAppointments": 1, "device": "Website", "module": "MyAccount",
+		"version": "2.5.3", "brandedApp": false, "multiLocation": false,
+	}
+	payload, err := json.Marshal(body)
 	if err != nil {
 		return nil // can't validate, assume OK
 	}
-	req.Header.Set("s_utkn", authHeader)
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
-	if req.Header.Get("User-Agent") == "" {
-		// Browser-shaped UA matches the main client default; WAF fingerprint
-		// checks on the auth-verify call have to clear the same bar as the
-		// per-resource calls or the user can't log in to begin with.
-		req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36")
+	req, err := http.NewRequest("POST", appointmentsPath, bytes.NewReader(payload))
+	if err != nil {
+		return nil // can't validate, assume OK
 	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("s_utkn", sUtkn)
+	if cookieHeader != "" {
+		req.Header.Set("Cookie", cookieHeader)
+	}
+	// Browser-shaped UA matches the main client default; WAF fingerprint checks
+	// on the auth-verify call have to clear the same bar as the per-resource
+	// calls or the user can't log in to begin with.
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
 
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{Timeout: 8 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil // network error, assume OK — don't block auth on connectivity
@@ -1136,6 +1167,12 @@ func validateComposedAuth(authHeader string) error {
 
 	if resp.StatusCode == 401 || resp.StatusCode == 403 {
 		return fmt.Errorf("HTTP %d", resp.StatusCode)
+	}
+	data, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	// A 2xx that carries an access-denied / responseCode 1044 envelope means the
+	// session isn't actually authenticated.
+	if looksLikeAuthDenied(string(data)) {
+		return fmt.Errorf("appointments API denied access")
 	}
 	return nil
 }

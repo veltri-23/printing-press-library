@@ -325,9 +325,14 @@ type availGroup struct {
 // ExtractSlots parses the (already .d-unwrapped) availability payload into
 // per-provider slot groups. The normal payload is a JSON array of booking
 // groups; when the endpoint instead returns an HTML/text fragment inside .d,
-// slot times are regex-extracted into a single dateless group. An empty or
+// slot times are regex-extracted and stamped with the query's date (and
+// provider, when a single one was requested) so callers still compare against
+// the correct day rather than matching a clock label on any date. An empty or
 // no-availability response yields an empty (non-nil) slice.
-func ExtractSlots(d json.RawMessage) []SlotGroup {
+//
+// queryDate is the AppDate sent with the request (appDateLayout, e.g.
+// "Mon Jan-02-2006"); queryProvider is the requested csvSPID.
+func ExtractSlots(d json.RawMessage, queryDate, queryProvider string) []SlotGroup {
 	var groups []availGroup
 	if err := json.Unmarshal(d, &groups); err == nil && len(groups) > 0 {
 		out := make([]SlotGroup, 0, len(groups))
@@ -350,13 +355,19 @@ func ExtractSlots(d json.RawMessage) []SlotGroup {
 		}
 		return out
 	}
-	// Fallback: HTML/text fragment. Extract distinct slot times, no provider
-	// or date context available.
+	// Fallback: HTML/text fragment carries no structured date/provider. Stamp
+	// the known query date so date-aware callers (slotOpen, earliestSlot) don't
+	// match a clock label against the wrong day; attach the provider only when a
+	// single one was requested.
 	times := extractSlotTimes(string(d))
 	if len(times) == 0 {
 		return []SlotGroup{}
 	}
-	return []SlotGroup{{Times: times}}
+	sg := SlotGroup{Date: cliutil.CleanText(queryDate), Times: times}
+	if p := strings.TrimSpace(queryProvider); p != "" && !strings.Contains(p, ",") {
+		sg.ProviderID = p
+	}
+	return []SlotGroup{sg}
 }
 
 // slotDateLayouts are the date formats the availability payload's AppDate

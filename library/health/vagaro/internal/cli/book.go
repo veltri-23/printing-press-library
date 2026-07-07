@@ -24,7 +24,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// atLayout is the --at timestamp format (local wall-clock, minute precision).
+// atLayout is the --at timestamp format (business-local wall-clock, minute
+// precision). The value is compared against Vagaro's business-local slot labels
+// as naive wall-clock, so it is parsed in a fixed neutral frame (UTC) rather
+// than the caller's zone — see slotOpen.
 const atLayout = "2006-01-02T15:04"
 
 type bookResult struct {
@@ -106,7 +109,10 @@ clicks as possible. Aliased as "book".`,
 			if service == "" || atStr == "" {
 				return usageErr(fmt.Errorf("--service and --at are required\nUsage: %s <slug> --service <id> --provider <id> --at <YYYY-MM-DDTHH:MM>", cmd.CommandPath()))
 			}
-			at, err := time.Parse(atLayout, atStr)
+			// Parse in a fixed neutral frame (UTC) so the entered wall-clock
+			// time is never shifted by the caller's local zone before it is
+			// compared, as naive wall-clock, against business-local slot labels.
+			at, err := time.ParseInLocation(atLayout, atStr, time.UTC)
 			if err != nil {
 				return usageErr(fmt.Errorf("invalid --at %q (want YYYY-MM-DDTHH:MM, e.g. 2026-07-24T10:00): %w", atStr, err))
 			}
@@ -210,7 +216,12 @@ func placeBooking(cmd *cobra.Command, flags *rootFlags, res bookResult) error {
 // groups. Also returns the times open on that same day for a helpful hint when
 // the exact slot is taken.
 func slotOpen(groups []vagaro.SlotGroup, at time.Time, timeLabel string) (bool, []string) {
-	wantDay := time.Date(at.Year(), at.Month(), at.Day(), 0, 0, 0, 0, time.UTC)
+	// Compare as naive wall-clock: the requested --at and Vagaro's slot labels
+	// are both business-local wall-clock strings, so match on year/month/day/
+	// hour/minute components rather than as absolute instants that could differ
+	// by zone. at.Year()/at.Hour()/etc. read the wall-clock in at's own zone.
+	wantY, wantMo, wantD := at.Date()
+	wantH, wantMin := at.Hour(), at.Minute()
 	sameDay := make([]string, 0)
 	open := false
 	for _, g := range groups {
@@ -223,12 +234,12 @@ func slotOpen(groups []vagaro.SlotGroup, at time.Time, timeLabel string) (bool, 
 				}
 				continue
 			}
-			day := time.Date(dt.Year(), dt.Month(), dt.Day(), 0, 0, 0, 0, time.UTC)
-			if !day.Equal(wantDay) {
+			y, mo, d := dt.Date()
+			if y != wantY || mo != wantMo || d != wantD {
 				continue
 			}
 			sameDay = append(sameDay, t)
-			if dt.Hour() == at.Hour() && dt.Minute() == at.Minute() {
+			if dt.Hour() == wantH && dt.Minute() == wantMin {
 				open = true
 			}
 		}
