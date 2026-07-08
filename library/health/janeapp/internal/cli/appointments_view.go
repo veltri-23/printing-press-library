@@ -11,7 +11,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"sort"
 	"time"
 
@@ -173,16 +172,17 @@ func fetchClinicAppointments(ctx context.Context, flags *rootFlags, clinic *Clin
 					break
 				}
 			}
-			// A non-empty object whose shape we don't recognize would otherwise
-			// be reported as "no appointments", silently hiding real bookings
-			// (and any conflicts that depend on them). Surface it instead.
+			// A non-empty object whose shape we don't recognize must be a hard
+			// error, not an empty list: silently returning zero appointments
+			// would let conflict-check report a clinic as clear and miss a real
+			// booking hidden in an unsupported response shape.
 			if !matched && len(wrapper) > 0 {
 				keys := make([]string, 0, len(wrapper))
 				for k := range wrapper {
 					keys = append(keys, k)
 				}
 				sort.Strings(keys)
-				fmt.Fprintf(os.Stderr, "warning: unrecognized appointments response shape for clinic %q (top-level keys: %v); treating as empty — bookings may be hidden\n", clinic.Name, keys)
+				return nil, fmt.Errorf("unrecognized appointments response shape for clinic %q (top-level keys: %v); refusing to proceed so safety checks don't run on incomplete data", clinic.Name, keys)
 			}
 		}
 	}
