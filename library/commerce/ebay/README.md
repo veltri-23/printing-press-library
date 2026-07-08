@@ -201,9 +201,9 @@ ebay-pp-cli comp "Zion Williamson rookie" --condition graded --json
 ebay-pp-cli auctions "PSA Mariners 1980" --has-bids --max-price 30 --json | \
   jq '.[] | {title, price, bids, ends_at, url}'
 
-# Save a search and re-run it
-ebay-pp-cli saved-search create vintage-mariners --query "PSA Mariners Griffey" --max-price 30
-ebay-pp-cli feed vintage-mariners --since 1h
+# Save a search and re-run it (stubbed commands; inspect current planned shape)
+ebay-pp-cli saved-search --help
+ebay-pp-cli feed --help
 ```
 
 ## Known Limitations
