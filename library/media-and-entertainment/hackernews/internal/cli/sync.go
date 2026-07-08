@@ -894,8 +894,12 @@ func recordStoryListSnapshot(db *store.Store, resource string, items []json.RawM
 	if len(ids) == 0 {
 		return
 	}
-	if err := recordFrontPageSnapshot(db, list, ids); err != nil && humanFriendly {
-		fmt.Fprintf(os.Stderr, "\nwarning: failed to record %s snapshot: %v\n", list, err)
+	if err := recordFrontPageSnapshot(db, list, ids); err != nil {
+		if humanFriendly {
+			fmt.Fprintf(os.Stderr, "\nwarning: failed to record %s snapshot: %v\n", list, err)
+		} else {
+			fmt.Fprintf(os.Stderr, `{"event":"snapshot_error","resource":"%s","error":"%s"}`+"\n", list, strings.ReplaceAll(err.Error(), `"`, `\"`))
+		}
 	}
 }
 
