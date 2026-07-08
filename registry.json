@@ -2,6 +2,64 @@
   "schema_version": 2,
   "entries": [
     {
+      "name": "1688",
+      "category": "commerce",
+      "api": "1688",
+      "description": "The free, offline, agent-native 1688 wholesale sourcing CLI — keyword search with the signals the web UI buries (回头率 reorder rate, factory-verified status, supplier trade scores, price drift), persisted to a local store no scraper tracks over time.",
+      "search_terms": [
+        "1688",
+        "1688-pp-cli",
+        "The free, offline, agent-native 1688 wholesale sourcing CLI — keyword search with the signals the web UI buries (回头率 reorder rate, factory-verified status, supplier trade scores, price drift), persisted to a local store no scraper tracks over time.",
+        "Factory-confidence rank + label",
+        "factory-find",
+        "Rank wholesale offers by how likely the seller is the real factory, not a reseller, and label each trader / likely-factory / verified-factory.",
+        "Repurchase-rate leaderboard",
+        "repurchase-top",
+        "Rank synced offers and suppliers by 回头率 (buyer reorder rate), with a minimum-transaction floor to suppress low-volume noise.",
+        "Price / repurchase / transaction drift",
+        "drift",
+        "Show how an offer's price, reorder rate, and 30-day transaction count moved across your stored snapshots.",
+        "Cross-supplier SKU compare",
+        "compare",
+        "Render a side-by-side table of price, MOQ, tier, reorder rate, transactions, factory flags, and trade scores for several offers of the same product.",
+        "Supplier reliability rollup",
+        "supplier-report",
+        "Aggregate one shop across all its stored offers: trade-service scores, average reorder rate, total transactions, verification badges, offer count, and price range.",
+        "Saved-query watch (poll-once delta)",
+        "watch",
+        "Re-run a saved search, store a fresh snapshot, and print only what changed since last run: price and reorder-rate moves plus newly appeared offers and suppliers.",
+        "Province price-spread",
+        "region-spread",
+        "Group stored offers for a keyword by Chinese province and report min, median, and max price plus transaction count per region."
+      ],
+      "path": "library/commerce/1688",
+      "release": {
+        "cli_name": "1688-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-08T23:14:42Z",
+        "source_commit": "050559439923abc24a767d0d37f3e8b663a1d067"
+      },
+      "printer": "qazmataz",
+      "printer_name": "Hamza Qazi",
+      "creator": {
+        "handle": "qazmataz",
+        "name": "Hamza Qazi"
+      },
+      "mcp": {
+        "binary": "1688-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 1,
+        "public_tool_count": 1,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "1password",
       "category": "auth",
       "api": "1Password Agent Secrets",
@@ -595,12 +653,12 @@
     {
       "name": "airframe",
       "category": "developer-tools",
-      "api": "Airframe",
+      "api": "airframe",
       "description": "Aircraft forensics from open public records — tail-number dossiers, fleet research, model-level safety, and NTSB event archaeology.",
       "search_terms": [
         "airframe",
         "airframe-pp-cli",
-        "Build aircraft dossiers from FAA registry and NTSB records, with owner, fleet, model-safety, and accident-history searches.",
+        "Aircraft forensics from open public records — tail-number dossiers, fleet research, model-level safety, and NTSB event archaeology.",
         "Tail-number dossier",
         "tail",
         "Full dossier for a given N-number: FAA registry row (owner, make/model, engine, status, Mode-S hex) joined with every NTSB-investigated event involving that specific airframe.",
@@ -988,7 +1046,7 @@
         "amazon-seller",
         "Amazon Seller",
         "amazon-seller-pp-cli",
-        "Run Amazon seller workflows from the terminal: FBA inventory, orders, sales reports, listings, catalog lookup, and account operations."
+        "Read FBA inventory, orders, sales reports, listings, and catalog data for an Amazon seller account."
       ],
       "path": "library/commerce/amazon-seller",
       "release": {
@@ -1275,7 +1333,7 @@
       "search_terms": [
         "apartments",
         "apartments-pp-cli",
-        "Search Apartments.com rentals from the terminal with offline sync, ranking, diff, and shortlist workflows.",
+        "Search Apartments.com listings, sync results to a local SQLite store, and run workflows the website never built — diff saved searches, rank by $/sqft, compare shortlists, and surface price drops or phantom listings.",
         "Watch saved searches with diff",
         "watch",
         "Re-run a stored search and surface what's NEW, REMOVED, or PRICE-CHANGED since the last sync.",
@@ -1478,7 +1536,8 @@
       "description": "Bypass paywalls and look up web archives via archive.today. Hero command: find or create an archive for any URL with lookup-before-submit, Wayback Machine fallback, and agent-hints on stderr when called non-interactively.",
       "search_terms": [
         "archive-is",
-        "archive-is-pp-cli"
+        "archive-is-pp-cli",
+        "Bypass paywalls and look up web archives via archive.today. Hero command: find or create an archive for any URL with lookup-before-submit, Wayback Machine fallback, and agent-hints on stderr when called non-interactively."
       ],
       "path": "library/media-and-entertainment/archive-is",
       "release": {
@@ -1606,7 +1665,7 @@
       "search_terms": [
         "arxiv",
         "arxiv-pp-cli",
-        "Free public arXiv paper search and metadata CLI with Atom-to-JSON output for agents and scripts.",
+        "Public Atom API for searching and fetching arXiv e-print metadata.",
         "Paper search",
         "query",
         "Search arXiv with documented query expressions and agent-friendly output controls.",
@@ -1732,6 +1791,12 @@
         "Render a flow with its ordered stage bindings as a tree"
       ],
       "path": "library/auth/authentik",
+      "release": {
+        "cli_name": "authentik-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-08T21:54:20Z",
+        "source_commit": "44db6a8ce140c30c0b1526294c22268ecdb7befd"
+      },
       "printer": "CarlF01",
       "printer_name": "CFinney",
       "mcp": {
@@ -2641,6 +2706,7 @@
         "cal-com",
         "Cal.com",
         "cal-com-pp-cli",
+        "Every Cal.com feature, plus offline agendas, composed booking flows, and analytics no other Cal.com tool ships.",
         "Cal.com bearer token (cal_live_* or cal_test_*); managed-user access tokens and OAuth access tokens also accepted",
         "One-shot booking",
         "book",
@@ -2773,7 +2839,7 @@
         "cf-domain",
         "Cloudflare Registrar Domains",
         "cf-domain-pp-cli",
-        "Agent-native Cloudflare Registrar CLI for domain search, live pricing checks, and gated registration.",
+        "Agent-native CLI for Cloudflare Registrar domain search, check, and registration.",
         "Cloudflare cf OAuth reuse",
         "auth context",
         "Reuses existing Cloudflare cf OAuth token and account context when explicit env vars are absent, without printing secrets.",
@@ -2874,7 +2940,7 @@
         "clarity",
         "Microsoft Clarity",
         "clarity-pp-cli",
-        "Generate Microsoft Clarity tracking snippets and audit local HTML for tag install, masking attributes, and client API calls.",
+        "Client-side instrumentation helpers for Microsoft Clarity.",
         "Snippet renderer",
         "snippet install",
         "Render a complete Clarity tracking snippet for a project ID, plus focused snippets for every documented client API call.",
@@ -3089,7 +3155,7 @@
         "cloud-run-admin",
         "Google Cloud Run",
         "cloud-run-admin-pp-cli",
-        "Inspect and operate Google Cloud Run services, jobs, revisions, executions, and local inventory for serverless container fleets.",
+        "Deploy and manage user provided container images that scale automatically based on incoming requests. The Cloud Run Admin API v1 follows the Knative Serving API specification, while v2 is aligned with Google Cloud AIP-based API standards, as described in https://google.aip.dev/.",
         "Agent-ready service inventory",
         "services list",
         "Lists Cloud Run services through the Admin API with agent-friendly JSON, compact output, and field selection.",
@@ -3419,7 +3485,7 @@
         "conduyt-crm",
         "Conduyt CRM",
         "conduyt-crm-pp-cli",
-        "Manage Conduyt CRM contacts, deals, pipelines, automations, campaigns, invoices, and local insight reports from the terminal.",
+        "AI-native CRM for the terminal — manage contacts, deals, pipelines, automations, email sequences, SMS drip campaigns, invoices, and 70+ resource types. Local SQLite sync, compound insight queries (pipeline health, deal velocity, email stats), and MCP code-orchestration for agent integration.",
         "Contact Trends",
         "contact-trends",
         "Analyze contact creation patterns by date and source using local SQLite store",
@@ -3452,7 +3518,7 @@
           "stdio",
           "http"
         ],
-        "tool_count": 0,
+        "tool_count": 321,
         "public_tool_count": 0,
         "auth_type": "bearer",
         "env_vars": [
@@ -4141,7 +4207,7 @@
       "search_terms": [
         "digitalocean",
         "digitalocean-pp-cli",
-        "Manage DigitalOcean Droplets, Kubernetes, databases, firewalls, networking, billing, and other cloud resources from the terminal.",
+        "Printing Press CLI for Digitalocean.",
         "Local resource archive",
         "workflow archive",
         "Sync DigitalOcean resources into a local SQLite store for offline inspection and repeatable agent workflows.",
@@ -4192,6 +4258,7 @@
         "docker-hub",
         "Docker Hub",
         "docker-hub-pp-cli",
+        "Docker Hub public API. Search container images, browse tags, check sizes, inspect Dockerfiles, and explore the world's largest container registry. No authentication required for public repositories (rate limited to ~18 req/min).",
         "Repository discovery",
         "docker-hub-search",
         "Search Docker Hub repositories with agent-ready JSON, compact output, and live/local source controls.",
@@ -4557,6 +4624,7 @@
       "search_terms": [
         "dub",
         "dub-pp-cli",
+        "Modern link attribution platform — short links, conversion tracking, affiliate/partner programs.",
         "Dead-link detection",
         "links stale",
         "Find archived, expired, or zero-traffic links across the workspace before they pile up.",
@@ -4655,9 +4723,9 @@
       "path": "library/commerce/ebay",
       "release": {
         "cli_name": "ebay-pp-cli",
-        "version": "2026.7.1",
-        "released_at": "2026-07-08T18:21:21Z",
-        "source_commit": "11d7b4ea752c9c8fb8909037133058eb57560cc0"
+        "version": "2026.7.2",
+        "released_at": "2026-07-08T22:18:26Z",
+        "source_commit": "8d08fedcf337579edd0b8f0f9ec9b7cc67870fb6"
       },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
@@ -4759,10 +4827,7 @@
         "tts render",
         "Render text to an audio file and print a structured manifest with file path, byte count, model, and voice.",
         "Dialogue Cast",
-        "Render speaker-labelled dialogue lines by resolving speaker-to-voice assignments and saving audio.",
-        "Voice budget",
-        "voice-budget",
-        "Compose the subscription and voices reads into remaining character credits, tier limits, reset timing, and voice-slot headroom before a large TTS batch."
+        "Render speaker-labelled dialogue lines by resolving speaker-to-voice assignments and saving audio."
       ],
       "path": "library/ai/elevenlabs",
       "release": {
@@ -4969,7 +5034,8 @@
       "description": "Live scores, standings, news, and game history across 17 sports from ESPN",
       "search_terms": [
         "espn",
-        "espn-pp-cli"
+        "espn-pp-cli",
+        "Live scores, standings, news, and game history across 17 sports from ESPN"
       ],
       "path": "library/media-and-entertainment/espn",
       "release": {
@@ -5883,6 +5949,7 @@
       "search_terms": [
         "food52",
         "food52-pp-cli",
+        "Search, browse, and read Food52 from your terminal — with offline FTS, pantry matching, recipe scaling, and the editorial signals other tools throw away.",
         "Pantry → recipe matcher",
         "pantry match",
         "Find Food52 recipes whose ingredients overlap your local pantry, ranked by coverage.",
@@ -6022,6 +6089,68 @@
       "creator": {
         "handle": "john-fiedler",
         "name": "John Fiedler"
+      }
+    },
+    {
+      "name": "framer",
+      "category": "developer-tools",
+      "api": "Framer",
+      "description": "CLI for managing Framer websites — CMS, canvas, code files, publishing, and site migration. Requires Node.",
+      "search_terms": [
+        "framer",
+        "framer-pp-cli",
+        "CLI for managing Framer websites — CMS, canvas, code files, publishing, and site migration. Requires Node.",
+        "Site Snapshot & Diff",
+        "snapshot",
+        "Track your Framer project's evolution over time with full structural snapshots and visual diffs",
+        "Multi-Project Dashboard",
+        "dashboard",
+        "Query across all registered Framer projects at once — stale CMS, unpublished changes, collection health",
+        "CMS Sync with Dry-Run",
+        "cms-sync",
+        "Import CMS content from CSV/JSON/Sheets with a preview diff before committing changes",
+        "CMS Schema Diff",
+        "cms-schema-diff",
+        "Declare CMS schema in YAML and diff it against the live project — infrastructure-as-code for Framer CMS",
+        "Bulk Asset Pipeline",
+        "assets upload",
+        "Upload a directory of images and auto-bind them to CMS items by filename-to-slug matching",
+        "CMS Relationship Validator",
+        "cms-validate",
+        "Find broken collection references, orphan items, and circular refs across your CMS",
+        "Design Token Import",
+        "styles-import",
+        "Import CSS variables or Tailwind config as Framer color and text styles — no manual recreation",
+        "Code File Sync",
+        "code-push",
+        "Edit TSX components locally in your editor, then push to Framer — eliminates copy-paste workflow"
+      ],
+      "path": "library/developer-tools/framer",
+      "release": {
+        "cli_name": "framer-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-08T23:13:59Z",
+        "source_commit": "1508ce6d9578ff09f71710f16d86898892758e7e"
+      },
+      "printer": "ioncom",
+      "printer_name": "ioncom",
+      "creator": {
+        "handle": "ioncom",
+        "name": "ioncom"
+      },
+      "mcp": {
+        "binary": "framer-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 46,
+        "public_tool_count": 0,
+        "auth_type": "api_key",
+        "env_vars": [
+          "FRAMER_API_KEY"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
       }
     },
     {
@@ -6788,7 +6917,7 @@
         "google-ads",
         "Google Ads",
         "google-ads-pp-cli",
-        "Discover accounts, run GAQL reports, inspect field metadata, and manage Google Ads campaigns, budgets, assets, audiences, and billing.",
+        "Google Ads API for account discovery, GAQL reporting, campaigns, budgets, assets, conversions, audiences, planning, and billing operations.",
         "GAQL account drilldown",
         "customers-google-ads search",
         "Run Google Ads Query Language searches from the terminal or MCP surface with JSON output.",
@@ -6889,7 +7018,7 @@
         "google-photos",
         "Google Photos",
         "google-photos-pp-cli",
-        "Manage Google Photos app-created albums and media, upload files, and handle Picker sessions from terminal-friendly commands.",
+        "Google Photos Library and Picker APIs for app-created media, albums, uploads, and user-selected media.",
         "Raw upload-token command",
         "upload file",
         "Upload photo or video bytes to Google Photos' raw upload endpoint and return the upload token needed by media-items batch-create.",
@@ -7236,7 +7365,6 @@
       "description": "Check Great Clips salon wait times, prepare Online Check-In requests, inspect route shapes, and track local wait history.",
       "search_terms": [
         "greatclips",
-        "Great Clips",
         "greatclips-pp-cli",
         "Check Great Clips salon wait times, prepare Online Check-In requests, inspect route shapes, and track local wait history.",
         "Auth0 Bearer JWT from cid.greatclips.com tenant. Recommended onboarding:\n`auth login --chrome` to extract the token from a logged-in Chrome session.\nAlternatively, `auth login --token <jwt>` to paste an existing token,\nor set GREATCLIPS_TOKEN in the environment.",
@@ -7397,7 +7525,7 @@
       "search_terms": [
         "hackernews",
         "hackernews-pp-cli",
-        "Read, search, and analyze Hacker News with a local SQLite store, offline full-text search, and agent-native output",
+        "Hacker News from your terminal — with a local SQLite store, snapshot history, and agent-native output no other HN tool has.",
         "Front-page diff",
         "since",
         "See exactly what climbed, fell, appeared, or dropped off the front page since your last sync.",
@@ -7464,7 +7592,7 @@
         "harris-teeter",
         "Harris Teeter",
         "harris-teeter-pp-cli",
-        "Read-only Harris Teeter grocery CLI for products, stores, coupons, cart, lists, account preferences, and recommendations through the logged-in web app session.",
+        "Harris Teeter grocery shopping API discovered from the logged-in web app",
         "Live Chrome session login",
         "auth login --chrome",
         "Read Harris Teeter session cookies from the already logged-in Chrome session, falling back through agent-browser/browser-use when standalone cookie tools are missing.",
@@ -8414,7 +8542,7 @@
         "jira",
         "Jira Cloud Platform",
         "jira-pp-cli",
-        "Call Jira Cloud Platform REST endpoints for issues, projects, users, workflows, permissions, and other Atlassian work-management data.",
+        "Jira Cloud platform REST API documentation",
         "Cycle Time Analytics",
         "cycle-time",
         "Show p50/p75/p90 cycle time and a histogram for issues resolved in a time window.",
@@ -8563,6 +8691,7 @@
         "kalshi",
         "Kalshi Trade Manual",
         "kalshi-pp-cli",
+        "Trade prediction markets, persist tick data, and answer category-level P&L questions Kalshi.com cannot.",
         "Portfolio Attribution",
         "See your realized P&L broken down by market category and series over any time window — answer 'did politics actually make money this quarter?' in one command.",
         "Odds History Tracker",
@@ -8971,6 +9100,7 @@
       "search_terms": [
         "linear",
         "linear-pp-cli",
+        "Offline-capable, agent-native CLI for the Linear API with SQLite-backed sync, FTS5 search, cross-cycle comparison, project burndown, and pp_created fixture lifecycle for safe live testing.",
         "Today View",
         "today",
         "See all of your assigned issues across every team for today, ranked by priority and cycle deadline.",
@@ -9920,7 +10050,7 @@
         "monarch-money",
         "Monarch Money",
         "monarch-money-pp-cli",
-        "Use Monarch Money account balances, tags, transactions, cashflow summaries, and explicit transaction CRUD workflows from the terminal.",
+        "Read Monarch Money account balances, tags, transactions, and cashflow summaries from the terminal.",
         "Guarded GraphQL query runner",
         "query",
         "Runs custom read-only Monarch Money GraphQL query files and refuses files that contain GraphQL mutations.",
@@ -10043,6 +10173,7 @@
         "movie-goat",
         "Movie Goat",
         "movie-goat-pp-cli",
+        "The movie CLI that combines TMDb's discovery engine with OMDb's multi-source ratings — and ships a SQLite watchlist that flags what's streaming on your services right now.",
         "Tonight Picker",
         "tonight",
         "Pick what to watch tonight from trending titles actually streaming on your services.",
@@ -10626,6 +10757,7 @@
         "nvd",
         "National Vulnerability Database",
         "nvd-pp-cli",
+        "The NVD is the U.S. government repository of standards-based vulnerability management data. Search CVEs by keyword, product (CPE name), CVE ID, or date range. Get CVSS scores, affected versions, references, and severity ratings. No API key required (optional for higher rate limits).",
         "CVE search",
         "json search-cves",
         "Search National Vulnerability Database CVEs from the JSON API with agent-safe output controls.",
@@ -12313,6 +12445,7 @@
       "search_terms": [
         "pokeapi",
         "pokeapi-pp-cli",
+        "Fully offline Pokédex with SQL, full-text search, type math, and a damage calculator no other Pokémon tool ships as a CLI.",
         "Reverse ability search",
         "pokemon by-ability",
         "Find every Pokémon with a given ability. Live API has no reverse index — this is a single SQL query against the local store.",
@@ -12713,7 +12846,7 @@
       "search_terms": [
         "producthunt",
         "producthunt-pp-cli",
-        "Find, monitor, and export Product Hunt launches for launch research, scouting, and competitive tracking without requiring a Product Hunt API application.",
+        "Read Product Hunt from your terminal — works token-free for the daily skim, unlocks a launch-day cockpit and a marketer research desk in one onboarding step.",
         "Launch-day tracker",
         "posts launch-day",
         "Renders your launch's votes-over-time trajectory side-by-side with today's top 5 launches — the answer to 'am I catching up to the leader.' Sync-driven, refreshes from the local store.",
@@ -12887,6 +13020,7 @@
       "search_terms": [
         "pypi",
         "pypi-pp-cli",
+        "PyPI JSON API. Look up Python package metadata, versions, release files, and vulnerability data. Browse recent updates and newest packages via RSS feeds. No authentication required — all endpoints are public.",
         "Package metadata lookup",
         "pypi json get-package-info",
         "Fetch PyPI package metadata for dependency research and package evaluation.",
@@ -13099,7 +13233,7 @@
         "recipe-goat",
         "Recipe GOAT",
         "recipe-goat-pp-cli",
-        "Search trusted recipe sites, rank results, save a local cookbook, and enrich nutrition data with USDA FoodData Central.",
+        "Find the best version of any recipe across 37 trusted sites — trust-aware ranking weights real reader signal at 80% and editorial trust at 15% (curated chef/baker sites win tie-break over crowdsourced aggregators). Builds a local SQLite cookbook with pantry match, meal plans, cook log, substitutions, and USDA-backed nutrition backfill. Powered by Surf-Chrome HTTP transport — bypasses TLS-fingerprint bot detection that previously blocked Dotdash properties.",
         "Best-version ranker",
         "goat",
         "Query any dish across 37 recipe sites and rank results by normalized rating × review count × author trust × site trust × recency.",
@@ -13167,7 +13301,7 @@
       "search_terms": [
         "redfin",
         "redfin-pp-cli",
-        "Search Redfin homes from the terminal with offline sync, ranking, diff, sold comps, and market trends.",
+        "Search Redfin homes for sale via internal Stingray endpoints, sync to local SQLite, and run workflows the website doesn't expose — saved-search diff, $/sqft net-HOA ranking, sold comps, multi-region trends.",
         "Saved-search watch with diff",
         "watch",
         "Re-run a saved gis search and surface what's NEW, REMOVED, PRICE-CHANGED, or STATUS-CHANGED since the last sync.",
@@ -13651,7 +13785,7 @@
         "transports": [
           "stdio"
         ],
-        "tool_count": 85,
+        "tool_count": 74,
         "public_tool_count": 85,
         "auth_type": "bearer",
         "env_vars": [
@@ -13972,7 +14106,7 @@
         "seats-aero",
         "Seats Aero Partner",
         "seats-aero-pp-cli",
-        "Search Seats.aero award-flight availability, route coverage, mileage-program feeds, and trip details from the terminal.",
+        "Seats.aero Partner API for award travel availability, cached search, route lists, and trip revalidation details.",
         "Seats.aero Partner API key from https://seats.aero/partner-api.",
         "Award deal finder",
         "seats-aero-partner-search",
@@ -14626,7 +14760,7 @@
       "search_terms": [
         "shopify",
         "shopify-pp-cli",
-        "Operate a Shopify store with Admin GraphQL commands, local sync, analytics, bulk exports, and ShopifyQL reporting.",
+        "Operate a Shopify store from the terminal with curated Admin GraphQL commands, local sync, analytics, and bulk exports.",
         "Sales Funnel from ShopifyQL",
         "shopifyql funnel",
         "Three-stage funnel over N days (sessions -> checkouts -> orders) computed via ShopifyQL with real response columns.",
@@ -14915,7 +15049,8 @@
       "description": "Send messages, search conversations, monitor channels, and manage your Slack workspace from the terminal",
       "search_terms": [
         "slack",
-        "slack-pp-cli"
+        "slack-pp-cli",
+        "Send messages, search conversations, monitor channels, and manage your Slack workspace from the terminal"
       ],
       "path": "library/productivity/slack",
       "release": {
@@ -15306,7 +15441,7 @@
         "transports": [
           "stdio"
         ],
-        "tool_count": 0,
+        "tool_count": 47,
         "public_tool_count": 0,
         "auth_type": "bearer",
         "env_vars": [
@@ -15373,6 +15508,7 @@
         "steam-web",
         "Steam Web",
         "steam-web-pp-cli",
+        "Look up Steam players, games, achievements, friends, and stats from the command line",
         "Library backlog audit",
         "library audit",
         "Surface never-launched games, paid titles you bounced off in under 2 hours, and where your hours actually went by genre.",
@@ -15506,7 +15642,7 @@
       "search_terms": [
         "stripe",
         "stripe-pp-cli",
-        "Payment processing and financial infrastructure API",
+        "Every Stripe feature, plus a local SQLite mirror with FTS, cross-entity SQL, and analytics no other Stripe tool ships.",
         "Customer health score",
         "health",
         "Compute a 0-100 health score for one or many customers from local SQLite, factoring in failed-payment count, dispute history, MRR contribution, subscription status, and account age.",
@@ -16086,6 +16222,7 @@
         "table-reservation-goat",
         "Table Reservation GOAT",
         "table-reservation-goat-pp-cli",
+        "One reservation CLI for OpenTable, Tock, and Resy — search all three networks at once, watch for cancellations, book, and track changes from a local store agents can query.",
         "Cross-network unified search",
         "goat",
         "One query across OpenTable and Tock simultaneously, ranked by relevance, earliest availability, and price band.",
@@ -16681,7 +16818,7 @@
         "tiktok-shop",
         "TikTok Shop",
         "tiktok-shop-pp-cli",
-        "Use TikTok Shop Seller API workflows for auth, shops, orders, products, inventory search, fulfillment, warehouses, and safe write preflights.",
+        "Safe v1 TikTok Shop Seller API CLI/MCP for auth readiness, token exchange and refresh, read-only shops, orders, products, inventory search, fulfillment packages, and warehouses.",
         "Official-docs safety context",
         "agent-context",
         "Emit machine-readable command, auth, official-doc URL, and mutation-policy context so agents can distinguish confirmed safe v1 capabilities from deferred TikTok Shop surfaces.",
@@ -17797,7 +17934,7 @@
         "wanderlust-goat",
         "Wanderlust GOAT",
         "wanderlust-goat-pp-cli",
-        "Persona-shaped place discovery within walking distance — two-stage funnel that seeds from Google Places and deep-researches each candidate against locale-specific sources.",
+        "Wanderlust GOAT — what a knowledgeable local with great taste would tell you to walk to from here, fused across editorial, local-language, and crowd layers no single tool ranks together.",
         "Persona-shaped local fanout",
         "near",
         "Find the 3-5 amazing things within walking distance that match your stated identity and criteria — not the 40 closest things.",
@@ -17959,7 +18096,8 @@
       "description": "Weather forecasts, severe weather alerts, air quality, and GO/CAUTION/STOP activity verdicts for walk, bike, hike, commute, and drive",
       "search_terms": [
         "weather-goat",
-        "weather-goat-pp-cli"
+        "weather-goat-pp-cli",
+        "Weather forecasts, severe weather alerts, air quality, and GO/CAUTION/STOP activity verdicts for walk, bike, hike, commute, and drive"
       ],
       "path": "library/other/weather-goat",
       "release": {
@@ -18070,6 +18208,7 @@
       "search_terms": [
         "wikipedia",
         "wikipedia-pp-cli",
+        "Wikipedia REST API. Get article summaries, search, browse related topics, and access on-this-day events. No authentication required. Uses a polite User-Agent header.",
         "Article summary",
         "page get-summary",
         "Fetch concise Wikipedia article summaries for quick research and agent context.",
