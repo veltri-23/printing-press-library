@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/mvanhorn/printing-press-library/library/productivity/safari-history/internal/output"
 	"github.com/mvanhorn/printing-press-library/library/productivity/safari-history/internal/source"
-	"github.com/mvanhorn/printing-press-library/library/productivity/safari-history/internal/store"
 )
 
 func newListCmd(opts *RootOptions) *cobra.Command {
@@ -24,15 +23,8 @@ func newListCmd(opts *RootOptions) *cobra.Command {
 			if err != nil {
 				return errors.Join(ErrUsage, err)
 			}
-			snapshot, err := snapshotPath()
+			st, _, err := openCoreHistoryStore(opts.Device)
 			if err != nil {
-				return err
-			}
-			st, err := store.OpenExisting(snapshot)
-			if err != nil {
-				if errors.Is(err, store.ErrNoSnapshot) {
-					return ErrNoSnapshot
-				}
 				return err
 			}
 			defer st.Close()

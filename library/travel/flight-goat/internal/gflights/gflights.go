@@ -41,10 +41,10 @@ type Leg struct {
 	DurationMinutes  int     `json:"duration"`
 	Airline          Airline `json:"airline"`
 	// PATCH: aircraft type, seat type, and amenities fields
-	FlightNumber     string   `json:"flight_number"`
-	AircraftType     string   `json:"aircraft_type,omitempty"`
-	SeatType         string   `json:"seat_type,omitempty"`
-	Amenities        []string `json:"amenities,omitempty"`
+	FlightNumber string   `json:"flight_number"`
+	AircraftType string   `json:"aircraft_type,omitempty"`
+	SeatType     string   `json:"seat_type,omitempty"`
+	Amenities    []string `json:"amenities,omitempty"`
 }
 
 // Flight is one itinerary (possibly multi-leg).
@@ -70,6 +70,10 @@ type SearchResult struct {
 	Query      SearchQuery `json:"query"`
 	Count      int         `json:"count"`
 	Flights    []Flight    `json:"flights"`
+	// PATCH(amend-2026-06-11): non-empty when the result was served by the
+	// server-rendered HTML fallback (Google's flights RPC currently rejects
+	// non-interactive clients). See html_fallback.go.
+	Note string `json:"note,omitempty"`
 	// PATCH(library): populated when one or both airport codes were remapped
 	// from a retired IATA code. The Query echo above keeps the user's
 	// original input; AirportRemapped is the only signal of substitution.
@@ -104,8 +108,20 @@ type DatesResult struct {
 	Query      SearchQuery `json:"query"`
 	Count      int         `json:"count"`
 	Dates      []DatePrice `json:"dates"`
+	// PATCH(amend-2026-06-11): see SearchResult.Note.
+	Note string `json:"note,omitempty"`
 	// PATCH(library): see SearchResult.AirportRemapped.
 	AirportRemapped *AirportRemapNote `json:"airport_remapped,omitempty"`
+}
+
+// Segment is one leg of a multi-city itinerary. Set SearchOptions.Segments
+// (length >= 2) to request a multi-city search via Google Flights' multi-city
+// flow (trip_type=3). When Segments is set, Origin / Destination /
+// DepartureDate / ReturnDate on SearchOptions are ignored.
+type Segment struct {
+	Origin        string
+	Destination   string
+	DepartureDate string // YYYY-MM-DD
 }
 
 // SearchOptions are the knobs users can pass to a flight search.
@@ -130,6 +146,13 @@ type SearchOptions struct {
 	Emissions      string               // PATCH: "ALL" (default) or "LESS" to filter low-emission itineraries
 	Layover        *LayoverRestrictions // PATCH: restrict connections to specific airports
 	LimitedResults bool                 // PATCH: when true, request the ~30 Google-curated set
+	// Segments triggers a multi-city search (Google Flights trip_type=3).
+	// Provide >= 2 entries; the existing Origin / Destination / DepartureDate
+	// / ReturnDate fields are bypassed when this is set. For Google Flights
+	// the result is a URL-only deeplink (the shopping POST requires an
+	// authenticated session); see multicity.go and the CLI's --provider flag
+	// for the cross-provider dispatch.
+	Segments []Segment
 }
 
 // Search runs a flight search against Google Flights' GetShoppingResults.
@@ -147,6 +170,12 @@ func Search(ctx context.Context, opts SearchOptions) (*SearchResult, error) {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
 		defer cancel()
+	}
+	// PATCH(library): multi-city short-circuits to URL generation in
+	// searchNativeDirect — no air-pair POST happens, so skip the
+	// retired-IATA remap (each Segment carries its own pair).
+	if len(opts.Segments) >= 2 {
+		return searchNativeDirect(ctx, opts)
 	}
 	// PATCH(library): normalize retired IATA codes before talking to Google.
 	// Google's GetShoppingResults silently returns empty for decommissioned

@@ -15,7 +15,7 @@ metadata:
      This file is a verbatim mirror of library/sales-and-crm/intercom/SKILL.md,
      regenerated post-merge by tools/generate-skills/. Hand-edits here are
      silently overwritten on the next regen. Edit the library/ source instead.
-     See AGENTS.md "Generated artifacts: registry.json, cli-skills/". -->
+     See the repository agent guide, section "Generated artifacts: registry.json, cli-skills/". -->
 
 # Intercom — Printing Press CLI
 
@@ -23,18 +23,20 @@ metadata:
 
 This skill drives the `intercom-pp-cli` binary. **You must verify the CLI is installed before invoking any command from this skill.** If it is missing, install it first:
 
-1. Install via the Printing Press installer:
+1. Install via the Printing Press installer. It defaults binaries to `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows:
    ```bash
    npx -y @mvanhorn/printing-press-library install intercom --cli-only
    ```
 2. Verify: `intercom-pp-cli --version`
-3. Ensure `$GOPATH/bin` (or `$HOME/go/bin`) is on `$PATH`.
+3. Ensure the reported install directory is on `$PATH` for the agent/runtime that will invoke this skill.
 
-If the `npx` install fails before this CLI has a public-library category, install Node or use the category-specific Go fallback after publish.
+If the `npx` install fails (no Node, offline, etc.), fall back to a direct Go install (requires Go 1.26.4 or newer):
 
-If `--version` reports "command not found" after install, the install step did not put the binary on `$PATH`. Do not proceed with skill commands until verification succeeds.
+```bash
+go install github.com/mvanhorn/printing-press-library/library/sales-and-crm/intercom/cmd/intercom-pp-cli@latest
+```
 
-This CLI exposes the full Intercom REST API as a single Go binary. Every endpoint is a subcommand. A `sync` command mirrors conversations, contacts, companies, tickets, and articles into a local SQLite database so offline `search` and four headline transcendence commands — `incident-tag`, `articles pull/push`, `contact 360`, and `conversations sla` — answer the questions the API alone can't. Region-aware (`--region us|eu|au`) and built for agents (JSON-first, typed exit codes, MCP-mirrored).
+If `--version` reports "command not found" after install, the runtime cannot see the binary directory on `$PATH`. Do not proceed with skill commands until verification succeeds.
 
 ## When to Use This CLI
 

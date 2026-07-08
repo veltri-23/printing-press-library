@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "slug": "janeapp",
+  "cli_name": "janeapp-pp-cli",
+  "version": "2026.7.1",
+  "released_at": "2026-07-08T05:31:14Z",
+  "source_commit": "59e0b17eae7a5070f37f005c4bc2f2077d5b608a",
+  "printing_press_version": "4.27.1",
+  "run_id": "20260707-170547",
+  "changes": [
+    {
+      "title": "feat(janeapp): add janeapp",
+      "pr": 1456,
+      "url": "https://github.com/mvanhorn/printing-press-library/pull/1456",
+      "commit": "59e0b17eae7a5070f37f005c4bc2f2077d5b608a"
+    }
+  ]
+}

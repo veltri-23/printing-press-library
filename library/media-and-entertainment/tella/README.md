@@ -4,7 +4,7 @@
 
 Tella ships an API and an official MCP server; this CLI gives you both surfaces in one binary, plus a local-first store that makes cross-video transcript search, view-milestone rollups, and webhook replay actually fast. Every endpoint is a Cobra command, every command emits structured JSON, and every mutation supports --dry-run.
 
-Printed by [@gregce](https://github.com/gregce) (Greg Ceccarelli).
+Created by [@gregce](https://github.com/gregce) (Greg Ceccarelli).
 
 ## Install
 
@@ -35,7 +35,7 @@ npx -y @mvanhorn/printing-press-library install tella --agent claude-code --agen
 
 ### Without Node (Go fallback)
 
-If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.3 or newer):
+If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.4 or newer):
 
 ```bash
 go install github.com/mvanhorn/printing-press-library/library/media-and-entertainment/tella/cmd/tella-pp-cli@latest
@@ -50,6 +50,14 @@ Download a pre-built binary for your platform from the [latest release](https://
 <!-- pp-hermes-install-anchor -->
 ## Install for Hermes
 
+Install the CLI binary first. The installer writes binaries to a per-user managed bin directory by default: `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows.
+
+```bash
+npx -y @mvanhorn/printing-press-library install tella --cli-only
+```
+
+Then install the focused Hermes skill.
+
 From the Hermes CLI:
 
 ```bash
@@ -62,13 +70,17 @@ Inside a Hermes chat session:
 /skills install mvanhorn/printing-press-library/cli-skills/pp-tella --force
 ```
 
+Restart the Hermes session or gateway if the newly installed skill is not visible immediately.
+
 ## Install for OpenClaw
 
-Tell your OpenClaw agent (copy this):
+Install both the CLI binary and the focused OpenClaw skill. The installer defaults binaries to a per-user bin directory (`$HOME/.local/bin` on macOS/Linux, `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows):
 
+```bash
+npx -y @mvanhorn/printing-press-library install tella --agent openclaw
 ```
-Install the pp-tella skill from https://github.com/mvanhorn/printing-press-library/tree/main/cli-skills/pp-tella. The skill defines how its required CLI can be installed.
-```
+
+Restart the OpenClaw session or gateway if the newly installed skill is not visible immediately.
 
 ## Use with Claude Desktop
 
@@ -114,7 +126,7 @@ Set TELLA_API_KEY to your Tella account API key (Account → Settings → API). 
 
 ```bash
 # Save your Tella API key to local config; used by every command.
-tella-pp-cli auth set-token
+tella-pp-cli auth set-token <token>
 
 # Verify token + reachability before doing anything else.
 tella-pp-cli doctor
@@ -184,9 +196,18 @@ These capabilities aren't available in any other tool for this API.
   ```
 
   Per-clip primitives also available individually:
+  - `videos clips cut <vid> <clipId> --range 2000:3500 --range 8000:9200` — cut multiple time ranges in one request.
+  - `videos clips cut-by-transcript <vid> <clipId> --word-range 12:17` — cut by uncut-transcript word indices; Tella resolves exact word timing.
   - `videos clips remove-buffers <vid> <clipId> [--min-ms N]` — UI-button equivalent: cuts every silence ≥ `N` ms (default 200). Public API only.
   - `videos clips trim-edges <vid> <clipId>` — narrow primitive: cuts only the head and tail silences. Public API only.
   - `videos clips find-mistakes <vid> <clipId> --unofficial` — AI mistake detection via Tella's web-app endpoint. **Unofficial API; cookie-auth required.** See the "Unofficial API: Find Mistakes" section below.
+
+- **`sources upload-file` + `videos clips add`** — Create a Tella source, upload local video bytes to the pre-signed URL, then add that source as a new clip.
+
+  ```bash
+  tella-pp-cli sources upload-file intro.mp4 --width 1920 --height 1080 --duration 42.5 --json
+  tella-pp-cli videos clips add vid_abc --source-id src_123 --name Intro --json
+  ```
 
 #### Unofficial API: Find Mistakes
 
@@ -236,6 +257,42 @@ Detection step uses cookie auth against `prod-stream.tella.tv` (Server-Sent Even
 
 Run `tella-pp-cli --help` for the full command reference and flag list.
 
+## Novel editing workflows
+
+These commands compose Tella's public edit primitives into agent-safe workflows:
+
+```bash
+# Upload a local file and add it as a new clip.
+tella-pp-cli videos clips insert-file vid_abc intro.mp4 --width 1920 --height 1080 --duration 42.5 --dry-run
+
+# Upload B-roll and attach it as layout media over a time range.
+tella-pp-cli videos clips add-broll vid_abc cl_xyz broll.mp4 --width 1920 --height 1080 --duration 8.2 --start-ms 4000 --duration-ms 6000 --dry-run
+
+# Clean a clip, then roll back cuts if needed.
+tella-pp-cli videos clips clean vid_abc cl_xyz --remove-fillers --remove-buffers --trim-edges --dry-run
+tella-pp-cli videos clips clean vid_abc cl_xyz --remove-fillers --remove-buffers --trim-edges --apply
+tella-pp-cli videos clips undo-last-cuts vid_abc cl_xyz --dry-run
+
+# Inspect edit substrate, then cut transcript words or replace word ranges.
+tella-pp-cli videos clips silence-map vid_abc cl_xyz --json
+tella-pp-cli videos clips cut-words vid_abc cl_xyz --term "mistake" --dry-run
+tella-pp-cli videos clips replace-word-ranges vid_abc cl_xyz --word-ranges '[{"fromWordIndex":12,"toWordIndex":17}]' --dry-run
+
+# Restore exact cuts explicitly.
+tella-pp-cli videos clips restore-cuts vid_abc cl_xyz --cuts '[{"fromMs":100,"toMs":250}]' --dry-run
+
+# Export/apply a full video edit plan.
+tella-pp-cli videos storyboard vid_abc --include-transcript --json > storyboard.json
+tella-pp-cli videos apply-storyboard vid_abc --file storyboard.json --dry-run
+
+# Presets, QA, and playlist-scale edit planning.
+tella-pp-cli videos format vid_abc --preset shorts --dry-run
+tella-pp-cli videos audit vid_abc --json
+tella-pp-cli playlists edit-pass plst_42 --remove-fillers --remove-buffers --trim-edges --dry-run
+```
+
+Commands default to dry-run/plan mode when they perform compound edits; pass each command's `--apply` flag where available, or drop global `--dry-run`, only after reviewing the emitted plan.
+
 ## Commands
 
 ### playlists
@@ -247,6 +304,13 @@ Playlist operations
 - **`tella-pp-cli playlists get`** - Returns detailed information about a playlist including its videos
 - **`tella-pp-cli playlists list`** - Returns a list of all playlists for the authenticated user
 - **`tella-pp-cli playlists update`** - Update a playlist's name and/or description
+
+### sources
+
+Uploaded video sources for clips and B-roll layouts
+
+- **`tella-pp-cli sources create`** - Create a new video source upload and return a `sourceId` plus pre-signed `uploadUrl`
+- **`tella-pp-cli sources upload-file`** - Create a source and upload a local video file to the pre-signed URL
 
 ### videos
 
@@ -334,7 +398,7 @@ Environment variables:
 
 ### API-specific
 
-- **401 Unauthorized on every call** — Re-fetch your API key at tella.tv → Account → Settings → API and run `tella-pp-cli auth set-token` again.
+- **401 Unauthorized on every call** — Re-fetch your API key at tella.tv → Account → Settings → API and run `tella-pp-cli auth set-token <token>` again.
 - **Empty results from `transcripts search --data-source local`** — Run `tella-pp-cli sync` first to populate the local transcripts table.
 - **`webhooks tail` shows no events** — Confirm a webhook endpoint is registered (`tella-pp-cli webhooks endpoint create`); the inbox only collects events for registered endpoints.
 - **`clips edit-pass --dry-run` shows zero planned mutations** — Default short-circuits before fetching anything; the empty plan is by design. Drop `--dry-run` to see real planning (and use `--apply` to actually fire).

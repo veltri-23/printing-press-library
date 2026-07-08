@@ -6,6 +6,9 @@ Sync once and ask cross-cutting questions forever. Where is my stuff right now, 
 
 Learn more at [Amazon Orders](https://www.amazon.com).
 
+Created by [@bwishan](https://github.com/bwishan) (Brian Wishan).
+Contributors: [@tmchow](https://github.com/tmchow) (Trevin Chow).
+
 ## Install
 
 The recommended path installs both the `amazon-orders-pp-cli` binary and the `pp-amazon-orders` agent skill (Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, and other agents supported by the upstream [`skills`](https://github.com/vercel-labs/skills) CLI) in one shot:
@@ -35,7 +38,7 @@ npx -y @mvanhorn/printing-press-library install amazon-orders --agent claude-cod
 
 ### Without Node (Go fallback)
 
-If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.3 or newer):
+If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.4 or newer):
 
 ```bash
 go install github.com/mvanhorn/printing-press-library/library/commerce/amazon-orders/cmd/amazon-orders-pp-cli@latest
@@ -50,6 +53,14 @@ Download a pre-built binary for your platform from the [latest release](https://
 <!-- pp-hermes-install-anchor -->
 ## Install for Hermes
 
+Install the CLI binary first. The installer writes binaries to a per-user managed bin directory by default: `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows.
+
+```bash
+npx -y @mvanhorn/printing-press-library install amazon-orders --cli-only
+```
+
+Then install the focused Hermes skill.
+
 From the Hermes CLI:
 
 ```bash
@@ -62,13 +73,17 @@ Inside a Hermes chat session:
 /skills install mvanhorn/printing-press-library/cli-skills/pp-amazon-orders --force
 ```
 
+Restart the Hermes session or gateway if the newly installed skill is not visible immediately.
+
 ## Install for OpenClaw
 
-Tell your OpenClaw agent (copy this):
+Install both the CLI binary and the focused OpenClaw skill. The installer defaults binaries to a per-user bin directory (`$HOME/.local/bin` on macOS/Linux, `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows):
 
+```bash
+npx -y @mvanhorn/printing-press-library install amazon-orders --agent openclaw
 ```
-Install the pp-amazon-orders skill from https://github.com/mvanhorn/printing-press-library/tree/main/cli-skills/pp-amazon-orders. The skill defines how its required CLI can be installed.
-```
+
+Restart the OpenClaw session or gateway if the newly installed skill is not visible immediately.
 
 ## Use with Claude Desktop
 
@@ -115,6 +130,14 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 
 Amazon publishes no buyer API. The CLI imports cookies from your logged-in Chrome / Firefox / Safari / Brave session via `auth login --chrome`. Those cookies persist locally, refresh automatically, and authenticate every subsequent fetch — no API key, no OAuth, no resident browser at runtime.
 
+For non-US Amazon marketplaces, pass the marketplace domain during login. The CLI will read cookies for that domain and persist the matching base URL for later commands:
+
+```bash
+amazon-orders-pp-cli auth login --chrome --domain amazon.in
+```
+
+You can also set `AMAZON_ORDERS_BASE_URL=https://www.amazon.in` before running `auth login --chrome`.
+
 ### Headless agents (1Password / Vault / Bitwarden)
 
 For CI, dev containers, and remote hosts where `auth login --chrome` is not viable, capture the session once on a logged-in machine and inject it on every other host via your secrets manager. The cookie value never enters an LLM's context window because the bytes flow `op → stdin → CLI` without a shell variable in the middle.
@@ -134,6 +157,9 @@ The exported JSON shape is `amazon-orders-session/v1`. `auth import` also accept
 ```bash
 # Import cookies from your logged-in browser session — required for any authenticated fetch.
 amazon-orders-pp-cli auth login --chrome
+
+# Non-US marketplace example.
+amazon-orders-pp-cli auth login --chrome --domain amazon.in
 
 # Walk the last 3 months of orders into the local store, including per-order item detail.
 amazon-orders-pp-cli sync --since 90d --concurrency 1
@@ -323,11 +349,11 @@ Environment variables:
 
 ### API-specific
 
-- **`auth status` reports `unauthenticated` after `auth login --chrome`** — Make sure you're logged in to amazon.com in Chrome, then re-run `auth login --chrome --domain amazon.com`.
+- **`auth status` reports `unauthenticated` after `auth login --chrome`** — Make sure you're logged in to the same Amazon marketplace in Chrome, then re-run with the matching domain, e.g. `auth login --chrome --domain amazon.in`.
 - **`sync` fails with `RateLimitError` after ~10 orders** — Pass `--rate 0.5` to slow the per-order detail fetch, or omit `--full-details` to fetch only the listing pages.
 - **Order detail returns 401 even when logged in** — Amazon rotated your session-id; re-run `auth login --chrome` to refresh cookies.
 - **`track <id>` returns empty when the order has multiple shipments** — Pass `--shipment-id <SID>` (visible in `orders get <id> --json`) to disambiguate.
-- **Foreign-locale orders parse with garbled dates** — v1 supports US (.com) only. Multi-region shipping in v2; track issue.
+- **Foreign-locale orders parse with garbled dates** — marketplace auth is supported, but some localized order-history date formats may still need parser fixes.
 
 ## Discovery Signals
 

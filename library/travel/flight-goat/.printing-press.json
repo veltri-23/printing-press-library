@@ -5,6 +5,10 @@
   "api_name": "flight-goat",
   "display_name": "Flight GOAT",
   "cli_name": "flight-goat-pp-cli",
+  "creator": {
+    "handle": "mvanhorn",
+    "name": "Matt Van Horn"
+  },
   "owner": "matt-van-horn",
   "printer": "mvanhorn",
   "printer_name": "Matt Van Horn",
@@ -18,5 +22,15 @@
   "auth_type": "api_key",
   "auth_env_vars": [
     "FLIGHT_GOAT_API_KEY_AUTH"
+  ],
+  "contributors": [
+    {
+      "handle": "lloydarmbrust",
+      "name": "Lloyd Armbrust"
+    },
+    {
+      "handle": "tmchow",
+      "name": "Trevin Chow"
+    }
   ]
 }

@@ -15,7 +15,7 @@ metadata:
      This file is a verbatim mirror of library/marketing/trustpilot/SKILL.md,
      regenerated post-merge by tools/generate-skills/. Hand-edits here are
      silently overwritten on the next regen. Edit the library/ source instead.
-     See AGENTS.md "Generated artifacts: registry.json, cli-skills/". -->
+     See the repository agent guide, section "Generated artifacts: registry.json, cli-skills/". -->
 
 # Trustpilot — Printing Press CLI
 
@@ -23,20 +23,20 @@ metadata:
 
 This skill drives the `trustpilot-pp-cli` binary. **You must verify the CLI is installed before invoking any command from this skill.** If it is missing, install it first:
 
-1. Install via the Printing Press installer:
+1. Install via the Printing Press installer. It defaults binaries to `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows:
    ```bash
    npx -y @mvanhorn/printing-press-library install trustpilot --cli-only
    ```
 2. Verify: `trustpilot-pp-cli --version`
-3. Ensure `$GOPATH/bin` (or `$HOME/go/bin`) is on `$PATH`.
+3. Ensure the reported install directory is on `$PATH` for the agent/runtime that will invoke this skill.
 
-If the `npx` install fails (no Node, offline, etc.), fall back to a direct Go install (requires Go 1.26.3 or newer):
+If the `npx` install fails (no Node, offline, etc.), fall back to a direct Go install (requires Go 1.26.4 or newer):
 
 ```bash
 go install github.com/mvanhorn/printing-press-library/library/marketing/trustpilot/cmd/trustpilot-pp-cli@latest
 ```
 
-If `--version` reports "command not found" after install, the install step did not put the binary on `$PATH`. Do not proceed with skill commands until verification succeeds.
+If `--version` reports "command not found" after install, the runtime cannot see the binary directory on `$PATH`. Do not proceed with skill commands until verification succeeds.
 
 ## When to Use This CLI
 
@@ -148,11 +148,11 @@ This CLI uses Chrome-compatible HTTP transport for browser-facing endpoints. It 
 
 **companies** — Search Trustpilot for companies by name and resolve to their canonical domain
 
-- `trustpilot-pp-cli companies <search_build_id>` — Search for companies matching a name; returns identifyingName domains usable with reviews fetch
+- `trustpilot-pp-cli companies <search_build_id>` — Search for companies matching a name; returns identifyingName domains usable with reviews-fetch
 
 **reviews** — Fetch Trustpilot reviews for a company
 
-- `trustpilot-pp-cli reviews <review_build_id> <domain>` — Fetch a page of reviews for a company by domain (use 'reviews fetch <domain>' from the CLI). Authenticated via...
+- `trustpilot-pp-cli reviews <review_build_id> <domain>` — Fetch a page of reviews for a company by domain (use 'reviews-fetch <domain>' from the CLI). Authenticated via...
 
 
 ### Finding the right command

@@ -25,7 +25,7 @@ import (
 func RegisterTools(s *server.MCPServer) {
 	s.AddTool(
 		mcplib.NewTool("agencies_list",
-			mcplib.WithDescription("List all contributing agencies with file counts."),
+			mcplib.WithDescription("List every government agency that contributed files to the PURSUE archive, with per-agency file counts and a breakdown by file type."),
 			mcplib.WithReadOnlyHintAnnotation(true),
 			mcplib.WithDestructiveHintAnnotation(false),
 			mcplib.WithOpenWorldHintAnnotation(true),
@@ -298,7 +298,7 @@ func handleSQL(ctx context.Context, req mcplib.CallToolRequest) (*mcplib.CallToo
 
 func handleContext(_ context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToolResult, error) {
 	ctx := map[string]any{
-		"api":         "ufo-goat",
+		"api":         "ufo",
 		"description": "Browse, search, and download declassified UAP files from the War.gov PURSUE archive",
 		"archetype":   "generic",
 		"tool_count":  4,

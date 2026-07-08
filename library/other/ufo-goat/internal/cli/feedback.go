@@ -220,6 +220,6 @@ func newFeedbackListCmd(flags *rootFlags) *cobra.Command {
 			return printJSONFiltered(cmd.OutOrStdout(), entries, flags)
 		},
 	}
-	cmd.Flags().IntVar(&limit, "limit", 20, "Maximum number of recent entries to return")
+	cmd.Flags().IntVar(&limit, "limit", 20, "Maximum number of recent feedback entries to return")
 	return cmd
 }

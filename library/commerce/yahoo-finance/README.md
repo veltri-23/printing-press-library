@@ -4,7 +4,7 @@
 
 yahoo-finance-pp-cli matches yfinance and yahoo-finance2 for raw endpoint coverage, then adds the things only a local store + agent-shaped CLI can do: cost-basis-aware portfolio performance, dividend income with yield-on-cost, a SQL-backed fundamentals screener, options moneyness + DTE filtering, and an `auth login --chrome` cookie escape hatch when Yahoo blocks your IP.
 
-Printed by [@tmchow](https://github.com/tmchow) (Trevin Chow). Reprinted under printing-press v4.14.0 by @Charles-Garrison.
+Created by [@tmchow](https://github.com/tmchow) (Trevin Chow).
 
 ## Install
 
@@ -35,7 +35,7 @@ npx -y @mvanhorn/printing-press-library install yahoo-finance --agent claude-cod
 
 ### Without Node (Go fallback)
 
-If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.3 or newer):
+If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.4 or newer):
 
 ```bash
 go install github.com/mvanhorn/printing-press-library/library/commerce/yahoo-finance/cmd/yahoo-finance-pp-cli@latest
@@ -50,6 +50,14 @@ Download a pre-built binary for your platform from the [latest release](https://
 <!-- pp-hermes-install-anchor -->
 ## Install for Hermes
 
+Install the CLI binary first. The installer writes binaries to a per-user managed bin directory by default: `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows.
+
+```bash
+npx -y @mvanhorn/printing-press-library install yahoo-finance --cli-only
+```
+
+Then install the focused Hermes skill.
+
 From the Hermes CLI:
 
 ```bash
@@ -62,13 +70,17 @@ Inside a Hermes chat session:
 /skills install mvanhorn/printing-press-library/cli-skills/pp-yahoo-finance --force
 ```
 
+Restart the Hermes session or gateway if the newly installed skill is not visible immediately.
+
 ## Install for OpenClaw
 
-Tell your OpenClaw agent (copy this):
+Install both the CLI binary and the focused OpenClaw skill. The installer defaults binaries to a per-user bin directory (`$HOME/.local/bin` on macOS/Linux, `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows):
 
+```bash
+npx -y @mvanhorn/printing-press-library install yahoo-finance --agent openclaw
 ```
-Install the pp-yahoo-finance skill from https://github.com/mvanhorn/printing-press-library/tree/main/cli-skills/pp-yahoo-finance. The skill defines how its required CLI can be installed.
-```
+
+Restart the OpenClaw session or gateway if the newly installed skill is not visible immediately.
 
 ## Use with Claude Desktop
 
@@ -211,7 +223,6 @@ These capabilities aren't available in any other tool for this API.
 
 ## Recipes
 
-
 ### Daily market briefing across your watchlist
 
 ```bash
@@ -318,7 +329,6 @@ Predefined and custom stock screeners
 Trending symbols by region
 
 - **`yahoo-finance-pp-cli trending <region>`** - Top trending symbols in a region right now
-
 
 ## Output Formats
 

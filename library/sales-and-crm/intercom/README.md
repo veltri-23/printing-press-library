@@ -6,7 +6,7 @@ This CLI exposes the full Intercom REST API as a single Go binary. Every endpoin
 
 Learn more at [Intercom](https://developers.intercom.com).
 
-Printed by [@rob-coco](https://github.com/rob-coco) (Rob Zehner).
+Created by [@rob-coco](https://github.com/rob-coco) (Rob Zehner).
 
 ## Install
 
@@ -35,9 +35,15 @@ npx -y @mvanhorn/printing-press-library install intercom --agent claude-code
 npx -y @mvanhorn/printing-press-library install intercom --agent claude-code --agent codex
 ```
 
-### Without Node
+### Without Node (Go fallback)
 
-The generated install path is category-agnostic until this CLI is published. If `npx` is not available before publish, install Node or use the category-specific Go fallback from the public-library entry after publish.
+If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.4 or newer):
+
+```bash
+go install github.com/mvanhorn/printing-press-library/library/sales-and-crm/intercom/cmd/intercom-pp-cli@latest
+```
+
+This installs the CLI only — no skill.
 
 ### Pre-built binary
 
@@ -45,6 +51,14 @@ Download a pre-built binary for your platform from the [latest release](https://
 
 <!-- pp-hermes-install-anchor -->
 ## Install for Hermes
+
+Install the CLI binary first. The installer writes binaries to a per-user managed bin directory by default: `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows.
+
+```bash
+npx -y @mvanhorn/printing-press-library install intercom --cli-only
+```
+
+Then install the focused Hermes skill.
 
 From the Hermes CLI:
 
@@ -58,13 +72,17 @@ Inside a Hermes chat session:
 /skills install mvanhorn/printing-press-library/cli-skills/pp-intercom --force
 ```
 
+Restart the Hermes session or gateway if the newly installed skill is not visible immediately.
+
 ## Install for OpenClaw
 
-Tell your OpenClaw agent (copy this):
+Install both the CLI binary and the focused OpenClaw skill. The installer defaults binaries to a per-user bin directory (`$HOME/.local/bin` on macOS/Linux, `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows):
 
+```bash
+npx -y @mvanhorn/printing-press-library install intercom --agent openclaw
 ```
-Install the pp-intercom skill from https://github.com/mvanhorn/printing-press-library/tree/main/cli-skills/pp-intercom. The skill defines how its required CLI can be installed.
-```
+
+Restart the OpenClaw session or gateway if the newly installed skill is not visible immediately.
 
 ## Use with Claude Desktop
 
@@ -166,7 +184,6 @@ These capabilities aren't available in any other tool for this API.
   ```
 
 ## Recipes
-
 
 ### Tag every conversation mentioning an outage
 
@@ -975,7 +992,6 @@ Everything about your Visitors
 **Option 1.** You can update a visitor by passing in the `user_id` of the visitor in the Request body.
 
 **Option 2.** You can update a visitor by passing in the `id` of the visitor in the Request body.
-
 
 ## Output Formats
 

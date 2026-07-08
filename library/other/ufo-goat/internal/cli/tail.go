@@ -92,7 +92,7 @@ native streaming instead of polling.`,
 		},
 	}
 
-	cmd.Flags().StringVar(&resource, "resource", "", "Resource type to tail")
+	cmd.Flags().StringVar(&resource, "resource", "", "Resource type to poll, also acceptable as a positional argument")
 	cmd.Flags().DurationVar(&interval, "interval", 10*time.Second, "Poll interval")
 	cmd.Flags().BoolVar(&follow, "follow", true, "Keep running (set --follow=false for single poll)")
 

@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/mvanhorn/printing-press-library/library/productivity/safari-history/internal/output"
 	"github.com/mvanhorn/printing-press-library/library/productivity/safari-history/internal/source"
-	"github.com/mvanhorn/printing-press-library/library/productivity/safari-history/internal/store"
 )
 
 func newJourneysCmd(opts *RootOptions) *cobra.Command {
@@ -34,15 +33,8 @@ func newJourneysCmd(opts *RootOptions) *cobra.Command {
 					return errors.Join(ErrUsage, err)
 				}
 			}
-			snapshot, err := snapshotPath()
+			st, err := openSnapshotStore()
 			if err != nil {
-				return err
-			}
-			st, err := store.OpenExisting(snapshot)
-			if err != nil {
-				if errors.Is(err, store.ErrNoSnapshot) {
-					return ErrNoSnapshot
-				}
 				return err
 			}
 			defer st.Close()

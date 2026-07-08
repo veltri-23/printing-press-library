@@ -13,12 +13,12 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/spf13/cobra"
 	"github.com/mvanhorn/printing-press-library/library/other/ufo-goat/internal/client"
 	"github.com/mvanhorn/printing-press-library/library/other/ufo-goat/internal/config"
+	"github.com/spf13/cobra"
 )
 
-var version = "1.0.0"
+var version = "2026.6.3"
 
 type rootFlags struct {
 	asJSON        bool
@@ -195,6 +195,8 @@ See README.md or the bundled SKILL.md for recipes.`,
 	rootCmd.AddCommand(newTimelineCmd(flags))
 	rootCmd.AddCommand(newPairsCmd(flags))
 	rootCmd.AddCommand(newNewFilesCmd(flags))
+	rootCmd.AddCommand(newReleasesCmd(flags))
+	rootCmd.AddCommand(newSourcesCmd(flags))
 	rootCmd.AddCommand(newDownloadCmd(flags))
 	rootCmd.AddCommand(newLocationsCmd(flags))
 	// Top-level search shortcut

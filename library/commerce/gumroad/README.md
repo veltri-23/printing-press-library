@@ -4,7 +4,7 @@
 
 This tool wraps Gumroad's documented OAuth API for products, files, covers, variants, offer codes, custom fields, resource subscriptions, sales, subscribers, licenses, payouts, tax forms, and earnings. It also adds the Printing Press local sync/search/analytics layer so agents can answer seller questions from a consistent local snapshot instead of repeatedly walking paginated endpoints.
 
-Printed by [@bheemreddy181](https://github.com/bheemreddy181) (Bheem Reddy).
+Created by [@bheemreddy181](https://github.com/bheemreddy181) (Bheem Reddy).
 
 ## Install
 
@@ -35,7 +35,7 @@ npx -y @mvanhorn/printing-press-library install gumroad --agent claude-code --ag
 
 ### Without Node (Go fallback)
 
-If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.3 or newer):
+If `npx` isn't available (no Node, offline), install the CLI directly via Go (requires Go 1.26.4 or newer):
 
 ```bash
 go install github.com/mvanhorn/printing-press-library/library/commerce/gumroad/cmd/gumroad-pp-cli@latest
@@ -50,6 +50,14 @@ Download a pre-built binary for your platform from the [latest release](https://
 <!-- pp-hermes-install-anchor -->
 ## Install for Hermes
 
+Install the CLI binary first. The installer writes binaries to a per-user managed bin directory by default: `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows.
+
+```bash
+npx -y @mvanhorn/printing-press-library install gumroad --cli-only
+```
+
+Then install the focused Hermes skill.
+
 From the Hermes CLI:
 
 ```bash
@@ -62,13 +70,17 @@ Inside a Hermes chat session:
 /skills install mvanhorn/printing-press-library/cli-skills/pp-gumroad --force
 ```
 
+Restart the Hermes session or gateway if the newly installed skill is not visible immediately.
+
 ## Install for OpenClaw
 
-Tell your OpenClaw agent (copy this):
+Install both the CLI binary and the focused OpenClaw skill. The installer defaults binaries to a per-user bin directory (`$HOME/.local/bin` on macOS/Linux, `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows):
 
+```bash
+npx -y @mvanhorn/printing-press-library install gumroad --agent openclaw
 ```
-Install the pp-gumroad skill from https://github.com/mvanhorn/printing-press-library/tree/main/cli-skills/pp-gumroad. The skill defines how its required CLI can be installed.
-```
+
+Restart the OpenClaw session or gateway if the newly installed skill is not visible immediately.
 
 ## Use with Claude Desktop
 

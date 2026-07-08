@@ -61,6 +61,16 @@ npx -y @mvanhorn/printing-press-library search flights --json
 npx -y @mvanhorn/printing-press-library list --category travel --json
 ```
 
+Catalog JSON includes release metadata when a CLI has a `.printing-press-release.json` ledger entry. Agents can compare a local binary against the remote catalog without repo inspection:
+
+```bash
+substack-pp-cli --version
+npx -y @mvanhorn/printing-press-library search substack --json
+npx -y @mvanhorn/printing-press-library update substack --bin-dir ~/.local/bin
+```
+
+Read `release.version`, `release.cli_name`, `release.released_at`, and `release.source_commit` from `search --json` or `list --json`. Fall back to `go version -m` or direct repo inspection only when `release` is missing or the local version string looks suspicious.
+
 ## Installing CLIs and skills
 
 Every install pulls down the Go binary **and** the focused skill in one shot. Use `--cli-only` or `--skill-only` (see [Options](#options)) if you want just one half.
@@ -91,10 +101,13 @@ npx -y @mvanhorn/printing-press-library search sports
 npx -y @mvanhorn/printing-press-library list --category travel
 npx -y @mvanhorn/printing-press-library list --installed
 npx -y @mvanhorn/printing-press-library update espn
+npx -y @mvanhorn/printing-press-library reinstall espn
 npx -y @mvanhorn/printing-press-library uninstall espn --yes
 ```
 
 `list` shows the public catalog by default. Use `list --installed` when you only want CLIs already present on your machine.
+
+`reinstall` is an alias for `update`: `reinstall <name>` rebuilds one CLI from the latest catalog code and re-adds its skill, while `reinstall` with no name refreshes every Printing Press CLI already on your `PATH`. Reach for it when a binary or skill needs a clean refresh — `install <name>` overwrites in place too, so either works.
 
 ## Options
 
@@ -108,6 +121,12 @@ npx -y @mvanhorn/printing-press-library install espn --skill-only
 
 # Constrain skill installation to a specific agent (repeatable)
 npx -y @mvanhorn/printing-press-library install espn --agent claude-code
+
+# Override the default binary directory when you need a specific install target
+npx -y @mvanhorn/printing-press-library install espn --bin-dir /path/to/bin
+
+# OpenClaw: target OpenClaw skills; the installer defaults to a per-user binary directory
+npx -y @mvanhorn/printing-press-library install espn --agent openclaw
 
 # Machine-readable output
 npx -y @mvanhorn/printing-press-library install espn --json
@@ -131,8 +150,22 @@ More bundles will be added over time. To suggest one, open an issue at the [prin
 ## Requirements
 
 - Node.js 20+
-- Go 1.26.3 or newer (for `go install`)
-- `$(go env GOPATH)/bin` on `$PATH` (usually `$HOME/go/bin`) so installed CLIs are runnable
+- Go 1.26.4 or newer (for `go install`)
+- The installer writes CLI binaries to a per-user binary directory by default: `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows. That directory must be on the runtime `PATH` for installed CLIs to be runnable by name. If it is missing, `install` still installs the focused skill, then prints the exact, copy-pasteable line to add for your platform and shell (zsh/bash/fish, PowerShell, cmd, or Git Bash).
+
+Use `--bin-dir <dir>` only when you want to override the default user bin directory. The installer creates the directory first, sets `GOBIN=<dir>` for the install, and reports the resulting binary path:
+
+```bash
+npx -y @mvanhorn/printing-press-library install espn --bin-dir /path/to/bin
+```
+
+Agent and gateway environments often run with a frozen or sanitized `PATH`. Updating `.zshrc`, `.bashrc`, or the Windows user environment may not affect an already-running agent process until you restart that session or gateway. For OpenClaw and similar gateway deployments, install normally and verify the gateway process can resolve the CLI:
+
+```bash
+npx -y @mvanhorn/printing-press-library install <slug> --agent openclaw
+```
+
+If you installed with an older release that wrote to `$GOPATH/bin`, reinstall with the current installer. A symlink into `$HOME/.local/bin` can be a temporary bridge on Unix-like systems, but it should no longer be the default fix.
 
 ## Migration from @mvanhorn/printing-press
 

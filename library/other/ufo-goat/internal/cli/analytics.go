@@ -84,10 +84,10 @@ Data must be synced first with the sync command.`,
 		},
 	}
 
-	cmd.Flags().StringVar(&resourceType, "type", "", "Resource type to analyze")
-	cmd.Flags().StringVar(&groupBy, "group-by", "", "Field to group by")
-	cmd.Flags().StringVar(&dbPath, "db", "", "Database path")
-	cmd.Flags().IntVar(&limit, "limit", 25, "Max groups to show")
+	cmd.Flags().StringVar(&resourceType, "type", "", "Resource type to analyze in the synced store (e.g. files)")
+	cmd.Flags().StringVar(&groupBy, "group-by", "", "Field to group counts by, such as agency, type, or release")
+	cmd.Flags().StringVar(&dbPath, "db", "", "Override the synced SQLite store path (default: ~/.local/share/ufo-goat-pp-cli/data.db)")
+	cmd.Flags().IntVar(&limit, "limit", 25, "Maximum number of grouped rows to display in the report")
 
 	return cmd
 }
