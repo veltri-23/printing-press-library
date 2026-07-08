@@ -9,6 +9,12 @@
     "handle": "pejmanjohn",
     "name": "Pejman Pour-Moezzi"
   },
+  "contributors": [
+    {
+      "handle": "ganes-j",
+      "name": "Jesse Ganes"
+    }
+  ],
   "owner": "pejman-pour-moezzi",
   "printer_name": "Pejman Pour-Moezzi",
   "spec_format": "internal",

@@ -46,5 +46,6 @@
     }
   ],
   "auth_title": "Seats.aero API key",
-  "auth_description": "Seats.aero Partner API key from https://seats.aero/partner-api."
+  "auth_description": "Seats.aero Partner API key from https://seats.aero/partner-api.",
+  "catalog_description": "Search Seats.aero award-flight availability, route coverage, mileage-program feeds, and trip details from the terminal."
 }

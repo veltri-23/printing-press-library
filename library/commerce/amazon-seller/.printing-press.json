@@ -49,5 +49,6 @@
       "description": "Refresh token from self-authorizing your private SP-API application."
     }
   ],
-  "auth_key_url": "https://sellercentral.amazon.com/sellingpartner/developerconsole"
+  "auth_key_url": "https://sellercentral.amazon.com/sellingpartner/developerconsole",
+  "catalog_description": "Run Amazon seller workflows from the terminal: FBA inventory, orders, sales reports, listings, catalog lookup, and account operations."
 }

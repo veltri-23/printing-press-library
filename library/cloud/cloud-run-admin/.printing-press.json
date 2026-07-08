@@ -53,5 +53,6 @@
       "command": "workflow",
       "description": "Provides compound workflows that combine multiple Cloud Run Admin API operations into one operator-facing flow."
     }
-  ]
+  ],
+  "catalog_description": "Inspect and operate Google Cloud Run services, jobs, revisions, executions, and local inventory for serverless container fleets."
 }

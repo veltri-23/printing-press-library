@@ -46,5 +46,6 @@
     }
   ],
   "printer": "cathryn-lavery",
-  "printer_name": "Cathryn Lavery"
+  "printer_name": "Cathryn Lavery",
+  "catalog_description": "Manage Namecheap domains, DNS, contacts, pricing, account balances, TLDs, and SSL metadata through a JSON-friendly XML API wrapper."
 }

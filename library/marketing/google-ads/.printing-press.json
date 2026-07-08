@@ -72,5 +72,6 @@
       "command": "google-ads-fields search",
       "description": "Search Google Ads field metadata so agents can construct valid GAQL queries."
     }
-  ]
+  ],
+  "catalog_description": "Discover accounts, run GAQL reports, inspect field metadata, and manage Google Ads campaigns, budgets, assets, audiences, and billing."
 }

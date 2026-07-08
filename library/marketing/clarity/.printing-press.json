@@ -34,5 +34,6 @@
       "command": "audit html",
       "description": "Inspect an HTML file for a Clarity tag script, masking attributes, and common window.clarity client API calls."
     }
-  ]
+  ],
+  "catalog_description": "Generate Microsoft Clarity tracking snippets and audit local HTML for tag install, masking attributes, and client API calls."
 }

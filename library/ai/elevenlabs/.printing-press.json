@@ -48,5 +48,6 @@
       "command": "dialogue cast",
       "description": "Render speaker-labelled dialogue lines by resolving speaker-to-voice assignments and saving audio."
     }
-  ]
+  ],
+  "catalog_description": "Create and manage ElevenLabs audio workflows: text-to-speech, voice conversion, transcription, dubbing, music, voices, and agents."
 }

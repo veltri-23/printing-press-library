@@ -51,5 +51,6 @@
       "command": "inventory update",
       "description": "Expose the confirmed inventory update endpoint as an explicit deferred-mutation status instead of executing stock changes before idempotency and retry safety are designed."
     }
-  ]
+  ],
+  "catalog_description": "Use TikTok Shop Seller API workflows for auth, shops, orders, products, inventory search, fulfillment, warehouses, and safe write preflights."
 }
