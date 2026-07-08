@@ -17542,9 +17542,9 @@
       "path": "library/health/vagaro",
       "release": {
         "cli_name": "vagaro-pp-cli",
-        "version": "2026.7.1",
-        "released_at": "2026-07-08T18:21:21Z",
-        "source_commit": "11d7b4ea752c9c8fb8909037133058eb57560cc0"
+        "version": "2026.7.2",
+        "released_at": "2026-07-08T20:38:39Z",
+        "source_commit": "ee39e4919399ad78b9f2ecfd76c17a1c8beea15f"
       },
       "printer": "tmchow",
       "printer_name": "Trevin Chow",
