@@ -1707,6 +1707,49 @@
       }
     },
     {
+      "name": "authentik",
+      "category": "auth",
+      "api": "authentik",
+      "description": "Agent-native admin CLI for authentik identity provider with offline SQLite cache and an MCP server for Claude Desktop.",
+      "search_terms": [
+        "authentik",
+        "authentik-pp-cli",
+        "Agent-native admin CLI for authentik identity provider with offline SQLite cache and an MCP server for Claude Desktop.",
+        "Operator health snapshot",
+        "health",
+        "Joins admin/system + tasks + workers + version into a single agent-readable summary",
+        "Stale token audit",
+        "tokens stale",
+        "Find API tokens whose owners have not used them in N days",
+        "Unused application audit",
+        "apps unused",
+        "List applications with no successful login in N days",
+        "User group flattener",
+        "users groups",
+        "Recursively expand a user's group memberships including inherited roles",
+        "Flow stage map",
+        "flows map",
+        "Render a flow with its ordered stage bindings as a tree"
+      ],
+      "path": "library/auth/authentik",
+      "printer": "CarlF01",
+      "printer_name": "CFinney",
+      "mcp": {
+        "binary": "authentik-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 969,
+        "public_tool_count": 8,
+        "auth_type": "bearer_token",
+        "env_vars": [
+          "AUTHENTIK_TOKEN"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "autotempest",
       "category": "commerce",
       "api": "AutoTempest",
@@ -16059,9 +16102,9 @@
       "path": "library/food-and-dining/table-reservation-goat",
       "release": {
         "cli_name": "table-reservation-goat-pp-cli",
-        "version": "2026.7.1",
-        "released_at": "2026-07-08T18:21:21Z",
-        "source_commit": "11d7b4ea752c9c8fb8909037133058eb57560cc0"
+        "version": "2026.7.2",
+        "released_at": "2026-07-08T21:07:09Z",
+        "source_commit": "802dc5ba785663e7c5157aeed81774729d42b22f"
       },
       "printer": "pejmanjohn",
       "printer_name": "Pejman Pour-Moezzi",
