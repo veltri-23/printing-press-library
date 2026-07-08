@@ -7327,9 +7327,9 @@
       "path": "library/media-and-entertainment/hackernews",
       "release": {
         "cli_name": "hackernews-pp-cli",
-        "version": "2026.6.2",
-        "released_at": "2026-06-21T08:16:26Z",
-        "source_commit": "acb84091ff016c6e7aea5f8cf6956a694aa0d1c7"
+        "version": "2026.7.1",
+        "released_at": "2026-07-08T05:30:38Z",
+        "source_commit": "ffd0ded58d00315f6ba66610e31455a701f7ff75"
       },
       "printer": "tmchow",
       "printer_name": "Trevin Chow",
@@ -8195,6 +8195,56 @@
         "auth_type": "none",
         "env_vars": [],
         "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
+      "name": "janeapp",
+      "category": "health",
+      "api": "Jane App",
+      "description": "Book, view, and manage your Jane (janeapp.com) appointments across every clinic from one terminal — with a unified agenda, next-opening finder, and availability watch the patient portal can't do.",
+      "search_terms": [
+        "janeapp",
+        "Jane App",
+        "janeapp-pp-cli",
+        "Book, view, and manage your Jane (janeapp.com) appointments across every clinic from one terminal — with a unified agenda, next-opening finder, and availability watch the patient portal can't do.",
+        "Jane has no public patient API. Each clinic is a separate subdomain with its\nown patient account. Add a profile for a clinic and log in with your patient\nusername/email and password:\n\n  janeapp-pp-cli profile add embophysio --url https://embophysio.janeapp.com\n  janeapp-pp-cli auth login --profile embophysio\n\nThe CLI performs Jane's two-step sign-in and stores the session cookie for\nthat profile. Repeat for each clinic. `--all-profiles` fans read commands\nacross every logged-in clinic.",
+        "Unified cross-clinic agenda",
+        "agenda",
+        "See every appointment across every Jane clinic you use in one chronological view.",
+        "Next-opening finder",
+        "next-opening",
+        "Find the soonest available slot for a practitioner + treatment, paging past Jane's 7-day availability cap.",
+        "Availability watch",
+        "watch",
+        "Poll availability and alert when an earlier slot than a target opens up.",
+        "Cross-clinic conflict check",
+        "conflict-check",
+        "Before booking, warn if a candidate slot collides with an existing appointment at another clinic."
+      ],
+      "path": "library/health/janeapp",
+      "release": {
+        "cli_name": "janeapp-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-08T05:31:14Z",
+        "source_commit": "59e0b17eae7a5070f37f005c4bc2f2077d5b608a"
+      },
+      "printer": "omarshahine",
+      "printer_name": "Omar Shahine",
+      "creator": {
+        "handle": "omarshahine",
+        "name": "Omar Shahine"
+      },
+      "mcp": {
+        "binary": "janeapp-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 6,
+        "public_tool_count": 5,
+        "auth_type": "cookie",
+        "env_vars": [],
+        "mcp_ready": "partial",
         "spec_format": "internal"
       }
     },
@@ -16225,6 +16275,12 @@
         "Local full-text search across synced events, performers, and venues, returning multiple matches."
       ],
       "path": "library/media-and-entertainment/ticketdata",
+      "release": {
+        "cli_name": "ticketdata-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-08T00:14:18Z",
+        "source_commit": "5cb756688d4e8619c5df99d892d4b5d010a582b8"
+      },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
       "creator": {
@@ -16307,6 +16363,52 @@
         ],
         "mcp_ready": "full",
         "spec_format": "openapi3"
+      }
+    },
+    {
+      "name": "ticktick",
+      "category": "productivity",
+      "api": "TickTick",
+      "description": "Every TickTick surface — tasks, habits, focus, daily notes — with a corruption-proof daily-note contract and offline analytics no other TickTick tool has.",
+      "search_terms": [
+        "ticktick",
+        "ticktick-pp-cli",
+        "Every TickTick surface — tasks, habits, focus, daily notes — with a corruption-proof daily-note contract and offline analytics no other TickTick tool has.",
+        "Safe Daily-Note Edit",
+        "note edit",
+        "Edit your daily note's content with a corruption-proof contract — the command can never flip the note's task kind or break its subtasks.",
+        "Agenda",
+        "One command returns today's tasks, habits with checkin state, and focus sessions together.",
+        "Week-in-Review Data Pack",
+        "review",
+        "Gather a week of completed tasks, daily notes, focus totals, and habit checkins as one structured pack ready for synthesis.",
+        "Habit Streaks",
+        "habits streaks",
+        "Current streak, longest streak, and at-risk-today flags for every habit.",
+        "Focus Stats",
+        "Focus/pomodoro time aggregated per day or per project over any window."
+      ],
+      "path": "library/productivity/ticktick",
+      "printer": "whoisharvey",
+      "printer_name": "Harvey The AI Guy",
+      "creator": {
+        "handle": "whoisharvey",
+        "name": "Harvey The AI Guy"
+      },
+      "mcp": {
+        "binary": "ticktick-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 11,
+        "public_tool_count": 0,
+        "auth_type": "api_key",
+        "env_vars": [
+          "TICKTICK_SESSION_TOKEN"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
       }
     },
     {
