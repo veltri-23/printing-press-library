@@ -294,7 +294,7 @@ test("install command installs multiple CLIs in one call", async () => {
 
   assert.equal(await command(["espn", "linear"]), 0);
   assert.equal(installed.length, 2);
-  assert.deepEqual(skills, ["pp-espn", "pp-linear"]);
+  assert.deepEqual(new Set(skills), new Set(["pp-espn", "pp-linear"]));
   assert.match(stdout.join("\n"), /Installed 2 CLI/);
 });
 
@@ -857,6 +857,36 @@ test("install command runs multi-name installs concurrently", async () => {
 
   assert.equal(await command(["espn", "linear", "opensnow", "--cli-only"]), 0);
   assert.ok(maxInFlight > 1, `expected concurrent go installs, saw max in-flight ${maxInFlight}`);
+});
+
+test("install command serializes skill installs during bulk installs", async () => {
+  let goInFlight = 0;
+  let maxGoInFlight = 0;
+  let skillInFlight = 0;
+  let maxSkillInFlight = 0;
+  const installedSkills: string[] = [];
+  const command = bulkDeps({
+    goInstall: async () => {
+      goInFlight++;
+      maxGoInFlight = Math.max(maxGoInFlight, goInFlight);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      goInFlight--;
+      return ok();
+    },
+    installSkill: async (skillName) => {
+      skillInFlight++;
+      maxSkillInFlight = Math.max(maxSkillInFlight, skillInFlight);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      installedSkills.push(skillName);
+      skillInFlight--;
+      return ok();
+    },
+  });
+
+  assert.equal(await command(["espn", "linear", "opensnow"]), 0);
+  assert.ok(maxGoInFlight > 1, `expected concurrent go installs, saw max in-flight ${maxGoInFlight}`);
+  assert.equal(maxSkillInFlight, 1);
+  assert.deepEqual(new Set(installedSkills), new Set(["pp-espn", "pp-linear", "pp-opensnow"]));
 });
 
 test("install command --all installs every catalog entry once", async () => {

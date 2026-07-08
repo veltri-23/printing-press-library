@@ -27,9 +27,7 @@ interface InstallOptions {
   categories: string[];
 }
 
-// Installs are network-bound (go-proxy resolution + skill fetch). Matches
-// update.ts's cap: several at once, but polite to the proxy and bounded for
-// concurrent global skill writes.
+// Matches update.ts's network-bound worker cap; skill-store writes are serialized separately.
 const INSTALL_CONCURRENCY = 6;
 
 interface InstallDeps {
@@ -164,10 +162,12 @@ export function createInstallCommand(overrides: Partial<InstallDeps> = {}) {
     // scrambled lines. A completion counter on stderr keeps long runs live.
     let completed = 0;
     const total = expanded.names.length;
+    const installSkill = serializeAsync(perInvocationDeps.installSkill);
     const outcomes = await mapWithConcurrency(expanded.names, INSTALL_CONCURRENCY, async (name) => {
       const lines: Array<{ stream: "out" | "err"; message: string }> = [];
       const bufferedDeps: InstallDeps = {
         ...perInvocationDeps,
+        installSkill,
         stdout: (message) => lines.push({ stream: "out", message }),
         stderr: (message) => lines.push({ stream: "err", message }),
       };
@@ -566,6 +566,20 @@ function memoize<T>(fn: () => Promise<T>): () => Promise<T> {
       cached = fn();
     }
     return cached;
+  };
+}
+
+function serializeAsync<Args extends unknown[], Result>(
+  fn: (...args: Args) => Promise<Result>,
+): (...args: Args) => Promise<Result> {
+  let previous = Promise.resolve();
+  return (...args) => {
+    const run = previous.then(() => fn(...args));
+    previous = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
   };
 }
 
