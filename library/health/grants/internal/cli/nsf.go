@@ -28,6 +28,7 @@ func cmdNSF(args []string) int {
 	if err != nil {
 		return fail(err)
 	}
+	fetched := len(awards)
 	if *minAmount > 0 {
 		var kept []sources.NSFAward
 		for _, a := range awards {
@@ -36,6 +37,14 @@ func cmdNSF(args []string) int {
 			}
 		}
 		awards = kept
+		// The NSF API returns an unordered page, so a client-side amount filter
+		// only ever sees the first `rows` records. A full page means there are
+		// almost certainly matching awards we never fetched.
+		if fetched == *rows {
+			fmt.Fprintf(os.Stderr,
+				"  (figyelem / warn: --min-amount csak az első %d, rendezetlen NSF találatra vonatkozik; növeld a --rows értékét / filter applied to the first %d unsorted results only)\n",
+				*rows, *rows)
+		}
 	}
 
 	if *asJSON {
