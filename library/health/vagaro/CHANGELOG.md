@@ -2,6 +2,10 @@
 
 This file is maintained by printing-press-library release automation. Do not hand-edit release sections in normal PRs.
 
+## 2026.7.4 - 2026-07-09
+
+- fix(vagaro): resolve rebook availability ids (#1474).
+
 ## 2026.7.3 - 2026-07-09
 
 - docs(vagaro): clarify repeat rebooking handoff (#1472).
