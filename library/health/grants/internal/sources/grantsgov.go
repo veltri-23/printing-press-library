@@ -6,8 +6,8 @@ import (
 	"html"
 )
 
-// Grants.gov Search2 API — nyitott szövetségi kiírások / open federal opportunities.
-// Keyless. Dátumformátum a találatokban: MM/DD/YYYY.
+// Grants.gov Search2 API — open federal funding opportunities.
+// Keyless. Dates in the results use MM/DD/YYYY.
 
 const (
 	grantsSearchURL = "https://api.grants.gov/v1/api/search2"
@@ -24,7 +24,7 @@ type Opportunity struct {
 	CloseDate  string      `json:"closeDate"`
 	Status     string      `json:"oppStatus"`
 
-	// Részletekből töltve (fetchOpportunity), csak --details/--min-award/--eligibility esetén.
+	// Populated from fetchOpportunity, only for --details/--min-award/--eligibility.
 	Details *OppDetails `json:"details,omitempty"`
 }
 
@@ -36,8 +36,8 @@ type OppDetails struct {
 	ApplicantTypes   []string `json:"applicantTypes,omitempty"`
 }
 
-// AwardCap: a szűréshez/kijelzéshez használt legjobb elérhető összeg —
-// keret, ha van, különben a becsült teljes finanszírozás.
+// AwardCap returns the best available amount for filtering and display: the
+// award ceiling when present, otherwise the estimated total funding.
 func (d OppDetails) AwardCap() int64 {
 	if d.AwardCeiling > 0 {
 		return d.AwardCeiling
@@ -74,7 +74,7 @@ func SearchOpportunities(keyword, agencyCode string, rows int) ([]Opportunity, i
 	}
 	opps := resp.Data.OppHits
 	for i := range opps {
-		opps[i].Title = html.UnescapeString(opps[i].Title) // pl. &ndash; a címekben
+		opps[i].Title = html.UnescapeString(opps[i].Title) // titles contain entities such as &ndash;
 	}
 	return opps, resp.Data.HitCount, nil
 }

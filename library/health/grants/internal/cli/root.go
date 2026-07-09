@@ -1,4 +1,4 @@
-// Package cli — grants-pp-cli parancs-diszpécser / command dispatcher.
+// Package cli — grants-pp-cli command dispatcher.
 package cli
 
 import (

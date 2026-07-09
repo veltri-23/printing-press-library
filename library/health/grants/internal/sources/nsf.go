@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-// NSF Awards API — megítélt NSF grantek / awarded NSF grants. Keyless.
+// NSF Awards API — awarded NSF grants. Keyless.
 const nsfAwardsURL = "https://api.nsf.gov/services/v1/awards.json"
 
 type NSFAward struct {

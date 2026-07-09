@@ -1,5 +1,5 @@
-// grants-pp-cli — nyitott kutatási pályázatok kulcs nélkül / open research grants, keyless.
-// Források / sources: Grants.gov (nyitott kiírások), NIH RePORTER + NSF (megítélt grantek).
+// grants-pp-cli — open research grants, keyless.
+// Sources: Grants.gov (open opportunities), NIH RePORTER + NSF (awarded grants).
 package main
 
 import (

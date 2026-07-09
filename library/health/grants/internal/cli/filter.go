@@ -9,9 +9,9 @@ import (
 	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/sources"
 )
 
-// parseFlexible: flag.Parse megáll az első pozicionális argumentumnál — ezért a
-// `search kulcsszó --rows 5` alakban a flagek a kulcsszóba folynának. Itt
-// újra-parszolással kiszedjük a pozicionálisokat, a flagek bárhol állhatnak.
+// parseFlexible: flag.Parse stops at the first positional argument, so in
+// `search keyword --rows 5` the flags would be swallowed into the keyword.
+// Re-parsing peels off positionals, letting flags appear anywhere.
 func parseFlexible(fs *flag.FlagSet, args []string) ([]string, error) {
 	var pos []string
 	for len(args) > 0 {
@@ -28,7 +28,7 @@ func parseFlexible(fs *flag.FlagSet, args []string) ([]string, error) {
 	return pos, nil
 }
 
-// Tiszta, tesztelhető szűrő-logika / pure, testable filter logic.
+// Pure, testable filter logic.
 
 const grantsDateLayout = "01/02/2006" // Grants.gov: MM/DD/YYYY
 
@@ -43,7 +43,7 @@ func ClosingBefore(opps []sources.Opportunity, cutoff time.Time) []sources.Oppor
 	for _, o := range opps {
 		d, err := ParseGrantsDate(o.CloseDate)
 		if err != nil {
-			continue // nincs értelmezhető határidő → kiszűrjük, mert a feltétel határidőre kérdez
+			continue // no parseable close date; the filter asks about deadlines, so drop it
 		}
 		if !d.After(cutoff) {
 			out = append(out, o)
@@ -52,7 +52,7 @@ func ClosingBefore(opps []sources.Opportunity, cutoff time.Time) []sources.Oppor
 	return out
 }
 
-// EligibilityMatches: case-insensitive substring bármely applicant type leírásban.
+// EligibilityMatches reports a case-insensitive substring hit in any applicant type.
 func EligibilityMatches(types []string, query string) bool {
 	q := strings.ToLower(strings.TrimSpace(query))
 	if q == "" {

@@ -6,7 +6,7 @@ import (
 	"github.com/mvanhorn/printing-press-library/library/health/grants/internal/sources"
 )
 
-// doctor — mindhárom keyless API elérhetőségének élő ellenőrzése.
+// doctor — live reachability check against all three keyless APIs.
 func cmdDoctor() int {
 	fmt.Println("🩺 grants-pp-cli doctor — élő API-ellenőrzés / live API check")
 	failed := false

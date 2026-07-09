@@ -2,7 +2,7 @@ package sources
 
 import "fmt"
 
-// NIH RePORTER v2 — megítélt NIH projektek / awarded NIH projects. Keyless.
+// NIH RePORTER v2 — awarded NIH projects. Keyless.
 const nihSearchURL = "https://api.reporter.nih.gov/v2/projects/search"
 
 type NIHProject struct {

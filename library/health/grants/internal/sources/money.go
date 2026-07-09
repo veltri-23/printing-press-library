@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// ParseMoney tolerant pénz-parszolás / tolerant money parsing:
-// "$1,500,000", "500000.00", 500000.0 (float64), nil, "none", "" → int64 (0 ha nem szám).
+// ParseMoney is a tolerant money parser:
+// "$1,500,000", "500000.00", 500000.0 (float64), nil, "none", "" → int64 (0 when not a number).
 func ParseMoney(v any) int64 {
 	switch x := v.(type) {
 	case nil:

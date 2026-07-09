@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// Keyless, no exec.Command — minden hívás közvetlen HTTP (retraction-checker minta).
+// Keyless, no exec.Command — every call is direct HTTP (retraction-checker pattern).
 var client = &http.Client{Timeout: 20 * time.Second}
 
 const userAgent = "grants-pp-cli/1.0 (keyless research tool)"

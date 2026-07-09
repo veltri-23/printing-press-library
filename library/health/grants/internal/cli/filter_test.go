@@ -32,7 +32,7 @@ func TestClosingBefore(t *testing.T) {
 	opps := []sources.Opportunity{
 		{Number: "A", CloseDate: "08/01/2026"},
 		{Number: "B", CloseDate: "12/31/2026"},
-		{Number: "C", CloseDate: ""},          // nincs határidő → kiesik
+		{Number: "C", CloseDate: ""}, // no close date, so it is dropped
 		{Number: "D", CloseDate: "07/15/2026"},
 	}
 	cutoff, _ := time.Parse("2006-01-02", "2026-09-01")
