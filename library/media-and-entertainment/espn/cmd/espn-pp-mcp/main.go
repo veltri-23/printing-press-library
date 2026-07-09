@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
-	mcptools "github.com/mvanhorn/printing-press-library/library/media-and-entertainment/espn/internal/mcp"
 	"github.com/mark3labs/mcp-go/server"
+	mcptools "github.com/mvanhorn/printing-press-library/library/media-and-entertainment/espn/internal/mcp"
 )
 
 // Transport selection order: --transport flag, then PP_MCP_TRANSPORT env,
@@ -23,16 +23,13 @@ const (
 	defaultHTTPAddr = ":7777"
 )
 
-// version is the printed MCP server's version, overridable at build time via ldflags.
-var version = "0.0.0-dev"
-
 func main() {
 	// Pin the learn-event surface for this process and every walker
 	// shell-out child, so usage events record surface=mcp.
 	_ = os.Setenv("ESPN_LEARN_SURFACE", "mcp")
 	s := server.NewMCPServer(
 		"ESPN",
-		version,
+		"1.0.0",
 		server.WithToolCapabilities(false),
 	)
 
