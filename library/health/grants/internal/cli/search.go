@@ -42,10 +42,14 @@ func cmdSearch(args []string) int {
 	if err != nil {
 		return fail(err)
 	}
+
+	// Capture initial fetch count before any filtering; used to detect
+	// truncation for client-side filters that only see the first page.
+	initialFetched := len(opps)
+
 	if !cutoff.IsZero() {
-		fetched := len(opps)
 		opps = ClosingBefore(opps, cutoff)
-		if fetched == *rows {
+		if initialFetched == *rows {
 			fmt.Fprintf(os.Stderr, "warning: results may be truncated (deadline filter applied to first %d rows only)\n", *rows)
 		}
 	}
@@ -53,10 +57,11 @@ func cmdSearch(args []string) int {
 	needDetails := *details || *minAward > 0 || *eligibility != ""
 	if needDetails {
 		var kept []sources.Opportunity
+		var eligibilitySkipped int
 		for _, o := range opps {
 			d, derr := sources.FetchDetails(o.ID)
 			if derr != nil {
-				fmt.Fprintf(os.Stderr, "  (figyelem / warn: %v — sor kihagyva)\n", derr)
+				fmt.Fprintf(os.Stderr, "  (warn: %v — skipped)\n", derr)
 				continue
 			}
 			o.Details = d
@@ -64,11 +69,26 @@ func cmdSearch(args []string) int {
 				continue
 			}
 			if !EligibilityMatches(d.ApplicantTypes, *eligibility) {
+				if *eligibility != "" && len(d.ApplicantTypes) == 0 {
+					eligibilitySkipped++
+				}
 				continue
 			}
 			kept = append(kept, o)
 		}
 		opps = kept
+
+		// Warn when the initial page was full: higher-award grants on subsequent
+		// pages are silently missed because Grants.gov has no amount sort.
+		if *minAward > 0 && initialFetched == *rows {
+			fmt.Fprintf(os.Stderr, "  (warning: --min-award filter applies only to the first %d fetched results; increase --rows to fetch more)\n", *rows)
+		}
+
+		// Warn when opportunities were dropped solely because applicant-type
+		// metadata was absent, not because they genuinely do not match.
+		if eligibilitySkipped > 0 {
+			fmt.Fprintf(os.Stderr, "  (warning: %d opportunity/opportunities excluded because applicant-type metadata was absent; they may still be eligible — verify manually)\n", eligibilitySkipped)
+		}
 	}
 
 	if *asJSON {
@@ -85,7 +105,7 @@ func cmdSearch(args []string) int {
 		if o.Details != nil {
 			label := "keret"
 			if o.Details.AwardCeiling == 0 && o.Details.EstimatedFunding > 0 {
-				label = "becsült" // estimatedFunding, nem hard ceiling
+				label = "becsült" // estimatedFunding, not a hard ceiling
 			}
 			fmt.Printf("  %14s %s: %s", "", label, FormatMoney(o.Details.AwardCap()))
 			if len(o.Details.ApplicantTypes) > 0 {
