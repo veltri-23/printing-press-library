@@ -29,12 +29,20 @@ import (
 
 const defaultUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 
+// maxResponseBytes caps how much of a success (2xx) response body we read into
+// memory. Substack's largest archive/post JSON is a few MB; 50 MiB leaves ample
+// headroom while stopping an oversized, malformed, or redirected body from
+// ballooning the heap. The error paths already bound their reads with
+// io.LimitReader — this bounds the success path too.
+const maxResponseBytes = 50 << 20 // 50 MiB
+
 // Client fetches from a single Substack publication host.
 type Client struct {
-	http    *http.Client
-	limiter *cliutil.AdaptiveLimiter
-	ua      string
-	session Session
+	http     *http.Client
+	limiter  *cliutil.AdaptiveLimiter
+	ua       string
+	session  Session
+	maxBytes int64 // cap on a success-path body read; defaults to maxResponseBytes
 }
 
 // NewClient returns a Tier-0 (anonymous) client. The redirect policy follows
@@ -54,9 +62,10 @@ func NewAuthedClient(sess Session) *Client {
 
 func newClient(sess Session) *Client {
 	c := &Client{
-		limiter: cliutil.NewAdaptiveLimiter(2.0),
-		ua:      defaultUA,
-		session: sess,
+		limiter:  cliutil.NewAdaptiveLimiter(2.0),
+		ua:       defaultUA,
+		session:  sess,
+		maxBytes: maxResponseBytes,
 	}
 	c.http = &http.Client{
 		Timeout:       30 * time.Second,
@@ -167,7 +176,18 @@ func (c *Client) get(ctx context.Context, rawURL string) ([]byte, error) {
 		return nil, fmt.Errorf("GET %s: HTTP %d: %s", rawURL, resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 	c.limiter.OnSuccess()
-	return io.ReadAll(resp.Body)
+	// Bound the success-path read: read at most maxBytes+1 and treat a body that
+	// reaches the cap as an error rather than silently truncating it (a truncated
+	// JSON would fail to parse downstream with a far less obvious message). This
+	// keeps an oversized or maliciously-redirected body from ballooning the heap.
+	data, err := io.ReadAll(io.LimitReader(resp.Body, c.maxBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(data)) > c.maxBytes {
+		return nil, fmt.Errorf("GET %s: response body exceeds %d bytes", rawURL, c.maxBytes)
+	}
+	return data, nil
 }
 
 // PostSummary is the minimal shape the CLI needs from an archive item; the full

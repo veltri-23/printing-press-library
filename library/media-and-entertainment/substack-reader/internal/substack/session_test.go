@@ -3,6 +3,8 @@
 package substack
 
 import (
+	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -92,7 +94,7 @@ func TestLoadSessionExplicitCookieFileBeatsDefault(t *testing.T) {
 	// the default file was tried first, so a stale default silently beat an
 	// explicit override and paid posts read as preview-only (Greptile P1).
 	home := t.TempDir()
-	t.Setenv("SUBSTACK_HOME", home) // steers ConfigDir -> <home>/config
+	t.Setenv("SUBSTACK_READER_HOME", home) // steers ConfigDir -> <home>/config
 	t.Setenv(EnvSession, "")      // no env session; exercise the file path
 	t.Setenv(EnvCookieFile, "")   // set below, after writing the default
 
@@ -123,7 +125,7 @@ func TestLoadSessionExplicitMissingCookieFileIsHardError(t *testing.T) {
 	// error, not a silent fall-through to a stale default cookie (Greptile P1,
 	// follow-up to the precedence fix). The default cookie below must NOT win.
 	home := t.TempDir()
-	t.Setenv("SUBSTACK_HOME", home)
+	t.Setenv("SUBSTACK_READER_HOME", home)
 	t.Setenv(EnvSession, "")
 	defaultPath, err := DefaultCookieFilePath()
 	if err != nil {
@@ -148,7 +150,7 @@ func TestLoadSessionEmptyExplicitCookieFileIsHardError(t *testing.T) {
 	// must be a hard error, not a silent fall-through to the default — the final
 	// edge of the explicit-is-authoritative class (Greptile P1).
 	home := t.TempDir()
-	t.Setenv("SUBSTACK_HOME", home)
+	t.Setenv("SUBSTACK_READER_HOME", home)
 	t.Setenv(EnvSession, "")
 	defaultPath, err := DefaultCookieFilePath()
 	if err != nil {
@@ -178,7 +180,7 @@ func TestLoadSessionCorruptDefaultDegradesToAnonymous(t *testing.T) {
 	// (and lets read.go propagate LoadSession errors unconditionally, knowing an
 	// error always means an explicit cookie failed).
 	home := t.TempDir()
-	t.Setenv("SUBSTACK_HOME", home)
+	t.Setenv("SUBSTACK_READER_HOME", home)
 	t.Setenv(EnvSession, "")
 	t.Setenv(EnvCookieFile, "")
 	defaultPath, err := DefaultCookieFilePath()
@@ -197,6 +199,41 @@ func TestLoadSessionCorruptDefaultDegradesToAnonymous(t *testing.T) {
 	}
 	if !got.IsZero() {
 		t.Errorf("corrupt default must yield an anonymous session, got %q", got.SID)
+	}
+}
+
+func TestLoadSessionUnparseableEnvWarns(t *testing.T) {
+	// A non-empty SUBSTACK_SESSION that carries no recognizable substack.sid
+	// (e.g. "garbage=value" — has an '=' but no known cookie key) must WARN on
+	// stderr rather than silently fall through to the cookie files as if unset
+	// (Greptile P2). With no cookie file configured it then degrades to anonymous.
+	home := t.TempDir()
+	t.Setenv("SUBSTACK_READER_HOME", home) // steer ConfigDir -> <home>/config (no cookie there)
+	t.Setenv(EnvCookieFile, "")
+	t.Setenv(EnvSession, "garbage=value")
+
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("os.Pipe: %v", err)
+	}
+	orig := os.Stderr
+	os.Stderr = w
+
+	got, loadErr := LoadSession()
+
+	_ = w.Close()
+	os.Stderr = orig
+	var buf bytes.Buffer
+	_, _ = io.Copy(&buf, r)
+
+	if loadErr != nil {
+		t.Fatalf("LoadSession should degrade to anonymous, not error: %v", loadErr)
+	}
+	if !got.IsZero() {
+		t.Errorf("unparseable SUBSTACK_SESSION should fall through to anonymous, got SID %q", got.SID)
+	}
+	if !strings.Contains(buf.String(), "SUBSTACK_SESSION") {
+		t.Errorf("expected a stderr warning mentioning SUBSTACK_SESSION, got: %q", buf.String())
 	}
 }
 

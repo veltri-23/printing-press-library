@@ -9,5 +9,5 @@
   "files": [
     "internal/substack/render.go"
   ],
-  "validated_outcome": "Hermetic render tests pin the tier labels (internal/substack render_test.go green under go1.26.5). A free post reads as tier full with the complete body (verified live: astralcodexten/introducing-plan-a -> access free, full body)."
+  "validated_outcome": "Hermetic render tests pin the tier labels (internal/substack render_test.go green under go1.26.5). A free post reads as tier full with the complete body (verified live: astralcodexten/introducing-plan-a -> access free, full body). Greptile P2 hardening (PR #1486): HTMLToText now strips whole <script>/<style> blocks (tag AND inner text) before the generic tag stripper, so embedded JS/CSS can no longer leak into rendered prose and inflate WordCount — which would otherwise skew the fullBodyRatio entitlement gate. Regression: internal/substack render_test.go TestHTMLToTextStripsScriptAndStyle (asserts no script/style tokens survive and WordCount counts only prose)."
 }

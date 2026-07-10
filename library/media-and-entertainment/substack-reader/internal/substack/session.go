@@ -117,6 +117,13 @@ func LoadSession() (Session, error) {
 		if s := ParseSessionEnv(raw); !s.IsZero() {
 			return s, nil
 		}
+		// The var is set but held no recognizable substack.sid (e.g. a value with
+		// an '=' but no known cookie key, or an empty pair). Warn rather than
+		// silently treat it as unset — a misconfigured SUBSTACK_SESSION otherwise
+		// looks identical to "no session", and the user would wrongly conclude the
+		// tool ignored their credential on purpose. Then fall through to the cookie
+		// files / anonymous.
+		fmt.Fprintf(os.Stderr, "warning: %s is set but no substack.sid could be parsed from it; ignoring it and falling back to the cookie file / anonymous. Set it to your substack.sid value or a \"substack.sid=<value>\" cookie fragment.\n", EnvSession)
 	}
 
 	// The explicit env-pointed file is authoritative: once SUBSTACK_COOKIE_FILE

@@ -20,6 +20,8 @@ import (
 )
 
 var (
+	scriptRE      = regexp.MustCompile(`(?is)<script\b[^>]*>.*?</script\s*>`)
+	styleRE       = regexp.MustCompile(`(?is)<style\b[^>]*>.*?</style\s*>`)
 	imgTagRE      = regexp.MustCompile(`(?is)<img\b[^>]*>`)
 	attrSrcRE     = regexp.MustCompile(`(?is)\bsrc\s*=\s*["']([^"']*)["']`)
 	attrAltRE     = regexp.MustCompile(`(?is)\balt\s*=\s*["']([^"']*)["']`)
@@ -41,6 +43,13 @@ func HTMLToText(bodyHTML string) string {
 		return ""
 	}
 	s := bodyHTML
+	// Drop <script>/<style> blocks (tag AND inner text) before anything else:
+	// their contents are code/CSS, not prose, and the generic tag stripper below
+	// only removes the tags — leaving the inner text to leak into the rendered
+	// body and inflate WordCount, which would skew the fullBodyRatio entitlement
+	// gate in DetectAccess.
+	s = scriptRE.ReplaceAllString(s, "")
+	s = styleRE.ReplaceAllString(s, "")
 	// Images first, before generic tag stripping erases their attributes.
 	s = imgTagRE.ReplaceAllStringFunc(s, func(tag string) string {
 		src := ""

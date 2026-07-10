@@ -23,6 +23,27 @@ func TestHTMLToText(t *testing.T) {
 	}
 }
 
+func TestHTMLToTextStripsScriptAndStyle(t *testing.T) {
+	// <script>/<style> inner text must be removed as whole blocks BEFORE the
+	// generic tag stripper runs — otherwise their contents leak into the prose
+	// and inflate WordCount, which skews the fullBodyRatio entitlement gate.
+	// Regression for the Greptile P2 finding.
+	in := `<style type="text/css">.foo{color:red;font-size:14px}</style>` +
+		`<p>Real prose here.</p>` +
+		`<script>var x = 1; alert("leaky leaky leaky");</script>` +
+		`<p>More real prose.</p>`
+	out := HTMLToText(in)
+	for _, leak := range []string{"color:red", "font-size", "alert", "leaky", "var x"} {
+		if strings.Contains(out, leak) {
+			t.Errorf("script/style inner text leaked into prose (found %q) in:\n%s", leak, out)
+		}
+	}
+	// Only the six real prose words should count; script/style words excluded.
+	if got := WordCount(out); got != 6 {
+		t.Errorf("WordCount = %d, want 6 (script/style contents must not count):\n%s", got, out)
+	}
+}
+
 func TestWordCountExcludesImagesAndURLs(t *testing.T) {
 	text := "one two three ![alt text here](https://cdn/x.jpg) https://example.com/page four"
 	if got := WordCount(text); got != 4 {

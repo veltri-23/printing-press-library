@@ -10,5 +10,5 @@
     "internal/substack/session.go",
     "internal/substack/client.go"
   ],
-  "validated_outcome": "Hermetic unit tests for the precedence chain, masking, and cookie-host invariant pass (internal/substack session_test.go green under go1.26.5). Cookie values never logged, printed, or committed."
+  "validated_outcome": "Hermetic unit tests for the precedence chain, masking, and cookie-host invariant pass (internal/substack session_test.go green under go1.26.5). Cookie values never logged, printed, or committed. Greptile P2 hardening (PR #1486): a non-empty SUBSTACK_SESSION that parses to no substack.sid (e.g. \"token=abc\" — an '=' but no known cookie key) now warns on stderr and falls through, instead of silently behaving as if unset, so a misconfigured opt-in credential is visible to the user. Regression: internal/substack session_test.go TestLoadSessionUnparseableEnvWarns. Also corrected a test-hygiene bug in the same file: the LoadSession tests used the ineffective env var SUBSTACK_HOME (the real override is SUBSTACK_READER_HOME), so they read/wrote the operator's real ~/.config cookie file; now hermetic (verified: real cookie file mtime unchanged across a full go test run)."
 }
