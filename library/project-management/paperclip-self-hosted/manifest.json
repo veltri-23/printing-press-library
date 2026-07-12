@@ -1,0 +1,27 @@
+{
+  "author": {
+    "name": "Hunter Veltri"
+  },
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ]
+  },
+  "description": "Mirror-read MCP for the self-hosted Paperclip board (http://paperclip.example.test). Local SQLite cache with FTS5; auto-resolves companyId from the cached single company.",
+  "display_name": "Paperclip CLI",
+  "license": "Apache-2.0",
+  "manifest_version": "0.3",
+  "name": "paperclip-pp-mcp",
+  "server": {
+    "entry_point": "bin/paperclip-pp-mcp",
+    "mcp_config": {
+      "args": [],
+      "command": "${__dirname}/bin/paperclip-pp-mcp"
+    },
+    "type": "binary"
+  },
+  "version": "4.28.0"
+}
