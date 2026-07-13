@@ -5305,34 +5305,35 @@
       "search_terms": [
         "everbee",
         "everbee-pp-cli",
-        "Research Etsy products, shops, and keywords from EverBee in a repeatable agent-ready workflow.",
-        "Opportunity Shortlist",
-        "Rank Etsy product opportunities by combining product analytics, keyword demand, competition, and local trend history.",
-        "Niche Score",
-        "Score a niche by weighing search demand, competition, product saturation, pricing, and trend movement.",
-        "Shop Gaps",
-        "Find competitor shop openings from product mix, pricing bands, tags, and keyword coverage.",
-        "Tag Gap",
-        "tags gap",
-        "Compare winning listing tags against a target shop or keyword set to reveal missing SEO coverage.",
-        "Keyword Clusters",
-        "keywords cluster",
-        "Group related keyword suggestions by term overlap, demand, competition, and opportunity score.",
-        "Trend Diff",
-        "trends diff",
-        "Compare saved research snapshots to show which products, shops, or keywords moved over time.",
-        "Competitor Watch",
-        "competitors watch",
-        "Detect competitor changes in top products, price bands, and tags across saved shop snapshots.",
-        "Listing Audit",
-        "Audit a listing's keyword and tag fit using EverBee-derived product and keyword context."
+        "Etsy niche research whose scores come with their evidence attached — seeded search, honest confidence, and a local store that turns repeat research into trends.",
+        "Evidence-aware niche verdict",
+        "research niche",
+        "Score an Etsy niche from a seed keyword and get the evidence behind the score, not just the number.",
+        "Batch sub-niche discovery",
+        "research subniches",
+        "Expand a parent niche into child niches and rank them on comparable, normalized scores.",
+        "Competitor sampling",
+        "research competitors",
+        "Get the market shape of a niche: result count, median price, review and sales density, listing-age quartiles.",
+        "Tag and title consensus with seasonality",
+        "research tags",
+        "See which tags and title tokens the winning listings in a niche agree on, and whether demand is seasonal or evergreen when EverBee supplies trend data.",
+        "Niche drift vs baseline",
+        "research drift",
+        "Compare a niche against a saved baseline to see what actually moved since last time.",
+        "Listing and handle identity resolution",
+        "research listing",
+        "Resolve an Etsy listing URL or ID to what we actually know about it, and say so plainly when we know nothing.",
+        "Semantic capability self-test",
+        "selftest",
+        "Check that the research path is not just reachable but actually returning relevant data."
       ],
       "path": "library/marketing/everbee",
       "release": {
         "cli_name": "everbee-pp-cli",
-        "version": "2026.7.1",
-        "released_at": "2026-07-08T18:21:21Z",
-        "source_commit": "11d7b4ea752c9c8fb8909037133058eb57560cc0"
+        "version": "2026.7.2",
+        "released_at": "2026-07-13T08:33:59Z",
+        "source_commit": "b79983575263b64cbcf56951272c8e6e3a2e9462"
       },
       "printer": "horknfbr",
       "printer_name": "horknfbr",
@@ -5346,7 +5347,7 @@
           "stdio",
           "http"
         ],
-        "tool_count": 5,
+        "tool_count": 6,
         "public_tool_count": 0,
         "auth_type": "api_key",
         "env_vars": [
@@ -5504,7 +5505,7 @@
         "faa-registry",
         "FAA Aircraft Registry",
         "faa-registry-pp-cli",
-        "Every FAA aircraft lookup the registry website offers, plus a daily-synced offline copy of the entire US registry that unlocks fleet reports, hex decoding, ownership history, and expiration alerts no other tool has.",
+        "Look up any US aircraft by tail number from the terminal — live FAA registry inquiries plus a daily-synced offline copy of the full registry for fleet queries, Mode S hex decoding, and expiration alerts no other tool has.",
         "Fleet composition report",
         "fleet report",
         "One command turns an owner name into a full fleet profile: aircraft count, model mix, jet/turboprop/piston split, average seats and year built.",
@@ -5982,9 +5983,9 @@
       "path": "library/travel/flight-goat",
       "release": {
         "cli_name": "flight-goat-pp-cli",
-        "version": "2026.7.2",
-        "released_at": "2026-07-10T05:42:37Z",
-        "source_commit": "64702c4716584fe5c16bc438a5bc204803347b73"
+        "version": "2026.7.3",
+        "released_at": "2026-07-13T08:32:42Z",
+        "source_commit": "ceca5e2352dee41e4ad77ceb1428e283dd0bb29b"
       },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
@@ -8574,7 +8575,7 @@
         "janeapp",
         "Jane App",
         "janeapp-pp-cli",
-        "Book, view, and manage your Jane (janeapp.com) appointments across every clinic from one terminal — with a unified agenda, next-opening finder, and availability watch the patient portal can't do.",
+        "Book, view, and manage your Jane (janeapp.com) appointments across every clinic from the terminal — unified agenda, next-opening finder, and availability watch the patient portal can't do.",
         "Jane has no public patient API. Each clinic is a separate subdomain with its\nown patient account. Add a profile for a clinic and log in with your patient\nusername/email and password:\n\n  janeapp-pp-cli profile add embophysio --url https://embophysio.janeapp.com\n  janeapp-pp-cli auth login --profile embophysio\n\nThe CLI performs Jane's two-step sign-in and stores the session cookie for\nthat profile. Repeat for each clinic. `--all-profiles` fans read commands\nacross every logged-in clinic.",
         "Unified cross-clinic agenda",
         "agenda",
@@ -8627,13 +8628,22 @@
         "Order Jimmy John's from the terminal — Freaky Fast Rewards stacking, half-order builder, and one-shot reorder.",
         "Unwich Converter",
         "menu unwich-convert",
-        "Convert a sandwich's modifier set to an Unwich (lettuce wrap) variant — pure-local computation, no live API call.",
+        "Convert a sandwich's modifier set to an Unwich (lettuce wrap) variant — pure-local modifier-delta computation, no live API call.",
+        "Half-and-Half Composer",
+        "menu half-and-half",
+        "Compose a two-product share order with the agent-facing note that JJ doesn't natively support half-and-half slicing.",
         "Office Lunch Planner",
         "order plan",
         "Suggest a sized cart for a group order — sandwiches + sides + cookies + drinks scaled to N people with dietary filters.",
-        "Half-and-Half Composer",
-        "menu half-and-half",
-        "Compose a two-product share order with the agent-facing note that JJ doesn't natively support half-and-half slicing."
+        "Local Stats",
+        "stats",
+        "Local SQL aggregation over synced stores/products/orders — offline analytics, no live API call.",
+        "Ordering Trends",
+        "trends",
+        "Weekly cadence and ordering breakdown derived from local order history.",
+        "Store Reconcile",
+        "reconcile",
+        "Diff locally synced stores against the live API and report drift."
       ],
       "path": "library/food-and-dining/jimmy-johns",
       "release": {
@@ -8665,7 +8675,7 @@
         "auth_type": "cookie",
         "env_vars": [],
         "mcp_ready": "partial",
-        "spec_format": "openapi3"
+        "spec_format": "internal"
       }
     },
     {
@@ -16476,9 +16486,9 @@
       "path": "library/food-and-dining/table-reservation-goat",
       "release": {
         "cli_name": "table-reservation-goat-pp-cli",
-        "version": "2026.7.3",
-        "released_at": "2026-07-08T23:15:22Z",
-        "source_commit": "220c1563d0375ec8741c4c377b4bb5a4317cbf6a"
+        "version": "2026.7.4",
+        "released_at": "2026-07-13T08:31:55Z",
+        "source_commit": "287b600a63d1111746e08832271a553fd53163be"
       },
       "printer": "pejmanjohn",
       "printer_name": "Pejman Pour-Moezzi",
