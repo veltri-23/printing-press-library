@@ -14334,6 +14334,53 @@
       }
     },
     {
+      "name": "sea-airport-parking",
+      "category": "travel",
+      "api": "SEA Airport Parking",
+      "description": "Check, track, and get alerted on SEA's official on-airport Reserved garage — with a local price/availability history and sold-out watch that no site or aggregator has.",
+      "search_terms": [
+        "sea-airport-parking",
+        "SEA Airport Parking",
+        "sea-airport-parking-pp-cli",
+        "Check, track, and get alerted on SEA's official on-airport Reserved garage — with a local price/availability history and sold-out watch that no site or aggregator has.",
+        "Flexible-date sweep",
+        "sweep",
+        "Search a flexible date window for the cheapest or any-available Reserved stay.",
+        "Sold-out watch",
+        "watch",
+        "Poll a sold-out or target date range until Reserved opens up (or drops below a price), then notify.",
+        "Quote-snapshot history",
+        "history",
+        "List every recorded quote snapshot for a date range: price, availability, promo, captured time.",
+        "Price / availability drift",
+        "drift",
+        "Summarize how a range's price and availability moved across stored snapshots: first vs latest, min/max, sold-out flips.",
+        "Availability calendar",
+        "calendar",
+        "Render price and open/sold-out across many entry days for a fixed-length stay."
+      ],
+      "path": "library/travel/sea-airport-parking",
+      "printer": "omarshahine",
+      "printer_name": "Omar Shahine",
+      "creator": {
+        "handle": "omarshahine",
+        "name": "Omar Shahine"
+      },
+      "mcp": {
+        "binary": "sea-airport-parking-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 1,
+        "public_tool_count": 1,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "seats-aero",
       "category": "travel",
       "api": "Seats Aero Partner",
@@ -16182,9 +16229,9 @@
       "path": "library/developer-tools/supabase",
       "release": {
         "cli_name": "supabase-pp-cli",
-        "version": "2026.7.1",
-        "released_at": "2026-07-08T18:21:21Z",
-        "source_commit": "11d7b4ea752c9c8fb8909037133058eb57560cc0"
+        "version": "2026.7.2",
+        "released_at": "2026-07-13T08:40:26Z",
+        "source_commit": "24a07b1badcaa3e6f967b0e9e7d001aa916c591b"
       },
       "printer": "giacaglia",
       "printer_name": "Giuliano Giacaglia",
