@@ -19202,9 +19202,9 @@
       "path": "library/developer-tools/yeswehack",
       "release": {
         "cli_name": "yeswehack-pp-cli",
-        "version": "2026.7.1",
-        "released_at": "2026-07-08T18:21:21Z",
-        "source_commit": "11d7b4ea752c9c8fb8909037133058eb57560cc0"
+        "version": "2026.7.2",
+        "released_at": "2026-07-18T05:21:04Z",
+        "source_commit": "776453ac3efa321bd30719d7b9ae991583c85b2a"
       },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
