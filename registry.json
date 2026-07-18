@@ -7298,6 +7298,59 @@
       }
     },
     {
+      "name": "google-trends",
+      "category": "marketing",
+      "api": "Google Trends",
+      "description": "Every Google Trends workflow pytrends offered, plus the local history and rate-limit resilience that archived, frozen wrapper never had.",
+      "search_terms": [
+        "google-trends",
+        "Google Trends",
+        "google-trends-pp-cli",
+        "Every Google Trends workflow pytrends offered, plus the local history and rate-limit resilience that archived, frozen wrapper never had.",
+        "Time-Travel Trending Lookup",
+        "trends trending at",
+        "See what was trending on a specific past date and geo — a question Google Trends' own live UI cannot answer.",
+        "Trend History Search",
+        "trends history search",
+        "Full-text search across every related-term and trending-topic result you've ever synced, offline.",
+        "Snapshot Diff / Rising-Term Watchlist",
+        "trends changes",
+        "See exactly what changed for a keyword's related terms and interest score since your last sync.",
+        "Content Opportunity Ranking",
+        "trends opportunities",
+        "Ranks a keyword's related/rising terms by rising-momentum times parent-topic growth, surfacing the best content ideas first.",
+        "Seasonality Index",
+        "trends seasonality",
+        "Computes monthly averages, peak month, and a seasonality strength score for a keyword from cached history.",
+        "Stale Query Report",
+        "trends stale",
+        "Lists tracked keywords whose local data hasn't been refreshed recently, so you know what to re-sync before you hit a rate limit.",
+        "Geo-Divergence Finder",
+        "trends geo-gap",
+        "Ranks the regions where two keywords' interest diverges most, instead of raw per-region values you'd have to compare by hand."
+      ],
+      "path": "library/marketing/google-trends",
+      "printer": "kmorebetter",
+      "printer_name": "Kerry Morrison",
+      "creator": {
+        "handle": "kmorebetter",
+        "name": "Kerry Morrison"
+      },
+      "mcp": {
+        "binary": "google-trends-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 6,
+        "public_tool_count": 2,
+        "auth_type": "cookie",
+        "env_vars": [],
+        "mcp_ready": "partial",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "gorgias",
       "category": "sales-and-crm",
       "api": "Gorgias",
@@ -12287,6 +12340,12 @@
         "Bootstraps a private OAuth bundle and reuses or refreshes it for bearer-authenticated catalog reads."
       ],
       "path": "library/health/peloton",
+      "release": {
+        "cli_name": "peloton-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-18T05:12:53Z",
+        "source_commit": "22179cc37cddf8c2f8ac760057b79ea42b775dd5"
+      },
       "printer": "itsmefelix-",
       "printer_name": "Felix Banuchi",
       "creator": {
