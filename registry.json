@@ -7330,6 +7330,12 @@
         "Ranks the regions where two keywords' interest diverges most, instead of raw per-region values you'd have to compare by hand."
       ],
       "path": "library/marketing/google-trends",
+      "release": {
+        "cli_name": "google-trends-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-18T05:14:12Z",
+        "source_commit": "044ed1a0a074f2e83d45a40e09f2d31c72c05e80"
+      },
       "printer": "kmorebetter",
       "printer_name": "Kerry Morrison",
       "creator": {
@@ -15649,6 +15655,43 @@
         "mcp_ready": "full",
         "spec_format": "openapi3"
       }
+    },
+    {
+      "name": "soccer-goat",
+      "category": "media-and-entertainment",
+      "api": "soccer-goat",
+      "description": "Type any player or club and get market value, EA FC rating, potential, and stats in one report, joined across sources that live in separate walled silos.",
+      "search_terms": [
+        "soccer-goat",
+        "soccer-goat-pp-cli",
+        "Unified player dossier",
+        "player",
+        "Type any player name and get market value, EA FC rating, potential, and key stats in one report.",
+        "Team squad value+rating board",
+        "team",
+        "Type a club name and get the full squad with each player's market value and rating, plus squad totals.",
+        "Market-vs-game divergence",
+        "over-under-rated",
+        "Flag players whose transfer-market value is far above or below their EA game rating.",
+        "Potential growth gap",
+        "potential-gap",
+        "Rank players by headroom (potential minus current rating).",
+        "Cross-source head-to-head",
+        "compare",
+        "Side-by-side value, rating, potential, and stats for two players.",
+        "Wonderkid scout query",
+        "wonderkids",
+        "Find young players with high potential and rising market value."
+      ],
+      "path": "library/media-and-entertainment/soccer-goat",
+      "printer": "mvanhorn",
+      "printer_name": "Matt Van Horn",
+      "contributors": [
+        {
+          "handle": "mvanhorn",
+          "name": "Matt Van Horn"
+        }
+      ]
     },
     {
       "name": "splitwise",
