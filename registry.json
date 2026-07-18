@@ -12274,6 +12274,43 @@
       }
     },
     {
+      "name": "peloton",
+      "category": "health",
+      "api": "Peloton",
+      "description": "Read-only Peloton workout, class, and structural-provider facts in a private local store.",
+      "search_terms": [
+        "peloton",
+        "peloton-pp-cli",
+        "Read-only Peloton workout, class, and structural-provider facts in a private local store.",
+        "Managed OAuth catalog access",
+        "auth setup",
+        "Bootstraps a private OAuth bundle and reuses or refreshes it for bearer-authenticated catalog reads."
+      ],
+      "path": "library/health/peloton",
+      "printer": "itsmefelix-",
+      "printer_name": "Felix Banuchi",
+      "creator": {
+        "handle": "itsmefelix-",
+        "name": "Felix Banuchi"
+      },
+      "mcp": {
+        "binary": "peloton-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 10,
+        "public_tool_count": 0,
+        "auth_type": "oauth2_refresh",
+        "env_vars": [
+          "PELOTON_OAUTH_USERNAME",
+          "PELOTON_OAUTH_PASSWORD"
+        ],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "pexels",
       "category": "media-and-entertainment",
       "api": "Pexels",
