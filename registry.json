@@ -5102,7 +5102,8 @@
       "mcp": {
         "binary": "espn-pp-mcp",
         "transports": [
-          "stdio"
+          "stdio",
+          "http"
         ],
         "tool_count": 7,
         "public_tool_count": 0,
@@ -7482,6 +7483,37 @@
         ],
         "mcp_ready": "full",
         "spec_format": "openapi3"
+      }
+    },
+    {
+      "name": "grants",
+      "category": "health",
+      "api": "Research Grants Finder",
+      "description": "Open US federal research funding from the terminal, keyless — Grants.gov open opportunities with deadline/agency/award/eligibility filters, plus awarded NIH RePORTER and NSF grants as funding benchmarks.",
+      "search_terms": [
+        "grants",
+        "Research Grants Finder",
+        "grants-pp-cli",
+        "Open US federal research funding from the terminal, keyless — Grants.gov open opportunities with deadline/agency/award/eligibility filters, plus awarded NIH RePORTER and NSF grants as funding benchmarks.",
+        "Award Cap Fallback",
+        "search --min-award",
+        "Filters by the best available award amount — awardCeiling with an estimatedFunding fallback — because Grants.gov frequently reports a zero ceiling on real opportunities. Output labels the fallback so users know the number is an estimate.",
+        "Eligibility Substring Filter",
+        "search --eligibility",
+        "Client-side applicant-type filter over per-opportunity fetchOpportunity details, e.g. limit results to universities or small businesses without reading each synopsis.",
+        "Cross-Source Doctor",
+        "doctor",
+        "One command live-checks all three keyless upstreams (Grants.gov Search2, NIH RePORTER, NSF Awards) before a research session, with per-source status.",
+        "Awarded-vs-Open Benchmarking",
+        "nih / nsf",
+        "Pairs open Grants.gov calls with historically awarded NIH RePORTER and NSF grants so applicants can benchmark typical award sizes for a topic before applying."
+      ],
+      "path": "library/health/grants",
+      "printer": "laci141",
+      "printer_name": "laci141",
+      "creator": {
+        "handle": "laci141",
+        "name": "laci141"
       }
     },
     {
@@ -16722,9 +16754,9 @@
       "path": "library/food-and-dining/table-reservation-goat",
       "release": {
         "cli_name": "table-reservation-goat-pp-cli",
-        "version": "2026.7.4",
-        "released_at": "2026-07-13T08:31:55Z",
-        "source_commit": "287b600a63d1111746e08832271a553fd53163be"
+        "version": "2026.7.5",
+        "released_at": "2026-07-18T05:16:59Z",
+        "source_commit": "6adda32be0c5efdd581e2e8285b8e98dfae8af4e"
       },
       "printer": "pejmanjohn",
       "printer_name": "Pejman Pour-Moezzi",
