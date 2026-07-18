@@ -2068,9 +2068,9 @@
       "path": "library/devices/bambu",
       "release": {
         "cli_name": "bambu-pp-cli",
-        "version": "2026.7.1",
-        "released_at": "2026-07-12T02:15:09Z",
-        "source_commit": "382949b6061fa86e2576cc7888bb61639bb3a507"
+        "version": "2026.7.2",
+        "released_at": "2026-07-18T05:15:14Z",
+        "source_commit": "d22065c4428b362db1099e1de0eef971ef67cd67"
       },
       "printer": "twidtwid",
       "printer_name": "Todd Dailey",
@@ -16221,6 +16221,53 @@
       }
     },
     {
+      "name": "substack-reader",
+      "category": "media-and-entertainment",
+      "api": "Substack Reader",
+      "description": "Read any Substack publication as a local, full-text-searchable corpus — keyless for free posts, your own session for what you subscribe to.",
+      "search_terms": [
+        "substack-reader",
+        "Substack Reader",
+        "substack-reader-pp-cli",
+        "Read any Substack publication as a local, full-text-searchable corpus — keyless for free posts, your own session for what you subscribe to.",
+        "Local publication corpus",
+        "archive",
+        "Archive a whole Substack publication into a local SQLite mirror you can read, search, and query offline — no other Substack tool builds a persistent corpus.",
+        "Entitlement-aware read",
+        "read",
+        "Read a post's full text; free posts keyless, and paid posts you subscribe to via your own session cookie — with an honest 'preview only, you're not entitled' signal.",
+        "Cross-publication digest",
+        "digest",
+        "A time-windowed digest across every publication in your local corpus — what's new since you last synced, ranked, in one view.",
+        "Author comparison",
+        "author-compare",
+        "Compare two publications' cadence, topics, and free/paid mix from the local corpus.",
+        "Local corpus SQL",
+        "sql",
+        "Run read-only SQL over your local Substack corpus for arbitrary analytics — post cadence, audience mix, longest posts — from data you've already archived."
+      ],
+      "path": "library/media-and-entertainment/substack-reader",
+      "printer": "maxswinguy",
+      "printer_name": "Maxime Delavergne",
+      "creator": {
+        "handle": "maxswinguy",
+        "name": "Maxime Delavergne"
+      },
+      "mcp": {
+        "binary": "substack-reader-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 3,
+        "public_tool_count": 3,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "sumble",
       "category": "sales-and-crm",
       "api": "Sumble",
@@ -16689,6 +16736,10 @@
         {
           "handle": "ganes-j",
           "name": "Jesse Ganes"
+        },
+        {
+          "handle": "teebs4140",
+          "name": "Dylan Thibault"
         }
       ],
       "mcp": {
