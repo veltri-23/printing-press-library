@@ -1,7 +1,7 @@
 ---
-name: pp-table-reservation-goat
-description: "Printing Press CLI for Table Reservation Goat. One reservation CLI for OpenTable, Tock, and Resy — search all three networks at once, watch for cancellations"
-author: "Pejman Pour-Moezzi"
+name: pp-substack-reader
+description: "Read any Substack publication as a local, full-text-searchable corpus — keyless for free posts, your own session for what you subscribe to. Trigger phrases: `archive this Substack`, `read this Substack post`, `search my Substack corpus`, `what's new in my newsletters`, `use substack-reader`, `run substack`."
+author: "Maxime Delavergne"
 license: "Apache-2.0"
 argument-hint: "<command> [args] | install cli|mcp"
 allowed-tools: "Read Bash"
@@ -9,66 +9,107 @@ metadata:
   openclaw:
     requires:
       bins:
-        - table-reservation-goat-pp-cli
+        - substack-reader-pp-cli
     install:
       - kind: go
-        bins: [table-reservation-goat-pp-cli]
-        module: github.com/mvanhorn/printing-press-library/library/food-and-dining/table-reservation-goat/cmd/table-reservation-goat-pp-cli
+        bins: [substack-reader-pp-cli]
+        module: github.com/mvanhorn/printing-press-library/library/media-and-entertainment/substack-reader/cmd/substack-reader-pp-cli
 ---
 <!-- GENERATED FILE — DO NOT EDIT.
-     This file is a verbatim mirror of library/food-and-dining/table-reservation-goat/SKILL.md,
+     This file is a verbatim mirror of library/media-and-entertainment/substack-reader/SKILL.md,
      regenerated post-merge by tools/generate-skills/. Hand-edits here are
      silently overwritten on the next regen. Edit the library/ source instead.
      See the repository agent guide, section "Generated artifacts: registry.json, cli-skills/". -->
 
-# Table Reservation Goat — Printing Press CLI
+# Substack Reader — Printing Press CLI
 
 ## Prerequisites: Install the CLI
 
-This skill drives the `table-reservation-goat-pp-cli` binary. **You must verify the CLI is installed before invoking any command from this skill.** If it is missing, install it first:
+This skill drives the `substack-reader-pp-cli` binary. **You must verify the CLI is installed before invoking any command from this skill.** If it is missing, install it first:
 
 1. Install via the Printing Press installer. It defaults binaries to `$HOME/.local/bin` on macOS/Linux and `%LOCALAPPDATA%\Programs\PrintingPress\bin` on Windows:
    ```bash
-   npx -y @mvanhorn/printing-press-library install table-reservation-goat --cli-only
+   npx -y @mvanhorn/printing-press-library install substack-reader --cli-only
    ```
-2. Verify: `table-reservation-goat-pp-cli --version`
+2. Verify: `substack-reader-pp-cli --version`
 3. Ensure the reported install directory is on `$PATH` for the agent/runtime that will invoke this skill.
 
 If the `npx` install fails (no Node, offline, etc.), fall back to a direct Go install (requires Go 1.26.5 or newer). This installs into `$GOPATH/bin` (default `$HOME/go/bin`), so add that directory to `$PATH` instead:
 
 ```bash
-go install github.com/mvanhorn/printing-press-library/library/food-and-dining/table-reservation-goat/cmd/table-reservation-goat-pp-cli@latest
+go install github.com/mvanhorn/printing-press-library/library/media-and-entertainment/substack-reader/cmd/substack-reader-pp-cli@latest
 ```
 
 If `--version` reports "command not found" after install, the runtime cannot see the binary directory on `$PATH`. Do not proceed with skill commands until verification succeeds.
 
-One reservation CLI for OpenTable, Tock, and Resy — search all three networks at once, watch for cancellations, book + cancel end-to-end, and track changes from a local store agents can query.
+Substack Reader archives whole publications into a local SQLite mirror you can search, SQL-query, and read offline. Free posts need no login; paid posts you're entitled to unlock with your own session cookie — never redistributed, always opt-in. Unlike every other Substack tool it builds a corpus that compounds instead of fetching live per call.
+
+## When to Use This CLI
+
+Use Substack Reader when you want a durable, searchable local copy of one or more Substack publications for reading, agent workflows, or analysis — especially reading a specific post's full text or searching across newsletters offline. It is the right tool when you value a corpus that compounds over live per-call fetching.
+
+## Anti-triggers
+
+Do not use this CLI for:
+- Do not use it to publish, schedule, or manage a Substack you own (this is read-only) — use the Substack web app or a publishing tool.
+- Do not use it to bulk-scrape or redistribute paid content you are not entitled to — it reads only your own entitled content, on demand.
+- Do not use it to manage subscribers, payments, or analytics for your own publication.
+
+## Unique Capabilities
+
+These capabilities aren't available in any other tool for this API.
+
+### Local corpus that compounds
+- **`archive`** — Archive a whole Substack publication into a local SQLite mirror you can read, search, and query offline — no other Substack tool builds a persistent corpus.
+
+  _Reach for this to turn a live newsletter into a durable, queryable knowledge base instead of re-fetching every time._
+
+  ```bash
+  substack-reader-pp-cli archive astralcodexten --limit 200
+  ```
+- **`sql`** — Run read-only SQL over your local Substack corpus for arbitrary analytics — post cadence, audience mix, longest posts — from data you've already archived.
+
+  _Reach for this for ad-hoc analytics over what you've archived, without re-fetching or writing code._
+
+  ```bash
+  substack-reader-pp-cli sql "SELECT audience, count(*) FROM posts GROUP BY audience"
+  ```
+
+### Entitlement-aware reading
+- **`read`** — Read a post's full text; free posts keyless, and paid posts you subscribe to via your own session cookie — with an honest 'preview only, you're not entitled' signal.
+
+  _Use to pull a specific post's full text into an agent workflow, respecting exactly what the user is entitled to._
+
+  ```bash
+  substack-reader-pp-cli read astralcodexten/open-thread-441
+  ```
+
+### Topic & comparative intelligence
+- **`digest`** — A time-windowed digest across every publication in your local corpus — what's new since you last synced, ranked, in one view.
+
+  _Use as a personal 'what did I miss across my newsletters' briefing._
+
+  ```bash
+  substack-reader-pp-cli digest --since 7d
+  ```
+- **`author-compare`** — Compare two publications' cadence, topics, and free/paid mix from the local corpus.
+
+  _Use to size up a newsletter before subscribing, or to study what a successful author publishes._
+
+  ```bash
+  substack-reader-pp-cli author-compare astralcodexten blog.bytebytego.com
+  ```
 
 ## Command Reference
 
-**availability** — Check open reservation slots across OpenTable, Tock, and Resy
+**categories** — Browse Substack's publication categories
 
-- `table-reservation-goat-pp-cli availability check` — Check open slots for a restaurant on a specific date and party size
-- `table-reservation-goat-pp-cli availability multi-day` — Multi-day availability for a single restaurant — Mon-Sun matrix
+- `substack-reader-pp-cli categories browse` — List publications in a category
+- `substack-reader-pp-cli categories list` — List all Substack categories
 
-**experiences** — List prepaid and tasting-menu experiences (Tock-style)
+**publications** — Discover Substack publications
 
-
-**me** — Read your authenticated user profile from both networks
-
-
-**reservations** — List, book, modify, and cancel reservations (requires auth login)
-
-OpenTable attach booking is enabled only when `TABLE_RESERVATION_GOAT_OT_CHROME_DEBUG_URL` is explicitly configured and the attached profile is already signed in. Use `TRG_ALLOW_BOOK=prepare` to drive through an enabled final confirmation control without clicking it; only `TRG_ALLOW_BOOK=1` may place the reservation. Typed failures are `attach_unreachable`, `not_signed_in`, `selector_drift`, `form_validation`, `slot_taken`, and `incomplete_confirmation`; `page_state` diagnostics are redacted and never include URL query tokens or arbitrary account labels.
-
-
-**restaurants** — Search and inspect restaurants across OpenTable, Tock, and Resy
-
-- `table-reservation-goat-pp-cli restaurants get` — Get a restaurant's full detail — hours, address, cuisine, price band, photos, accolades
-- `table-reservation-goat-pp-cli restaurants list` — List restaurants across OpenTable, Tock, and Resy; filter by location, cuisine, price band, accolades, and party size
-
-**wishlist** — Read your saved/wishlisted restaurants from both networks
-
+- `substack-reader-pp-cli publications <query>` — Search Substack publications by name (best-effort; may return few results anonymously)
 
 
 ### Finding the right command
@@ -76,16 +117,42 @@ OpenTable attach booking is enabled only when `TABLE_RESERVATION_GOAT_OT_CHROME_
 When you know what you want to do but not which command does it, ask the CLI directly:
 
 ```bash
-table-reservation-goat-pp-cli which "<capability in your own words>"
+substack-reader-pp-cli which "<capability in your own words>"
 ```
 
 `which` resolves a natural-language capability query to the best matching command from this CLI's curated feature index. Exit code `0` means at least one match; exit code `2` means no confident match — fall back to `--help` or use a narrower query.
 
+## Recipes
+
+### Build a searchable corpus
+
+```bash
+substack-reader-pp-cli archive astralcodexten --limit 200 && substack-reader-pp-cli search "prediction markets"
+```
+
+Mirror a publication then search it offline with FTS ranking.
+
+### Narrow a large post to fields
+
+```bash
+substack-reader-pp-cli read astralcodexten/open-thread-441 --agent --select title,post_date,audience,body_html
+```
+
+Pull only the fields an agent needs from a verbose post object.
+
+### Audience mix analytics
+
+```bash
+substack-reader-pp-cli sql "SELECT audience, count(*) FROM posts GROUP BY audience"
+```
+
+Read-only SQL over the local corpus for arbitrary analytics.
+
 ## Auth Setup
 
-Search and availability require no account. OpenTable and Tock attach booking use the signed-in session in the attached Chrome profile; Resy booking uses its saved API token.
+Free/public posts are keyless — zero setup. To read paid posts you already subscribe to, provide your own Substack session cookie (substack.sid); this reads only what you are already entitled to and is never required for free content.
 
-Run `table-reservation-goat-pp-cli doctor` to verify setup.
+Run `substack-reader-pp-cli doctor` to verify setup.
 
 ## Agent Mode
 
@@ -95,11 +162,12 @@ Add `--agent` to any command. Expands to: `--json --compact --no-input --no-colo
 - **Filterable** — `--select` keeps a subset of fields. Dotted paths descend into nested structures; arrays traverse element-wise. Critical for keeping context small on verbose APIs:
 
   ```bash
+  substack-reader-pp-cli categories list --agent --select id,name,status
   ```
 - **Previewable** — `--dry-run` shows the request without sending
 - **Offline-friendly** — sync/search commands can use the local SQLite store when available
 - **Non-interactive** — never prompts, every input is a flag
-- **Explicit retries** — use `--idempotent` only when an already-existing create should count as success, and use `--ignore-missing` only when a missing delete target should count as success
+- **Read-only** — do not use this CLI for create, update, delete, publish, comment, upvote, invite, order, send, or other mutating requests
 
 ### Response envelope
 
@@ -118,28 +186,28 @@ Parse `.results` for data and `.meta.source` to know whether it's live or local.
 
 Agents should treat the CLI's path resolver as part of the runtime contract:
 
-- Use `--home <dir>` for one invocation, or set `TABLE_RESERVATION_GOAT_HOME=<dir>` to relocate all four path kinds under one root.
-- Use per-kind env vars only when a specific kind must diverge: `TABLE_RESERVATION_GOAT_CONFIG_DIR`, `TABLE_RESERVATION_GOAT_DATA_DIR`, `TABLE_RESERVATION_GOAT_STATE_DIR`, `TABLE_RESERVATION_GOAT_CACHE_DIR`.
-- Resolution order is per-kind env var, `--home`, `TABLE_RESERVATION_GOAT_HOME`, XDG (`XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_STATE_HOME`, `XDG_CACHE_HOME`), then platform defaults.
+- Use `--home <dir>` for one invocation, or set `SUBSTACK_READER_HOME=<dir>` to relocate all four path kinds under one root.
+- Use per-kind env vars only when a specific kind must diverge: `SUBSTACK_READER_CONFIG_DIR`, `SUBSTACK_READER_DATA_DIR`, `SUBSTACK_READER_STATE_DIR`, `SUBSTACK_READER_CACHE_DIR`.
+- Resolution order is per-kind env var, `--home`, `SUBSTACK_READER_HOME`, XDG (`XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_STATE_HOME`, `XDG_CACHE_HOME`), then platform defaults.
 - `config` contains settings like `config.toml` and profiles. `data` contains `credentials.toml`, `data.db`, cookies, and auth sidecars. `state` contains persisted queries, jobs, and `teach.log`. `cache` contains regenerable HTTP/cache files.
 - Stored secrets live in `credentials.toml` under the data dir. Existing legacy `config.toml` secrets are read for compatibility and leave `config.toml` on the first auth write.
-- Run `table-reservation-goat-pp-cli doctor --fail-on warn` to surface path and credential-location warnings. `agent-context` exposes a schema v4 `paths` block for agents that need the resolved dirs.
+- Run `substack-reader-pp-cli doctor --fail-on warn` to surface path and credential-location warnings. `agent-context` exposes a schema v4 `paths` block for agents that need the resolved dirs.
 - For MCP, pass relocation through the MCP host config. The MCP binary does not inherit CLI flags:
 
   ```json
   {
     "mcpServers": {
-      "table-reservation-goat": {
-        "command": "table-reservation-goat-pp-mcp",
+      "substack-reader": {
+        "command": "substack-reader-pp-mcp",
         "env": {
-          "TABLE_RESERVATION_GOAT_HOME": "/srv/table-reservation-goat"
+          "SUBSTACK_READER_HOME": "/srv/substack-reader"
         }
       }
     }
   }
   ```
 
-Fleet precedence: an inherited per-kind env var overrides an explicit `--home` for that kind. Use `TABLE_RESERVATION_GOAT_HOME` or per-kind vars as durable fleet levers, and use `--home` only for a single invocation. Relocation is not reversible by unsetting env vars; move files manually before clearing `TABLE_RESERVATION_GOAT_HOME`, or `doctor` will not find credentials left under the former root.
+Fleet precedence: an inherited per-kind env var overrides an explicit `--home` for that kind. Use `SUBSTACK_READER_HOME` or per-kind vars as durable fleet levers, and use `--home` only for a single invocation. Relocation is not reversible by unsetting env vars; move files manually before clearing `SUBSTACK_READER_HOME`, or `doctor` will not find credentials left under the former root.
 
 ## Automatic learning
 
@@ -150,7 +218,7 @@ This CLI ships a self-capturing learning loop. The CLI does its own bookkeeping:
 Before list/search/drill commands on a new user question, run:
 
 ```bash
-table-reservation-goat-pp-cli recall "<user's question>" --agent
+substack-reader-pp-cli recall "<user's question>" --agent
 ```
 
 The response envelope:
@@ -173,7 +241,7 @@ The response envelope:
     { "id": 12, "class": "flag_alias | playbook_candidate",
       "summary": "...", "sightings": 3, "last_seen": "...",
       "rationale": "...",
-      "next_action": ["<trial command>", "table-reservation-goat-pp-cli learnings confirm 12"] }
+      "next_action": ["<trial command>", "substack-reader-pp-cli learnings confirm 12"] }
   ],
   "playbook": {
     "query_family": "...",
@@ -212,7 +280,7 @@ if Playbook present:
        for the entity slot tokens. If a step's slot is unresolved, fall back to
        discovery for that step only.
     -> the Playbook's expected_tool_calls is a budget; if you find yourself running
-       materially more, record the divergence via `table-reservation-goat-pp-cli playbook amend`
+       materially more, record the divergence via `substack-reader-pp-cli playbook amend`
        at end-of-session.
 
 elif Notes present (no Playbook):
@@ -238,7 +306,7 @@ else:  // Found == false, no playbook, no notes
 
 Playbook and Notes are orthogonal to the per-resource path. A recall response can carry both a Playbook AND a `Results[]` hit - use both: the Playbook tells you which choreography to run; the resource hits short-circuit specific steps. Default to skipping `mismatches`; pass `--debug-mismatches` only when investigating cold-start surprises.
 
-Candidate judgment details: `learnings confirm <id>` prints the candidate's full payload before materializing it - check that the printed payload matches the behavior you verified. `learnings reject <id>` tombstones the derivation signature so the same candidate does not resurface. The envelope carries only the few candidates worth acting on now; `table-reservation-goat-pp-cli learnings candidates` lists the full open set.
+Candidate judgment details: `learnings confirm <id>` prints the candidate's full payload before materializing it - check that the printed payload matches the behavior you verified. `learnings reject <id>` tombstones the derivation signature so the same candidate does not resurface. The envelope carries only the few candidates worth acting on now; `substack-reader-pp-cli learnings candidates` lists the full open set.
 
 Graceful degradation: if `learnings confirm` is an unknown command, you are driving an older binary - ignore the candidates guidance and follow the rest of the protocol.
 
@@ -250,7 +318,7 @@ Graceful degradation: if `learnings confirm` is an unknown command, you are driv
 - `similar_shape_different_entity:<canonical>` (top-level): a structurally matching row exists but its canonical entity differs from the live query's. Treated as cold start; the warning carries the conflicting canonical as a hint, but the row is NOT promoted into Results.
 - `ambiguous_alias` (top-level): a single query entity resolved to multiple canonicals (e.g., "Cards" → Arizona Cardinals + St. Louis Cardinals). Surface the ambiguity from context before committing to a resource.
 - `candidates_present` (top-level): the envelope carries a `candidates` section. Handle it via the candidates branch in Step 2 before anything else.
-- `lookup_refresh_available` (top-level): an entity in the query has no lookup row yet, but synced data could provide one. Run `table-reservation-goat-pp-cli sync` to refresh entity lookups.
+- `lookup_refresh_available` (top-level): an entity in the query has no lookup row yet, but synced data could provide one. Run `substack-reader-pp-cli sync` to refresh entity lookups.
 - Top-level `no_learnings_for_query_family`: the table had no rows above the Jaccard floor. Pure cold start.
 
 ### Step 4: `teach &` after finalizing your response - always
@@ -258,7 +326,7 @@ Graceful degradation: if `learnings confirm` is an unknown command, you are driv
 Teaching is unconditional. After resolving a query the store could not answer, background-teach the final resource mapping - no call-count threshold, no judging whether it was "worth" learning. The teach is the anchor of the loop: it triggers playbook synthesis for a family without a playbook, and same-referent phrasings fold into one family so near-duplicate teaches do not fragment the store. Fire it after assembling your user-facing response but BEFORE emitting it, with a shell `&` so the call returns immediately:
 
 ```bash
-table-reservation-goat-pp-cli teach --query "<user's question>" --resource-type <type> --resource <id1> --resource <id2>
+substack-reader-pp-cli teach --query "<user's question>" --resource-type <type> --resource <id1> --resource <id2>
 # (append shell `&` to background it)
 ```
 
@@ -272,7 +340,7 @@ You do not need to decide whether a session "deserves" a playbook: a teach on a 
 
 ```bash
 # Common case: record both the resource learning AND the playbook in one call.
-table-reservation-goat-pp-cli teach \
+substack-reader-pp-cli teach \
   --query "<user's question>" \
   --resource <id> \
   --playbook-file ~/playbooks/<shape>.json \
@@ -280,7 +348,7 @@ table-reservation-goat-pp-cli teach \
 # (append shell `&` to background it)
 
 # Alternate: playbook-only (no resource to record alongside).
-table-reservation-goat-pp-cli teach-playbook \
+substack-reader-pp-cli teach-playbook \
   --query "<user's question>" \
   --playbook-file ~/playbooks/<shape>.json \
   --notes-file ~/playbooks/<shape>-notes.md
@@ -295,7 +363,7 @@ When you DO find a playbook on a future recall, treat it as ground truth: replay
 If your debug-protocol response identifies a concrete correction the notes or playbook should know — a workaround, an undocumented endpoint shape, a stale field name, observed schema drift, an empty-payload fallback — fire `playbook amend` BEFORE emitting your user-facing response. Same fire-and-forget posture as `teach`.
 
 ```bash
-table-reservation-goat-pp-cli playbook amend \
+substack-reader-pp-cli playbook amend \
   --query "<exact recall query string>" \
   --add-note "<your concrete correction>"
 # (append shell `&` to background it)
@@ -326,24 +394,24 @@ If a correction is only meaningful with user-specific context, it belongs in a p
 
 ### Measuring the loop
 
-`table-reservation-goat-pp-cli learnings stats` reports recall hit rate, teach-to-reuse, playbook resolution rate, and candidate confirm/reject counts from the local `learn_events` table. Rates are null until they have a denominator; everything stays on this machine. Use it to check whether the loop is earning its keep for this CLI.
+`substack-reader-pp-cli learnings stats` reports recall hit rate, teach-to-reuse, playbook resolution rate, and candidate confirm/reject counts from the local `learn_events` table. Rates are null until they have a denominator; everything stays on this machine. Use it to check whether the loop is earning its keep for this CLI.
 
 ### Disabling learning
 
 - `--no-learn` on a single command short-circuits both `recall` and the `teach` write path. Use for deterministic agent flows or tests that must not be affected by accumulated learnings.
-- `TABLE_RESERVATION_GOAT_NO_LEARN=true` in the environment globally disables the pipeline.
+- `SUBSTACK_READER_NO_LEARN=true` in the environment globally disables the pipeline.
 
 ## Agent Feedback
 
 When you (or the agent) notice something off about this CLI, record it:
 
 ```
-table-reservation-goat-pp-cli feedback "the --since flag is inclusive but docs say exclusive"
-table-reservation-goat-pp-cli feedback --stdin < notes.txt
-table-reservation-goat-pp-cli feedback list --json --limit 10
+substack-reader-pp-cli feedback "the --since flag is inclusive but docs say exclusive"
+substack-reader-pp-cli feedback --stdin < notes.txt
+substack-reader-pp-cli feedback list --json --limit 10
 ```
 
-Entries are stored locally as `feedback.jsonl` under the resolved data dir. They are never POSTed unless `TABLE_RESERVATION_GOAT_FEEDBACK_ENDPOINT` is set AND either `--send` is passed or `TABLE_RESERVATION_GOAT_FEEDBACK_AUTO_SEND=true`. Default behavior is local-only.
+Entries are stored locally as `feedback.jsonl` under the resolved data dir. They are never POSTed unless `SUBSTACK_READER_FEEDBACK_ENDPOINT` is set AND either `--send` is passed or `SUBSTACK_READER_FEEDBACK_AUTO_SEND=true`. Default behavior is local-only.
 
 Write what *surprised* you, not a bug report. Short, specific, one line: that is the part that compounds.
 
@@ -364,11 +432,11 @@ Unknown schemes are refused with a structured error naming the supported set. We
 A profile is a saved set of flag values, reused across invocations. Use it when a scheduled or recurring agent reuses the same saved flags while providing different input each run.
 
 ```
-table-reservation-goat-pp-cli profile save briefing --json
-table-reservation-goat-pp-cli --profile briefing experiences list
-table-reservation-goat-pp-cli profile list --json
-table-reservation-goat-pp-cli profile show briefing
-table-reservation-goat-pp-cli profile delete briefing --yes
+substack-reader-pp-cli profile save briefing --json
+substack-reader-pp-cli --profile briefing categories list
+substack-reader-pp-cli profile list --json
+substack-reader-pp-cli profile show briefing
+substack-reader-pp-cli profile delete briefing --yes
 ```
 
 Explicit flags always win over profile values; profile values win over defaults. `agent-context` lists all available profiles under `available_profiles` so introspecting agents discover them at runtime.
@@ -388,7 +456,7 @@ Explicit flags always win over profile values; profile values win over defaults.
 
 Parse `$ARGUMENTS`:
 
-1. **Empty, `help`, or `--help`** → show `table-reservation-goat-pp-cli --help` output
+1. **Empty, `help`, or `--help`** → show `substack-reader-pp-cli --help` output
 2. **Starts with `install`** → ends with `mcp` → MCP installation; otherwise → see Prerequisites above
 3. **Anything else** → Direct Use (execute as CLI command with `--agent`)
 
@@ -396,21 +464,21 @@ Parse `$ARGUMENTS`:
 
 1. Install the MCP server:
    ```bash
-   go install github.com/mvanhorn/printing-press-library/library/food-and-dining/table-reservation-goat/cmd/table-reservation-goat-pp-mcp@latest
+   go install github.com/mvanhorn/printing-press-library/library/media-and-entertainment/substack-reader/cmd/substack-reader-pp-mcp@latest
    ```
 2. Register with Claude Code:
    ```bash
-   claude mcp add table-reservation-goat-pp-mcp -- table-reservation-goat-pp-mcp
+   claude mcp add substack-reader-pp-mcp -- substack-reader-pp-mcp
    ```
 3. Verify: `claude mcp list`
 
 ## Direct Use
 
-1. Check if installed: `which table-reservation-goat-pp-cli`
+1. Check if installed: `which substack-reader-pp-cli`
    If not found, offer to install (see Prerequisites at the top of this skill).
 2. Match the user query to the best command from the Unique Capabilities and Command Reference above.
 3. Execute with the `--agent` flag:
    ```bash
-   table-reservation-goat-pp-cli <command> [subcommand] [args] --agent
+   substack-reader-pp-cli <command> [subcommand] [args] --agent
    ```
-4. If ambiguous, drill into subcommand help: `table-reservation-goat-pp-cli <command> --help`.
+4. If ambiguous, drill into subcommand help: `substack-reader-pp-cli <command> --help`.
