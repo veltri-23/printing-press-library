@@ -11,37 +11,35 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newProgramsListScopesCmd(flags *rootFlags) *cobra.Command {
+func newUserListMembersCmd(flags *rootFlags) *cobra.Command {
+	var flagPage string
+	var flagResultsPerPage int
+	var flagAll bool
 
 	cmd := &cobra.Command{
-		Use:         "list-scopes <slug>",
-		Short:       "List the in-scope and out-of-scope assets for a program",
-		Example:     "  yeswehack-pp-cli programs list-scopes example-value",
-		Annotations: map[string]string{"pp:endpoint": "programs.list_scopes", "pp:method": "GET", "pp:path": "/programs/{slug}/scopes", "mcp:read-only": "true"},
+		Use:         "list-members",
+		Short:       "List the authenticated hunter's program membership records",
+		Example:     "  yeswehack-pp-cli user list-members",
+		Annotations: map[string]string{"pp:endpoint": "user.list_members", "pp:method": "GET", "pp:path": "/user/members", "mcp:read-only": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) == 0 {
-				return cmd.Help()
-			}
 			c, err := flags.newClient()
 			if err != nil {
 				return err
 			}
 
-			path := "/programs/{slug}/scopes"
-			path = replacePathParam(path, "slug", args[0])
-			data, prov, err := readProgramScopes(cmd, c, flags, args[0])
+			path := "/user/members"
+			data, prov, err := resolvePaginatedRead(cmd.Context(), c, flags, "user-members", path, map[string]string{
+				"page":           fmt.Sprintf("%v", flagPage),
+				"resultsPerPage": fmt.Sprintf("%v", flagResultsPerPage),
+			}, nil, flagAll, "", "", "")
 			if err != nil {
 				return classifyAPIError(err, flags)
 			}
-			// Print provenance to stderr for human-facing output
 			{
 				var countItems []json.RawMessage
-				_ = json.Unmarshal(data, &countItems)
+				_ = json.Unmarshal(extractResponseItems(data), &countItems)
 				printProvenance(cmd, len(countItems), prov)
 			}
-			// For JSON output, wrap with provenance envelope before passing through flags.
-			// --select wins over --compact when both are set; --compact only runs when
-			// no explicit fields were requested.
 			if flags.asJSON || !isTerminal(cmd.OutOrStdout()) {
 				filtered := data
 				if flags.selectFields != "" {
@@ -55,10 +53,9 @@ func newProgramsListScopesCmd(flags *rootFlags) *cobra.Command {
 				}
 				return printOutput(cmd.OutOrStdout(), wrapped, true)
 			}
-			// For all other output modes (table, csv, plain, quiet), use the standard pipeline
 			if wantsHumanTable(cmd.OutOrStdout(), flags) {
 				var items []map[string]any
-				if json.Unmarshal(data, &items) == nil && len(items) > 0 {
+				if json.Unmarshal(extractResponseItems(data), &items) == nil && len(items) > 0 {
 					if err := printAutoTable(cmd.OutOrStdout(), items); err != nil {
 						return err
 					}
@@ -71,6 +68,9 @@ func newProgramsListScopesCmd(flags *rootFlags) *cobra.Command {
 			return printOutputWithFlags(cmd.OutOrStdout(), data, flags)
 		},
 	}
+	cmd.Flags().StringVar(&flagPage, "page", "", "Page number")
+	cmd.Flags().IntVar(&flagResultsPerPage, "results-per-page", 0, "Page size")
+	cmd.Flags().BoolVar(&flagAll, "all", false, "Fetch all pages")
 
 	return cmd
 }
