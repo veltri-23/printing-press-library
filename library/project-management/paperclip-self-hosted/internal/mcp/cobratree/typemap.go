@@ -28,7 +28,7 @@ func toolOptionsForFlags(cmd *cobra.Command, blocked map[string]bool, positional
 		if flag == nil || flag.Hidden || flag.Deprecated != "" {
 			return
 		}
-		if reservedStructuredArgs[flag.Name] {
+		if reservedStructuredArgs[flag.Name] || blocked[flag.Name] {
 			return
 		}
 		if seen[flag.Name] {
@@ -188,6 +188,9 @@ func positionalArgsForCommand(cmd *cobra.Command, blocked map[string]bool) []pos
 func blockedStructuredArgsForCommand(cmd *cobra.Command) map[string]bool {
 	blocked := map[string]bool{}
 	for name := range reservedStructuredArgs {
+		blocked[name] = true
+	}
+	for name := range blockedLocalFileFlags {
 		blocked[name] = true
 	}
 	if cmd == nil {

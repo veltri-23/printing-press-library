@@ -177,6 +177,30 @@ func TestBlockedStructuredArgsOnlyDropsInheritedRootFlags(t *testing.T) {
 	}
 }
 
+func TestBlockedStructuredArgsDropsCommandLocalFileReaders(t *testing.T) {
+	root := &cobra.Command{Use: "root"}
+	child := &cobra.Command{Use: "teach-playbook"}
+	child.Flags().String("notes-file", "", "notes path")
+	child.Flags().String("playbook-json", "", "inline playbook")
+	root.AddCommand(child)
+
+	blocked := blockedStructuredArgsForCommand(child)
+	if !blocked["notes-file"] {
+		t.Fatalf("command-local --notes-file was not blocked: %#v", blocked)
+	}
+	if blocked["playbook-json"] {
+		t.Fatalf("inline --playbook-json should remain available: %#v", blocked)
+	}
+
+	tool := mcplib.NewTool("teach-playbook", toolOptionsForFlags(child, blocked, nil)...)
+	if _, ok := tool.InputSchema.Properties["notes-file"]; ok {
+		t.Fatalf("filesystem flag leaked into MCP schema: %#v", tool.InputSchema.Properties)
+	}
+	if _, ok := tool.InputSchema.Properties["playbook-json"]; !ok {
+		t.Fatalf("inline alternative missing from MCP schema: %#v", tool.InputSchema.Properties)
+	}
+}
+
 // TestArgsFieldRejectsFlagLikeTokens covers the free-form "args" string
 // half of the control-plane-injection guard. shellOutToCLI is a closure
 // that requires a real binary on PATH; we exercise the same guard logic

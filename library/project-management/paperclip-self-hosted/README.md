@@ -114,6 +114,22 @@ See [Install](#install) above.
 
 ### 2. Verify Setup
 
+Configure one of Paperclip's supported authentication modes first:
+
+```bash
+# Browser-session authentication
+export PAPERCLIP_SESSION_COOKIE="<session-cookie>"
+
+# Or a board API key
+export PAPERCLIP_API_KEY="<board-api-key>"
+
+# Or an agent bearer token
+export PAPERCLIP_AGENT_TOKEN="<agent-token>"
+```
+
+The CLI auto-detects the mode from the credential. Set `PAPERCLIP_AUTH_MODE` to
+`board-session`, `board-api-key`, `agent-bearer`, or `none` to choose explicitly.
+
 ```bash
 paperclip-pp-cli doctor
 ```

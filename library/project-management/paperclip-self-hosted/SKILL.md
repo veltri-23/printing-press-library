@@ -280,7 +280,14 @@ paperclip-pp-cli which "<capability in your own words>"
 
 ## Auth Setup
 
-No authentication required.
+Configure one of Paperclip's supported authentication modes:
+
+- `PAPERCLIP_SESSION_COOKIE` for a browser session (`board-session`)
+- `PAPERCLIP_API_KEY` for a board API key (`board-api-key`)
+- `PAPERCLIP_AGENT_TOKEN` for an agent bearer token (`agent-bearer`)
+
+The CLI auto-detects the mode from the credential. Set `PAPERCLIP_AUTH_MODE` to
+`board-session`, `board-api-key`, `agent-bearer`, or `none` to choose explicitly.
 
 Run `paperclip-pp-cli doctor` to verify setup.
 

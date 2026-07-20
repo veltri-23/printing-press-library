@@ -1,7 +1,44 @@
 {
   "api_name": "paperclip-self-hosted",
   "api_version": "1.0",
-  "auth_type": "none",
+  "auth_type": "composed",
+  "auth_env_vars": [
+    "PAPERCLIP_AUTH_MODE",
+    "PAPERCLIP_SESSION_COOKIE",
+    "PAPERCLIP_API_KEY",
+    "PAPERCLIP_AGENT_TOKEN"
+  ],
+  "auth_description": "Choose a browser session cookie, board API key, or agent bearer token. PAPERCLIP_AUTH_MODE can explicitly select board-session, board-api-key, agent-bearer, or none; otherwise the CLI auto-detects the supplied credential.",
+  "auth_env_var_specs": [
+    {
+      "name": "PAPERCLIP_AUTH_MODE",
+      "kind": "mode",
+      "required": false,
+      "sensitive": false,
+      "description": "Explicit auth mode: board-session, board-api-key, agent-bearer, or none."
+    },
+    {
+      "name": "PAPERCLIP_SESSION_COOKIE",
+      "kind": "cookie",
+      "required": false,
+      "sensitive": true,
+      "description": "Browser session cookie value for board-session authentication."
+    },
+    {
+      "name": "PAPERCLIP_API_KEY",
+      "kind": "api_key",
+      "required": false,
+      "sensitive": true,
+      "description": "Board API key used as a bearer credential."
+    },
+    {
+      "name": "PAPERCLIP_AGENT_TOKEN",
+      "kind": "bearer_token",
+      "required": false,
+      "sensitive": true,
+      "description": "Agent bearer token."
+    }
+  ],
   "cli_name": "paperclip-pp-cli",
   "creator": {
     "handle": "veltri-23",
