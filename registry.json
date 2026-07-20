@@ -6263,6 +6263,61 @@
       }
     },
     {
+      "name": "fpi-india",
+      "category": "other",
+      "api": "FPI India",
+      "description": "The full history of Foreign Portfolio Investor flows into India, synced locally and queryable offline — something neither NSDL nor CDSL offers today.",
+      "search_terms": [
+        "fpi-india",
+        "FPI India",
+        "fpi-india-pp-cli",
+        "The full history of Foreign Portfolio Investor flows into India, synced locally and queryable offline — something neither NSDL nor CDSL offers today.",
+        "Net-investment year-over-year comparison",
+        "net-investment yoy",
+        "See this year's FPI net flow next to the same period last year, delta computed automatically.",
+        "Sector rotation top movers",
+        "sector rotation",
+        "Rank which sectors saw the biggest FPI inflow/outflow swing between the two most recent synced periods.",
+        "Foreign investment limit utilization",
+        "limits utilization",
+        "See what percentage of the regulatory FPI investment cap a sector or debt category has used.",
+        "Buying/selling streak detection",
+        "net-investment streaks",
+        "See how many consecutive fortnights/years FPIs have been net buyers or sellers, and the most recent flip.",
+        "AUC historical trend",
+        "auc trend",
+        "Track how a country's or category's share of assets under custody has changed across synced snapshots.",
+        "Historical extremes",
+        "net-investment extremes",
+        "Find the largest single-period FPI inflows or outflows across the full 1992-93-to-present series.",
+        "Net-investment trend",
+        "See the rolling growth-rate and direction of FPI net flow over a window of recent periods.",
+        "NSDL/CDSL discrepancy flagging",
+        "cdsl diff",
+        "Compare NSDL's and CDSL's figures for the same date and flag any mismatch."
+      ],
+      "path": "library/other/fpi-india",
+      "printer": "lavs9",
+      "printer_name": "Mayank Lavania",
+      "creator": {
+        "handle": "lavs9",
+        "name": "Mayank Lavania"
+      },
+      "mcp": {
+        "binary": "fpi-india-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 15,
+        "public_tool_count": 15,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "framer",
       "category": "developer-tools",
       "api": "Framer",
