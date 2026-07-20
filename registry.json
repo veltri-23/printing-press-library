@@ -6297,6 +6297,12 @@
         "Compare NSDL's and CDSL's figures for the same date and flag any mismatch."
       ],
       "path": "library/other/fpi-india",
+      "release": {
+        "cli_name": "fpi-india-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-20T16:30:48Z",
+        "source_commit": "e276eadd76ea58a925424300dcf7912463b70674"
+      },
       "printer": "lavs9",
       "printer_name": "Mayank Lavania",
       "creator": {
@@ -13700,6 +13706,58 @@
       }
     },
     {
+      "name": "quranku",
+      "category": "education",
+      "api": "QuranKu",
+      "description": "Every Al-Qur'an feature the app has, plus the Indonesian Tarjamah Tafsiriyah offline, a local database, offline search, a khatam plan, and a hifz tracker no other Qur'an tool has.",
+      "search_terms": [
+        "quranku",
+        "quranku-pp-cli",
+        "Every Al-Qur'an feature the app has, plus the Indonesian Tarjamah Tafsiriyah offline, a local database, offline search, a khatam plan, and a hifz tracker no other Qur'an tool has.",
+        "Offline full-text search",
+        "find",
+        "Search the Qur'an offline by word or meaning across Arabic and the Indonesian Tafsiriyah.",
+        "Cross-source verse lookup",
+        "verse",
+        "Get a single verse (e.g. 2:255) with Arabic and the Tafsiriyah translation joined together.",
+        "Verse of the day",
+        "daily",
+        "A stable, date-seeded verse of the day with its Tafsiriyah translation.",
+        "Khatam reading plan",
+        "plan",
+        "Build and follow a plan to finish the Qur'an in N days, tracking progress locally.",
+        "Hifz memorization tracker",
+        "hifz",
+        "Mark and review Qur'an memorization progress per surah or verse.",
+        "Bookmarks with notes",
+        "bookmark",
+        "Save verses with personal notes for later, offline.",
+        "Random ayah",
+        "random",
+        "A random verse with its Tafsiriyah translation for reflection."
+      ],
+      "path": "library/education/quranku",
+      "printer": "erikgunawans",
+      "printer_name": "erikgunawans",
+      "creator": {
+        "handle": "erikgunawans",
+        "name": "erikgunawans"
+      },
+      "mcp": {
+        "binary": "quranku-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 11,
+        "public_tool_count": 11,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "rappi",
       "category": "food-and-dining",
       "api": "Rappi",
@@ -16730,9 +16788,9 @@
       "path": "library/developer-tools/supabase",
       "release": {
         "cli_name": "supabase-pp-cli",
-        "version": "2026.7.2",
-        "released_at": "2026-07-13T08:40:26Z",
-        "source_commit": "24a07b1badcaa3e6f967b0e9e7d001aa916c591b"
+        "version": "2026.7.3",
+        "released_at": "2026-07-20T16:33:59Z",
+        "source_commit": "6ca6f86a27f97f663f06fa197d2844b98ee03384"
       },
       "printer": "giacaglia",
       "printer_name": "Giuliano Giacaglia",
@@ -17029,9 +17087,9 @@
       "path": "library/food-and-dining/table-reservation-goat",
       "release": {
         "cli_name": "table-reservation-goat-pp-cli",
-        "version": "2026.7.5",
-        "released_at": "2026-07-18T05:16:59Z",
-        "source_commit": "6adda32be0c5efdd581e2e8285b8e98dfae8af4e"
+        "version": "2026.7.6",
+        "released_at": "2026-07-20T16:29:06Z",
+        "source_commit": "7273626283faf13b8dc27a4debf4de684069ae05"
       },
       "printer": "pejmanjohn",
       "printer_name": "Pejman Pour-Moezzi",
