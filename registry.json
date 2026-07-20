@@ -3841,6 +3841,12 @@
         "Join one recall's affected products, remedy, contact, images, incidents, and official URL into an action packet."
       ],
       "path": "library/other/cpsc-recalls",
+      "release": {
+        "cli_name": "cpsc-recalls-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-20T16:27:43Z",
+        "source_commit": "33a876a101119727e16fcb9f089ad5cec3279888"
+      },
       "printer": "Avanderheyde",
       "printer_name": "Avanderheyde",
       "creator": {
@@ -17379,6 +17385,7 @@
       "search_terms": [
         "ticketmaster",
         "ticketmaster-pp-cli",
+        "Every Discovery v2 endpoint plus offline search, multi-venue watchlists, residency dedup, and on-sale tracking no API call exposes.",
         "Multi-venue watchlist sweep",
         "events upcoming",
         "Fan out across a venue ID file or list and return one merged, deduplicated, date-sorted event list — the watchlist primitive behind any curated 'what's on at my venues' workflow.",
@@ -17423,7 +17430,8 @@
       "mcp": {
         "binary": "ticketmaster-pp-mcp",
         "transports": [
-          "stdio"
+          "stdio",
+          "http"
         ],
         "tool_count": 13,
         "public_tool_count": 0,
