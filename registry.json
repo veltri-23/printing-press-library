@@ -5055,6 +5055,56 @@
       }
     },
     {
+      "name": "epa-echo",
+      "category": "other",
+      "api": "Epa Echo",
+      "description": "Resolve EPA-regulated facilities, inspect transparent compliance evidence, and retain change history without opaque scores.",
+      "search_terms": [
+        "epa-echo",
+        "Epa Echo",
+        "epa-echo-pp-cli",
+        "Resolve EPA-regulated facilities, inspect transparent compliance evidence, and retain change history without opaque scores.",
+        "Explainable facility resolution",
+        "resolve facility",
+        "Rank bounded facility matches while preserving FRS identifiers, addresses, program status fields, and query provenance.",
+        "Facility dossier change set",
+        "dossier diff",
+        "Compare a live detailed facility report with the prior local snapshot and list changed ECHO sections without assigning a score.",
+        "Portfolio compliance watch",
+        "watch",
+        "Fetch a bounded CSV portfolio of facility IDs and atomically report changed detailed-report sections since the prior run.",
+        "Explained nearby scan",
+        "nearby explain",
+        "List facilities within an EPA-supported radius and expose the compliance, inspection, action, and penalty fields behind each concern.",
+        "Effluent exceedance trend",
+        "effluent trend",
+        "Return ECHO's reported Clean Water Act effluent compliance and exceedance records for one stable facility identifier.",
+        "Enforcement chain timeline",
+        "enforcement timeline",
+        "Collect dated inspection, violation, formal-action, and enforcement sections from a detailed facility report without causal inference."
+      ],
+      "path": "library/other/epa-echo",
+      "printer": "Avanderheyde",
+      "printer_name": "avanderheyde",
+      "creator": {
+        "handle": "Avanderheyde",
+        "name": "avanderheyde"
+      },
+      "mcp": {
+        "binary": "epa-echo-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 3,
+        "public_tool_count": 3,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "erank",
       "category": "marketing",
       "api": "eRank",
@@ -14949,6 +14999,53 @@
       }
     },
     {
+      "name": "sensortower",
+      "category": "marketing",
+      "api": "Sensor Tower",
+      "description": "Every free Sensor Tower ranking, plus the rank history the dashboard forgets the moment you close the tab.",
+      "search_terms": [
+        "sensortower",
+        "Sensor Tower",
+        "sensortower-pp-cli",
+        "Every free Sensor Tower ranking, plus the rank history the dashboard forgets the moment you close the tab.",
+        "Category movers and new entrants",
+        "movers",
+        "See which apps climbed, fell, or newly appeared in a category chart since the previous 'movers' run.",
+        "Release-vs-rank teardown",
+        "teardown",
+        "Align an app's release timeline against its rank history to see which shipped version moved the needle.",
+        "Weekly watch digest",
+        "watch digest",
+        "Print every tracked app's current rank per chart plus its delta since the previous 'movers' run.",
+        "Free-vs-grossing divergence",
+        "divergence",
+        "Find monetization outliers in a category by comparing each app's free-chart rank against its grossing-chart rank.",
+        "Cross-platform comparison",
+        "compare",
+        "Compare one product's iOS and Android standing side by side after resolving cross-platform identity."
+      ],
+      "path": "library/marketing/sensortower",
+      "printer": "waveriderai",
+      "printer_name": "waveriderai",
+      "creator": {
+        "handle": "waveriderai",
+        "name": "waveriderai"
+      },
+      "mcp": {
+        "binary": "sensortower-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 12,
+        "public_tool_count": 10,
+        "auth_type": "cookie",
+        "env_vars": [],
+        "mcp_ready": "partial",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "sentry",
       "category": "monitoring",
       "api": "Sentry",
@@ -16390,6 +16487,12 @@
         "Run read-only SQL over your local Substack corpus for arbitrary analytics — post cadence, audience mix, longest posts — from data you've already archived."
       ],
       "path": "library/media-and-entertainment/substack-reader",
+      "release": {
+        "cli_name": "substack-reader-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-20T16:26:43Z",
+        "source_commit": "80867fe8953f97af3fb69ea88f3bc09eda4d6c59"
+      },
       "printer": "maxswinguy",
       "printer_name": "Maxime Delavergne",
       "creator": {
@@ -18375,6 +18478,56 @@
         "env_vars": [],
         "mcp_ready": "partial",
         "spec_format": "internal"
+      }
+    },
+    {
+      "name": "vehicle-safety",
+      "category": "other",
+      "api": "Vehicle Safety",
+      "description": "Build source-attributed vehicle safety dossiers, honest comparisons, and recall-change reports from NHTSA data.",
+      "search_terms": [
+        "vehicle-safety",
+        "Vehicle Safety",
+        "vehicle-safety-pp-cli",
+        "Build source-attributed vehicle safety dossiers, honest comparisons, and recall-change reports from NHTSA data.",
+        "Safety dossier",
+        "dossier",
+        "See identity, recall and complaint summaries, and available crash ratings in one source-attributed report; add --include-records for complete source records.",
+        "Garage recall watch",
+        "watch",
+        "Report newly observed recall campaigns and remedy changes for saved vehicles.",
+        "Defect signal timeline",
+        "signals",
+        "Place complaint and recall events on one normalized timeline and identify the official flat-file sources required for investigations and communications.",
+        "Honest model comparison",
+        "compare",
+        "Compare two model years while keeping raw complaint counts and missing denominators explicit.",
+        "Recall coverage reconciliation",
+        "recall-coverage",
+        "Decode one VIN, list matching model-level campaigns, and keep VIN eligibility and repair status explicitly unverified with a link to NHTSA's official lookup.",
+        "Complaint-to-bulletin bridge",
+        "bulletin-bridge",
+        "Show structured complaint and manufacturer-communication co-occurrence candidates."
+      ],
+      "path": "library/other/vehicle-safety",
+      "printer": "Avanderheyde",
+      "printer_name": "avanderheyde",
+      "creator": {
+        "handle": "Avanderheyde",
+        "name": "avanderheyde"
+      },
+      "mcp": {
+        "binary": "vehicle-safety-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 9,
+        "public_tool_count": 9,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
       }
     },
     {
