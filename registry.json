@@ -4716,6 +4716,50 @@
       }
     },
     {
+      "name": "drug-enforcement",
+      "category": "health",
+      "api": "Drug Enforcement",
+      "description": "Search FDA drug recall enforcement records — keyless, offline-cacheable, agent-native. Reports FDA facts only; never says a drug is safe.",
+      "search_terms": [
+        "drug-enforcement",
+        "Drug Enforcement",
+        "drug-enforcement-pp-cli",
+        "Search FDA drug recall enforcement records — keyless, offline-cacheable, agent-native. Reports FDA facts only; never says a drug is safe.",
+        "Recall check by drug",
+        "check",
+        "Find active FDA recalls that mention a drug, optionally filtered to the most serious class.",
+        "Recalls by firm",
+        "firm",
+        "List every recall attributed to a recalling firm or manufacturer.",
+        "Recent recalls window",
+        "recent",
+        "List recalls initiated in the last N days, most recent first.",
+        "Recall detail by number",
+        "reference",
+        "Show full detail for a single recall number, with the FDA class legend."
+      ],
+      "path": "library/health/drug-enforcement",
+      "printer": "laci141",
+      "printer_name": "laci141",
+      "creator": {
+        "handle": "laci141",
+        "name": "laci141"
+      },
+      "mcp": {
+        "binary": "drug-enforcement-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 1,
+        "public_tool_count": 1,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "dub",
       "category": "marketing",
       "api": "Dub",
@@ -6706,6 +6750,12 @@
         "Search previously fetched repo listings from the local store — find files by name or pattern with zero API calls."
       ],
       "path": "library/developer-tools/github-contents",
+      "release": {
+        "cli_name": "github-contents-pp-cli",
+        "version": "2026.7.1",
+        "released_at": "2026-07-20T16:46:00Z",
+        "source_commit": "2b595c7718c0ee29b262f5ca701c4d39915d84a2"
+      },
       "printer": "rvdlaar",
       "printer_name": "Rick van de Laar",
       "creator": {
