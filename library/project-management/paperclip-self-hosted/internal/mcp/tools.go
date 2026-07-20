@@ -5636,6 +5636,9 @@ func newMCPConfig() (*config.Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("loading config: %w", err)
 	}
+	if err := cfg.ValidateAuth(); err != nil {
+		return nil, fmt.Errorf("validating config: %w", err)
+	}
 	return cfg, nil
 }
 

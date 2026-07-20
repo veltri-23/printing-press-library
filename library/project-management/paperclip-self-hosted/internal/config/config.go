@@ -96,9 +96,6 @@ func Load(configPath string) (*Config, error) {
 		cfg.AgentToken = v
 		cfg.markEnvOverride("AgentToken")
 	}
-	if err := cfg.ValidateAuth(); err != nil {
-		return nil, err
-	}
 	return cfg, nil
 }
 

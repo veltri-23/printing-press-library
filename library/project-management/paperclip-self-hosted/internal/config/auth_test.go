@@ -1,6 +1,9 @@
 package config
 
-import "testing"
+import (
+	"path/filepath"
+	"testing"
+)
 
 func TestResolvedAuthModeAutoDetectsCredentials(t *testing.T) {
 	cases := []struct {
@@ -33,5 +36,20 @@ func TestValidateAuthRequiresCredentialForExplicitMode(t *testing.T) {
 	}
 	if err := (&Config{AuthMode: "unknown"}).ValidateAuth(); err == nil {
 		t.Fatal("ValidateAuth() returned nil for an unknown mode")
+	}
+}
+
+func TestLoadDefersAuthValidationUntilCallerOverridesAreApplied(t *testing.T) {
+	t.Setenv("PAPERCLIP_AUTH_MODE", "board-api-key")
+	cfg, err := Load(filepath.Join(t.TempDir(), "config.toml"))
+	if err != nil {
+		t.Fatalf("Load returned error before caller could apply a credential override: %v", err)
+	}
+	if err := cfg.ValidateAuth(); err == nil {
+		t.Fatal("ValidateAuth returned nil before the credential override")
+	}
+	cfg.BoardAPIKey = "from-flag"
+	if err := cfg.ValidateAuth(); err != nil {
+		t.Fatalf("ValidateAuth returned error after credential override: %v", err)
 	}
 }
