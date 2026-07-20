@@ -3,6 +3,7 @@
 package cli
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/mvanhorn/printing-press-library/library/food-and-dining/table-reservation-goat/internal/source/opentable"
+	"github.com/mvanhorn/printing-press-library/library/food-and-dining/table-reservation-goat/internal/source/tock"
 )
 
 type fakeOpenTableAttachPostBookClient struct {
@@ -423,6 +425,78 @@ func TestVerifyEnvFloor_GuardOrder(t *testing.T) {
 	// because IsVerifyEnv short-circuits first. We can't test the cobra layer
 	// directly here without a full command harness, but the env detection is
 	// the gate — and it's covered by cliutil.IsVerifyEnv tests already.
+}
+
+func TestTockCVCForBooking_NoInputAttemptsWithEmptyCVCAndDoesNotPrompt(t *testing.T) {
+	// Machine mode without TRG_TOCK_CVC proceeds with an empty CVC (the
+	// interactive flow allows skipping; card-on-file venues complete without
+	// one). A venue that truly blocks surfaces tock.ErrCVCRequired from the
+	// checkout stage instead.
+	t.Setenv("TRG_TOCK_CVC", "")
+	var stderr bytes.Buffer
+	cvc, err := tockCVCForBooking(true, os.Stdin, &stderr)
+	if err != nil {
+		t.Fatalf("tockCVCForBooking unexpected err: %v", err)
+	}
+	if cvc != "" {
+		t.Fatalf("cvc = %q, want empty", cvc)
+	}
+	if stderr.Len() != 0 {
+		t.Fatalf("machine mode wrote prompt: %q", stderr.String())
+	}
+}
+
+func TestTockCVCForBooking_NoInputAcceptsEnv(t *testing.T) {
+	t.Setenv("TRG_TOCK_CVC", "123")
+	var stderr bytes.Buffer
+	cvc, err := tockCVCForBooking(true, os.Stdin, &stderr)
+	if err != nil {
+		t.Fatalf("tockCVCForBooking unexpected err: %v", err)
+	}
+	if cvc != "123" {
+		t.Fatalf("cvc = %q, want env value", cvc)
+	}
+	if stderr.Len() != 0 {
+		t.Fatalf("machine mode with env wrote prompt: %q", stderr.String())
+	}
+}
+
+func TestTockCVCForBooking_RejectsInvalidEnv(t *testing.T) {
+	t.Setenv("TRG_TOCK_CVC", "12x")
+	var stderr bytes.Buffer
+	cvc, err := tockCVCForBooking(true, os.Stdin, &stderr)
+	if !errors.Is(err, errTockCVCInvalid) {
+		t.Fatalf("tockCVCForBooking err = %v, want errTockCVCInvalid", err)
+	}
+	if cvc != "" {
+		t.Fatalf("cvc = %q, want empty", cvc)
+	}
+	if stderr.Len() != 0 {
+		t.Fatalf("invalid env wrote prompt: %q", stderr.String())
+	}
+}
+
+func TestApplyTockBookError_SelectorDriftPreservesPinnedExperienceFailure(t *testing.T) {
+	bookErr := &tock.ChromeBookError{
+		Kind: tock.ErrSlotControlNotFound,
+		Step: "booking_control",
+		Cause: errors.New(
+			`requested_time="6:15 PM" combobox_layout_error=experience_card: pinned experience 520126 could not be positively identified among Book now controls`,
+		),
+	}
+	got := applyTockBookError(bookResult{}, bookErr, "barcelona-wine-bar-raleigh", "2026-07-10", "18:15", 2)
+
+	if got.Error != "selector_drift" {
+		t.Fatalf("error category = %q, want selector_drift", got.Error)
+	}
+	for _, want := range []string{"step=booking_control", "experience_card", "pinned experience 520126"} {
+		if !strings.Contains(got.Hint, want) {
+			t.Errorf("hint = %q, want it to contain %q", got.Hint, want)
+		}
+	}
+	if want := "https://www.exploretock.com/barcelona-wine-bar-raleigh?date=2026-07-10&size=2&time=18:15"; got.BookURL != want {
+		t.Fatalf("book URL = %q, want %q", got.BookURL, want)
+	}
 }
 
 func envIsVerify() bool {
