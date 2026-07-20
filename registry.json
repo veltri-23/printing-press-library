@@ -5089,9 +5089,9 @@
       "path": "library/media-and-entertainment/espn",
       "release": {
         "cli_name": "espn-pp-cli",
-        "version": "2026.7.2",
-        "released_at": "2026-07-08T23:15:22Z",
-        "source_commit": "220c1563d0375ec8741c4c377b4bb5a4317cbf6a"
+        "version": "2026.7.3",
+        "released_at": "2026-07-18T05:23:08Z",
+        "source_commit": "6f816e95cac275189aa9b9f7a1e678cb5b0d6f5d"
       },
       "printer": "mvanhorn",
       "printer_name": "Matt Van Horn",
@@ -9357,6 +9357,61 @@
         ],
         "mcp_ready": "full",
         "spec_format": "openapi3"
+      }
+    },
+    {
+      "name": "lightroom-classic",
+      "category": "media-and-entertainment",
+      "api": "Lightroom Classic",
+      "description": "Your Lightroom Classic catalog, queryable from the terminal — streaks, daily picks, and shot lists with zero exports and zero writes.",
+      "search_terms": [
+        "lightroom-classic",
+        "Lightroom Classic",
+        "lightroom-classic-pp-cli",
+        "Your Lightroom Classic catalog, queryable from the terminal — streaks, daily picks, and shot lists with zero exports and zero writes.",
+        "Streak & gap tracker",
+        "streaks",
+        "See your current and longest daily-shooting streaks and every missed day in a range.",
+        "Daily pick resolver",
+        "pick-of-day",
+        "Get exactly one image per day — flag beats rating beats recency — with its file path resolved for publishing.",
+        "On-this-day",
+        "Everything shot on this calendar date across all years, grouped by year.",
+        "Project progress",
+        "project",
+        "Progress report for a fixed-length photo project: day N of target, missed days, projected finish.",
+        "Shooting habits stats",
+        "stats",
+        "Histograms of your shooting by focal length, hour, weekday, month, camera, lens, or ISO.",
+        "Catalog doctor",
+        "doctor",
+        "Health sweep: masters missing on disk, images without capture time, orphan keywords, empty collections.",
+        "Keeper funnel",
+        "funnel",
+        "Conversion rates from shot to picked to rated to developed to collected, optionally per year.",
+        "Unedited backlog",
+        "backlog",
+        "Keepers you flagged or rated but never developed."
+      ],
+      "path": "library/media-and-entertainment/lightroom-classic",
+      "printer": "micahb37",
+      "printer_name": "Micah Baldwin",
+      "creator": {
+        "handle": "micahb37",
+        "name": "Micah Baldwin"
+      },
+      "mcp": {
+        "binary": "lightroom-classic-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 5,
+        "public_tool_count": 5,
+        "auth_type": "none",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "internal"
       }
     },
     {
